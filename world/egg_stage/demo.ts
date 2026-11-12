@@ -2,7 +2,7 @@ import { EGG, OXYGEN, RESPIRE, START } from '../../data/egg'
 import { ECY } from './terrain'
 
 type Bubble = { x: number; y: number; a: number }
-export type Phase = 'ready' | 'active' | 'cooldown'
+type Phase = 'ready' | 'active' | 'cooldown'
 
 export const rise = (b: Bubble) => b.y - b.a * 2.4
 

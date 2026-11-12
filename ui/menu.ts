@@ -3,7 +3,7 @@ import { UI } from '../data/palette'
 import { panel } from './panel'
 import { text } from './text'
 
-export type Item = { label: string; run(): void }
+type Item = { label: string; run(): void }
 
 export function menu(items: Item[], x: number, bottom: number, w = 96, h = 22, pitch = 28) {
   let sel = 0

@@ -9,29 +9,29 @@ import { egg, EX, EY } from './egg'
 import { lakebed } from './lakebed'
 import { motes } from './motes'
 
-const items = menu(MENU.map(m => ({ label: m.label, run: () => m.to ? go(m.to) : m.exit && close() })), 362, 254)
-let m: ReturnType<typeof motes>, b: ReturnType<typeof breath>
+const buttons = menu(MENU.map(({ label, to, exit }) => ({ label, run: () => to ? go(to) : exit && close() })), 362, 254)
+let drift: ReturnType<typeof motes>, air: ReturnType<typeof breath>
 
 export const frontPage: Scene = {
   hz: 10,
   enter() {
-    m = motes()
-    b = breath()
+    drift = motes()
+    air = breath()
   },
   update(_, t) {
-    m.step()
-    b.step(t)
+    drift.step()
+    air.step(t)
   },
   draw(g, _, t) {
     g.drawImage(lakebed(), 0, 0)
     caustics(g, t)
-    m.draw(g)
+    drift.draw(g)
     g.drawImage(egg(Math.max(0, Math.sin(t % 5 / 5 * Math.PI * 2)) ** 2 > .6), EX - 12, EY - 12)
-    b.draw(g)
+    air.draw(g)
     g.drawImage(logo(), 20, 18)
-    items.draw(g)
+    buttons.draw(g)
   },
-  hover: items.hover,
-  click: items.click,
-  key: items.key,
+  hover: buttons.hover,
+  click: buttons.click,
+  key: buttons.key,
 }
