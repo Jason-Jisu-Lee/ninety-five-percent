@@ -56,21 +56,21 @@ export const stage1: Scene = {
     store()
   },
   draw(g) {
-    render(g, run.sim, clock, fade <= 0, aim, hot)
+    render(g, run.sim, clock, fade <= 0, aim, top() ? null : hot)
     if (fade > 0) title.draw(g, fade)
     else ui.draw(g, run.sim.sel, run.paused)
     story.draw(g)
     for (let i = layers.length; i--;) layers[i].draw(g)
   },
   hover(x, y) {
-    const { sim } = run
+    const { sim } = run, was = hot
     if (story.on()) return false
     if (top()) return top()!.hover(x, y)
     if (fade > 0) return !going && title.hover(x, y)
     sim.cursor = [x, y]
     aim = hot = null
     if (ui.hover(x, y)) return true
-    hot = sim.prey.at(x, y)
+    hot = sim.prey.at(x, y, was)
     aim = sim.sel && !hot && !run.paused ? sim.perchAt(x, y) : null
     return !!hot || !!aim || !run.paused && sim.onFly(x, y) && sim.free()
   },
@@ -78,7 +78,7 @@ export const stage1: Scene = {
     if (story.on()) return story.next()
     if (top()) return top()!.click(x, y)
     if (fade > 0) return void (going || title.click(x, y))
-    if (!ui.click(x, y) && !tapEnemy(run.sim.prey.at(x, y)) && !run.paused) run.sim.click(x, y)
+    if (!ui.click(x, y) && !tapEnemy(run.sim.prey.at(x, y, hot)) && !run.paused) run.sim.click(x, y)
   },
   key(k) {
     if (story.on()) return k === 'Escape' ? story.skip() : story.next(), true

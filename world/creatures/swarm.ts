@@ -24,11 +24,11 @@ export function swarm(kinds: Kind[]) {
   return {
     list,
     kill: drop,
-    at(x: number, y: number) {
+    at(x: number, y: number, keep: Prey | null = null) {
       let best: Prey | null = null, near = 0
       for (const p of list) {
         const k = PREY[p.kind], d = Math.hypot(p.x - x, p.y - p.h * .7 - y)
-        if (d < Math.max(k.len, k.wing * 2 + k.wide) / 2 + 4 && (!best || d < near)) [best, near] = [p, d]
+        if (d < Math.max(k.len, k.wing * 2 + k.wide) / 2 + 4 && (!best || best !== keep && (d < near || p === keep))) [best, near] = [p, d]
       }
       return best
     },
