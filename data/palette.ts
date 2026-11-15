@@ -4,8 +4,6 @@ export const UI = {
   text: '#e9e2d4',
   dim: '#8f877b',
   accent: '#7fb062',
-  glint: '#8fc4c2',
-  yolk: '#cfa860',
 }
 
 export const FOREST = {

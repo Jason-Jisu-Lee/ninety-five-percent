@@ -1,1 +1,1 @@
-export const W = 480, H = 270, UW = 960, UH = 540
+export const W = 640, H = 360

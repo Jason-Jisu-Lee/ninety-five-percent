@@ -1,9 +1,9 @@
-import { H, UH, UW, W } from '../data/screen'
+import { H, W } from '../data/screen'
 import { ctx, mk } from './canvas'
 
 export const canvas = document.querySelector('canvas')!
-export const world = ctx(mk(W, H)), ui = ctx(mk(UW, UH))
-const out = ctx(canvas), big = mk(1, 1)
+export const world = ctx(mk(W, H))
+const out = ctx(canvas)
 let k = 0
 
 export function fit() {
@@ -19,27 +19,11 @@ export function fit() {
   k = s
   canvas.width = W * k
   canvas.height = H * k
-  if (k > 1 && k & 1) {
-    big.width = UW * (k + 1) / 2
-    big.height = UH * (k + 1) / 2
-  }
 }
 
-export function present(hud?: boolean) {
+export function present() {
   out.imageSmoothingEnabled = false
   out.drawImage(world.canvas, 0, 0, canvas.width, canvas.height)
-  if (!hud) return
-  let src = ui.canvas
-  if (k > 1 && k & 1) {
-    const b = ctx(big)
-    b.imageSmoothingEnabled = false
-    b.clearRect(0, 0, big.width, big.height)
-    b.drawImage(src, 0, 0, big.width, big.height)
-    src = big
-  }
-  out.imageSmoothingEnabled = !!(k & 1)
-  out.imageSmoothingQuality = 'high'
-  out.drawImage(src, 0, 0, canvas.width, canvas.height)
 }
 
 export function toWorld(e: MouseEvent): [number, number] {

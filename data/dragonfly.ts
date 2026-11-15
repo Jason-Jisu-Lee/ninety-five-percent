@@ -1,9 +1,7 @@
 export const DF = {
-  S: 33,
-  scale: 1.35,
-  headings: 16,
+  scale: 4,
+  headings: 32,
   flapFrames: 8,
-  frames: 10,
   amp: 1,
   hindLead: Math.PI / 2,
   lift: .55,
@@ -11,8 +9,16 @@ export const DF = {
   hind: { L: 6.6, ry: .6, sweep: .34, chord: 2.1 },
   thorax: { rx: 1.5, ry: 1.75 },
   abdomen: { from: 1.2, to: 10.4, band: 1.5, baseWidth: .85, width: .5 },
-  head: { y: -2.1 },
-  eyes: { x: .95, y: -2.7 },
+  head: { y: -2.25, rx: 1.05, ry: .8 },
+  eyes: { x: .68, y: -2.4, rx: .62, ry: .72 },
+  jaw: { x: .34, y: -2.95, len: .4 },
+  legs: [
+    [[.9, -1.3], [1.5, -2.9], [.55, -4.2]],
+    [[1.1, -.7], [2.1, -2.7], [.9, -4.5]],
+    [[1.1, -.1], [2.6, -1.9], [1.3, -4.7]],
+  ],
+  headAt: 2.3,
+  mouth: 3.9,
 }
 
 export const BODY = {
@@ -22,11 +28,8 @@ export const BODY = {
   amber: { abd: '#e2a634', abdDk: '#6e4512', tip: '#3b240a', thorax: '#b5792a', thoraxHi: '#f0c560', thoraxDk: '#5e3b12', head: '#b37a2c', eye: '#3c2610' },
 }
 
-export const WING = { fill: '#cfe6e4', costa: '#344244', stigma: '#181e1e', outline: '#14301f', shadow: '#1c4730' }
+export const JAW = '#c9a45c'
 
-export const FLIGHT = {
-  cruise: [1.5, 3.5, 38, 1.6],
-  dart: [.35, .6, 120, .25],
-  hover: [.8, 1.8, 0, 0],
-  glide: [.8, 1.4, -1, .5],
-}
+export const WING = { fill: '#cfe6e4', vein: '#8fc4c2', costa: '#344244', stigma: '#181e1e', outline: '#14301f', shadow: '#14301f' }
+
+export const FLY = { cruise: 120, chase: 240, dart: 320, turn: 8, accel: 6, arrive: 4, height: 26, bob: 2, beat: 4, catch: 13, rest: .6 }

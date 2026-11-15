@@ -1,0 +1,14 @@
+export const HOME = { x: 320, y: 186 }
+export const GIANT = 4
+export const FADE = 1.2
+export const TRUNK = { x: 668, y: -40, r: 157.5 }
+export const ROOT = { x: 585, y: 70, ang: 2.64, len: 166, bend: 22, half: 15 }
+export const POND = { x: -40, y: 470, r: 250 }
+export const PAD = { x: 62, y: 356, r: 52, notch: -.7 }
+export const SWARM = { x: 150, y: 258, r: 30, drift: 30 }
+export const CLUMPS = [[70, 142, 12, 34], [184, 112, 11, 30], [292, 56, 12, 32], [452, 62, 11, 30], [506, 252, 12, 34], [378, 336, 11, 30], [262, 334, 11, 28], [594, 176, 11, 30], [26, 196, 10, 26], [250, 104, 10, 26]]
+export const CLOVER = [[392, 160, 9], [210, 212, 7], [590, 300, 6]]
+export const DAISIES = [[98, 200, .4], [478, 156, 1.3], [442, 240, 2.2], [236, 152, .9]]
+export const DANDELION = [468, 304]
+export const PEBBLES = [[198, 264, 9, 6], [216, 282, 5, 4], [176, 238, 4, 3], [416, 168, 7, 5], [330, 104, 4, 3], [548, 232, 10, 7], [564, 246, 4, 3]]
+export const LEAF = { x: 262, y: 256, ang: -.5, len: 50 }

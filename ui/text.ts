@@ -19,7 +19,8 @@ function raster(str: string, size: number, col: string) {
   return r
 }
 
-export function text(g: Ctx, str: string, x: number, y: number, size: number, col: string, align?: 'c' | 'r') {
-  const t = raster(str, size, col)
-  g.drawImage(t.c, (align === 'c' ? Math.round(x - t.w / 2) : align === 'r' ? Math.round(x - t.w) : x) - 1, y - size - 3)
+export function text(g: Ctx, str: string, x: number, y: number, size: number, col: string, align?: 'c' | 'r', edge?: string) {
+  const t = raster(str, size, col), left = (align === 'c' ? Math.round(x - t.w / 2) : align === 'r' ? Math.round(x - t.w) : x) - 1, top = y - size - 3
+  if (edge) for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) g.drawImage(raster(str, size, edge).c, left + dx, top + dy)
+  g.drawImage(t.c, left, top)
 }

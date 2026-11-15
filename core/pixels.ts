@@ -1,20 +1,18 @@
 import { ctx, mk, u32 } from './canvas'
 
 export function pixels(w: number, h: number) {
-  const img = new ImageData(w, h), d = img.data, u = new Uint32Array(d.buffer)
-  const at = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h ? y * w + x : -1
+  const img = new ImageData(w, h), u = new Uint32Array(img.data.buffer)
+  const set = (x: number, y: number, col: string) => {
+    if (x >= 0 && y >= 0 && x < w && y < h) u[y * w + x] = u32(col)
+  }
   return {
     u,
-    set(x: number, y: number, col: string) {
-      const i = at(x, y)
-      if (i >= 0) u[i] = u32(col)
-    },
-    dark(x: number, y: number, f: number) {
-      const i = at(x, y) * 4
-      if (i < 0) return
-      d[i] *= f
-      d[i + 1] *= f
-      d[i + 2] *= f
+    set,
+    oval(cx: number, cy: number, rx: number, ry: number, ink: (x: number, y: number, d: number) => string | false) {
+      for (let y = Math.floor(cy - ry); y <= cy + ry; y++) for (let x = Math.floor(cx - rx); x <= cx + rx; x++) {
+        const d = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2, col = d <= 1 && ink(x, y, d)
+        if (col) set(x, y, col)
+      }
     },
     done() {
       const c = mk(w, h)

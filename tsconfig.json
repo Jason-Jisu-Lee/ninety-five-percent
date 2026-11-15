@@ -11,5 +11,5 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["core", "world", "ui", "data", "vite.config.ts"]
+  "include": ["core", "world", "ui", "data", "demo", "vite.config.ts"]
 }

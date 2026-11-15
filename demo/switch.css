@@ -1,0 +1,7 @@
+.demo{position:fixed;left:50%;bottom:6px;transform:translateX(-50%);z-index:1;padding:6px 10px;background:#100d0bee;border:1px solid #8f877b;color:#e9e2d4;font:12px/1.5 system-ui,sans-serif;white-space:nowrap;opacity:.4}
+.demo:hover{opacity:1}
+.demo div{display:flex;gap:6px;align-items:center;margin:2px 0}
+.demo b{width:96px;white-space:pre}
+.demo button{font:inherit;color:inherit;background:none;border:1px solid #8f877b;padding:1px 8px;cursor:pointer}
+.demo button.on{border-color:#7fb062;color:#7fb062}
+.demo p{margin:4px 0 0;color:#c9c0b2;white-space:pre-line}

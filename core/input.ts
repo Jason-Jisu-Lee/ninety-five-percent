@@ -1,20 +1,12 @@
 import { canvas, toWorld } from './display'
-import { current, redraw } from './loop'
-
-function point(e: PointerEvent, press?: boolean) {
-  const [x, y] = toWorld(e)
-  if (press) current().click?.(x, y)
-  const s = current()
-  canvas.style.cursor = s.hover?.(x, y) ? 'pointer' : ''
-  if (s.hover || press) redraw()
-}
+import { current } from './loop'
 
 export function listen() {
-  canvas.addEventListener('pointermove', e => point(e))
-  canvas.addEventListener('pointerdown', e => point(e, true))
+  canvas.addEventListener('pointermove', e => {
+    canvas.style.cursor = current().hover(...toWorld(e)) ? 'pointer' : ''
+  })
+  canvas.addEventListener('pointerdown', e => current().click(...toWorld(e)))
   addEventListener('keydown', e => {
-    if (!current().key?.(e.key)) return
-    e.preventDefault()
-    redraw()
+    if (current().key(e.key)) e.preventDefault()
   })
 }

@@ -1,16 +1,13 @@
 import '../ui/page.css'
-import { eggStage } from '../world/egg_stage/scene'
-import { forest } from '../world/forest/scene'
-import { frontPage } from '../world/front_page/scene'
+import { demo } from '../demo/switch'
+import { stage1 } from '../world/stage1/scene'
 import { fit } from './display'
 import { listen } from './input'
-import { redraw, start } from './loop'
+import { start } from './loop'
 
 await Promise.race([document.fonts.load('12px "Pixelify Sans"'), new Promise(r => setTimeout(r, 2000))]).catch(() => 0)
 fit()
-addEventListener('resize', () => {
-  fit()
-  redraw()
-})
+addEventListener('resize', fit)
 listen()
-start({ front_page: frontPage, egg_stage: eggStage, forest }, 'front_page')
+start(stage1)
+demo()
