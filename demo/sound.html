@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dragonfly Sound Samples</title>
+<link rel="icon" href="data:,">
+<style>
+body{margin:0;padding:24px 16px;background:#0a1312;color:#e9e2d4;font:16px/1.4 ui-monospace,Consolas,monospace}
+main{max-width:760px;margin:auto}
+article{border:2px solid #c9c0b2;background:#100d0b;padding:12px 16px;margin-bottom:12px}
+b{color:#f2cf47}
+small{display:block;color:#8f877b;font-size:14px}
+audio{display:block;width:100%;margin-top:8px}
+#fx{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-top:24px}
+button{border:2px solid #c9c0b2;background:#100d0b;color:#e9e2d4;font:inherit;text-align:left;padding:8px 12px;cursor:pointer}
+button:hover,button:focus-visible{border-color:#7fb062;outline:0}
+button:active{background:#1c4730}
+</style>
+<main>
+<div id="tracks"></div>
+<div id="fx"></div>
+</main>
+<script>
+const TRACKS = [
+  ['01_becoming', 'Becoming', 'Front page'],
+  ['02_pond_bank', 'Pond Bank', 'Stage 1 while it hunts by itself'],
+  ['03_on_the_wing', 'On the Wing', 'Stage 1 while the player flies it'],
+  ['04_reed_rest', 'Reed Rest', 'Resting'],
+  ['05_horsefly', 'Horsefly', 'Horsefly on screen'],
+  ['06_meganeura', 'Meganeura', 'Death and permanent traits'],
+  ['07_energy_bloom', 'Energy Bloom', 'Menus and upgrades'],
+  ['08_new_wings', 'New Wings', 'Stage cleared'],
+]
+const FX = {
+  hover: 'Pointer lands on a button', click: 'Button pressed', confirm: 'Start or Continue', back: 'Close or cancel',
+  toggle: 'Music or panel switch', pause: 'Game paused', resume: 'Game resumed', buy: 'Stat level bought',
+  denied: 'Not enough energy', warning: 'Hard Reset asks to confirm', reset: 'Progress deleted', select: 'Dragonfly selected',
+  deselect: 'Dragonfly released', catch: 'Prey grabbed', bite: 'Each bite', kill: 'Prey eaten', energy: 'Energy gained',
+  escape: 'Prey breaks free', land: 'Lands to rest', wake: 'Takes off rested', tired: 'Stamina low', alarm: 'Horsefly arrives',
+  quest: 'Quest complete',
+}
+const tracks = document.querySelector('#tracks'), fx = document.querySelector('#fx')
+tracks.innerHTML = TRACKS.map(([file, name, use]) =>
+  `<article><b>${file.slice(0, 2)} ${name}</b><small>${use}</small><audio controls preload="metadata" src="../assets/audio/soundtrack/${file}.ogg"></audio></article>`).join('')
+fx.innerHTML = Object.entries(FX).map(([name, use]) => `<button data-fx="${name}">${name}<small>${use}</small></button>`).join('')
+tracks.addEventListener('play', e => document.querySelectorAll('audio').forEach(a => a === e.target || a.pause()), true)
+fx.addEventListener('click', e => {
+  const name = e.target.closest('button')?.dataset.fx
+  if (name) new Audio(`../assets/audio/effects/${name}.wav`).play()
+})
+</script>
