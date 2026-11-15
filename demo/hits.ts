@@ -1,0 +1,11 @@
+export function hits(gap: number) {
+  const slow = [0, 0, 0]
+  let wait = 0
+  return (level: number[], dt: number) => {
+    const rise = Math.max(...level.map((v, k) => v - slow[k]))
+    level.forEach((v, k) => slow[k] += (v - slow[k]) * Math.min(1, dt * 5))
+    if ((wait -= dt) > 0 || rise < .3) return 0
+    wait = gap
+    return Math.min(1, rise + .4)
+  }
+}

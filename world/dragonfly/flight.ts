@@ -14,10 +14,10 @@ export function flight(x: number, y: number) {
   return Object.assign(f, {
     top,
     seek(tx: number, ty: number, max: number, dt: number, th = FLY.height) {
-      const d = Math.hypot(tx - f.x, ty - f.y), want = Math.atan2(ty - f.y, tx - f.x), was = f.ang
+      const d = Math.hypot(tx - f.x, ty - f.y), want = Math.atan2(ty - f.y, tx - f.x), was = f.ang, near = d * FLY.arrive
       if (d > 2) f.ang = turn(f.ang, want, FLY.turn * agile() * dt)
       spin += (wrap(f.ang - was) / (dt || 1) - spin) * Math.min(1, dt * 8)
-      f.speed += (Math.min(max, d * FLY.arrive) * Math.max(0, Math.cos(wrap(want - f.ang))) - f.speed) * Math.min(1, dt * FLY.accel * agile())
+      f.speed += (Math.min(max, near) * Math.max(0, Math.cos(wrap(want - f.ang))) - f.speed) * Math.min(1, dt * (near < f.speed ? FLY.brake : FLY.accel * agile()))
       f.base += (th - f.base) * Math.min(1, dt * 3)
     },
     step(dt: number, t: number) {

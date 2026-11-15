@@ -6,7 +6,7 @@ import { pathToFileURL } from 'node:url'
 import { parse, WHOLE } from '../audio/chip/mml.mjs'
 import { render } from '../audio/chip/synth.mjs'
 import { wav } from '../audio/chip/wav.mjs'
-import effects from '../audio/effects.mjs'
+import effects from '../audio/effects/effects.mjs'
 
 const root = join(import.meta.dirname, '..'), songs = join(root, 'audio/songs'), out = join(root, 'assets/audio')
 const only = process.argv[2] ?? '', PEAK = .89, LOUD = .07, FADE = 12, tmp = join(tmpdir(), 'chip.wav')
