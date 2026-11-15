@@ -1,0 +1,86 @@
+import { veil } from '../../core/draw/dissolve'
+import type { Ctx } from '../../core/screen/canvas'
+import { UI } from '../../data/look/palette'
+import { W } from '../../data/look/screen'
+import { icon } from '../parts/icons'
+import { menu } from '../parts/menu'
+import { box, panel } from '../parts/panel'
+import { text } from '../text/text'
+import { ROWS, statistics } from './statistics'
+import { volume } from './volume'
+
+const PW = 200, X = W - PW >> 1, B = 232, MX = W - 96 >> 1, CX = X + PW - 19
+
+export function settings(toMenu: () => void, reset: () => void) {
+  let shown = false, sure = false, stats = false, play = false, hot = false
+  const shut = () => {
+    shown = sure = stats = false
+  }
+  const item = (label: string, run: () => void) => ({ label, run })
+  const ask = item('Hard Reset', () => {
+    sure = true
+    confirm.focus(1)
+  })
+  const tally = item('Statistics', () => {
+    stats = true
+  })
+  const game = menu([tally, item('Main Menu', () => {
+    shut()
+    toMenu()
+  }), ask], MX, B - 14)
+  const home = menu([tally, ask], MX, B - 14)
+  const confirm = menu([item('Hard Reset', () => {
+    shut()
+    reset()
+  }), item('Cancel', () => {
+    sure = false
+  })], MX, B - 14)
+  const back = menu([item('Back', () => {
+    stats = false
+  })], MX, B - 14)
+  const now = () => sure ? confirm : stats ? back : play ? game : home, top = () => now().top - (sure ? 46 : stats ? ROWS * 11 + 29 : 50)
+  const onX = (x: number, y: number) => !sure && x >= CX && x < CX + 11 && y >= top() + 6 && y < top() + 17
+  const slide = (x: number, y: number) => sure || stats ? -1 : volume.at(x, y, MX, top() + 26)
+  return {
+    shown: () => shown,
+    open(inGame: boolean) {
+      shown = true
+      play = inGame
+    },
+    hover(x: number, y: number) {
+      hot = onX(x, y)
+      return now().hover(x, y) || hot || slide(x, y) >= 0
+    },
+    click(x: number, y: number) {
+      if (onX(x, y)) shut()
+      else if (slide(x, y) >= 0) volume.set(slide(x, y))
+      else now().click(x, y)
+    },
+    key(k: string) {
+      const d = k === 'ArrowRight' || k === 'd' ? 1 : k === 'ArrowLeft' || k === 'a' ? -1 : 0
+      if (k === 'Escape') {
+        if (sure) sure = false
+        else if (stats) stats = false
+        else shut()
+      } else if (d && !sure && !stats) volume.nudge(d)
+      else return now().key(k)
+      return true
+    },
+    draw(g: Ctx) {
+      if (!shown) return
+      const y = top()
+      veil(g, .5)
+      panel(g, X, y, PW, B - y, UI.border, UI.panel)
+      now().draw(g)
+      if (sure) {
+        text(g, 'Are you sure?', W / 2, y + 20, UI.text, 'c')
+        text(g, 'This will delete all progress.', W / 2, y + 34, UI.text, 'c')
+        return
+      }
+      box(g, CX, y + 6, 11, 11, hot ? UI.accent : UI.border, UI.panel)
+      icon(g, 'x', CX + 3, y + 9, UI.text)
+      if (stats) statistics(g, X + 16, X + PW - 16, y + 24)
+      else volume.draw(g, MX, y + 26)
+    },
+  }
+}

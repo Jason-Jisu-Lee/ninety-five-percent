@@ -1,6 +1,7 @@
 import { PREY } from '../../data/stage1/enemies'
-import { H, W } from '../../data/screen'
-import { errand, move, type Kind, type Prey } from './prey'
+import { H, W } from '../../data/look/screen'
+import { move } from './move'
+import { errand, type Kind, type Prey } from './prey'
 
 export function swarm() {
   const R = Math.random, list: Prey[] = [], due: { kind: Kind; at: number }[] = []

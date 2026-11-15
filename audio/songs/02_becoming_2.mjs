@@ -40,7 +40,7 @@ export default {
   title: 'Becoming II',
   bpm: 118,
   beats: 4,
-  tail: 10,
+  tail: 14,
   send: { a: .3, b: .15 },
   intro: {
     a: `@1 v8 x0 q8 ~0 l16

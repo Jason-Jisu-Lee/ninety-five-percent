@@ -1,5 +1,5 @@
-import { WING } from '../dragonfly'
-import { FOREST as C } from '../palette'
+import { WING } from '../dragonfly/colors'
+import { FOREST as C } from '../look/palette'
 
 const INK = WING.stigma
 

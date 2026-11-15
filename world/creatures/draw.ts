@@ -1,5 +1,5 @@
-import type { Ctx } from '../../core/canvas'
-import { FOREST as C } from '../../data/palette'
+import type { Ctx } from '../../core/screen/canvas'
+import { FOREST as C } from '../../data/look/palette'
 import { PREY } from '../../data/stage1/enemies'
 import type { Prey } from './prey'
 

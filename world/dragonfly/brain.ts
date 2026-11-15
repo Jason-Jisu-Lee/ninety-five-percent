@@ -1,5 +1,5 @@
-import { wrap } from '../../core/angle'
-import { AUTO } from '../../data/dragonfly'
+import { wrap } from '../../core/math/angle'
+import { AUTO } from '../../data/dragonfly/auto'
 import { PREY } from '../../data/stage1/enemies'
 import type { Prey } from '../creatures/prey'
 import type { Flight } from './flight'

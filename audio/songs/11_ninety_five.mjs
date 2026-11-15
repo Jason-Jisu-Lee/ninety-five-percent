@@ -71,7 +71,7 @@ export default {
   title: 'Ninety-Five',
   bpm: 120,
   beats: 4,
-  tail: 4,
+  tail: 8,
   send: { a: .25, b: .2 },
   intro: {
     a: `| r1 | r1 | r1 | r1 |`,

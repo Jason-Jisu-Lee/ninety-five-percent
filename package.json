@@ -8,8 +8,8 @@
     "check": "tsc",
     "build": "tsc && vite build",
     "preview": "vite preview --open",
-    "audio": "node audio/chip/render.mjs",
-    "sprites": "node world/catalog.mjs"
+    "audio": "node tools/audio.mjs",
+    "sprites": "node tools/sprites.mjs"
   },
   "devDependencies": {
     "typescript": "^7.0.2",

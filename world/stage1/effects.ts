@@ -1,7 +1,7 @@
-import type { Ctx } from '../../core/canvas'
-import { WING } from '../../data/dragonfly'
-import { FOREST as C, UI } from '../../data/palette'
-import { text } from '../../ui/text'
+import type { Ctx } from '../../core/screen/canvas'
+import { WING } from '../../data/dragonfly/colors'
+import { FOREST as C, UI } from '../../data/look/palette'
+import { text } from '../../ui/text/text'
 
 export function effects() {
   let nums: { x: number; y: number; s: string; col: string; age: number }[] = [], bits: { x: number; y: number; h: number; vx: number; age: number; n: number }[] = []

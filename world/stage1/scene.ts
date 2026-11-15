@@ -1,24 +1,15 @@
-import { toggle } from '../../audio/music'
-import { dissolve } from '../../core/dissolve'
-import { outline } from '../../core/outline'
-import { save, store, wipe } from '../../core/save'
-import type { Scene } from '../../core/scene'
-import { DF, STAMINA } from '../../data/dragonfly'
-import { FOREST as C, UI } from '../../data/palette'
-import { PREY } from '../../data/stage1/enemies'
-import { stage } from '../../data/stats'
-import { FADE } from '../../data/stage1/scene'
-import { bar } from '../../ui/bar'
-import { front } from '../../ui/front'
-import { hud } from '../../ui/hud'
-import { intro } from '../../ui/intro'
-import { ring } from '../../ui/ring'
-import { settings } from '../../ui/settings'
-import { wear } from '../dragonfly/sheet'
-import { drawPrey } from '../creatures/draw'
-import { glints } from './glints'
-import { ground } from './ground'
-import { hunt, type Perch } from './hunt'
+import { toggle } from '../../audio/player/music'
+import type { Scene } from '../../core/loop/scene'
+import { save, store, wipe } from '../../core/save/save'
+import { FADE } from '../../data/stage1/map'
+import { signKey } from '../../demo/sign'
+import { front } from '../../ui/front/front'
+import { intro } from '../../ui/front/intro'
+import { hud } from '../../ui/hud/hud'
+import { settings } from '../../ui/settings/settings'
+import { hunt } from './hunt/hunt'
+import type { Perch } from './hunt/sim'
+import { render } from './render'
 
 let sim: ReturnType<typeof hunt>, fade = 1, going = false, frozen = false, paused = false, clock = 0, kept = 0, aim: Perch | null = null
 
@@ -61,32 +52,9 @@ export const stage1: Scene = {
     store()
   },
   draw(g) {
-    const { fly, prey, fx, held } = sim, st = [stage(save.lv.speed), stage(save.lv.power)], [spr, sh] = wear(DF.color, st)(fly.heading, fly.frame, !!held)
-    const half = spr.width >> 1, sx = Math.round(fly.x + fly.h * .45), sy = Math.round(fly.y), x = Math.round(fly.x), y = Math.round(fly.y - fly.h * .7)
-    g.drawImage(ground(), 0, 0)
-    glints(g, clock)
-    fx.litter(g)
-    for (const p of prey.list) drawPrey(g, p, clock, true)
-    if (fade > 0) {
-      const big = wear(DF.color, st, DF.giant)(0, fly.frame)[1]
-      dissolve(g, big, sx - (big.width >> 1), sy - (big.height >> 1), fade / 2)
-    }
-    g.drawImage(sh, sx - half, sy - half)
-    for (const p of prey.list) drawPrey(g, p, clock)
-    if (aim && fade <= 0) ring(g, aim.x, Math.round(aim.y - aim.h * .7), 7, UI.text)
-    if (sim.sel && sim.glow > 0) outline(g, spr, x - half, y - half, C.yellow)
-    g.drawImage(spr, x - half, y - half)
-    if (held) {
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) drawPrey(g, { ...held, x: held.x + dx, y: held.y + dy }, clock, false, C.red)
-      drawPrey(g, held, clock)
-    }
-    fx.numbers(g)
-    if (held) bar(g, Math.round(held.x), Math.round(held.y - held.h * .7) + (Math.sin(fly.ang) > .35 ? 7 : -9), Math.max(0, held.hp) / PREY[held.kind].hp, Math.min(40, 10 + 2 * PREY[held.kind].hp))
+    render(g, sim, clock, fade <= 0, aim)
     if (fade > 0) title.draw(g, fade)
-    else {
-      if (sim.sel || sim.glow > 0 || sim.stamina < (fly.perched ? 99 : STAMINA.show)) bar(g, x, y - 25, sim.stamina / 100, 20, sim.stamina < STAMINA.tired ? C.pink : UI.accent, fly.perched && sim.stamina < STAMINA.wake ? STAMINA.wake / 100 : 0)
-      ui.draw(g, sim.sel, paused)
-    }
+    else ui.draw(g, sim.sel, paused)
     story.draw(g)
     opts.draw(g)
   },
@@ -115,7 +83,7 @@ export const stage1: Scene = {
     else if (k === 'p' || k === ' ') paused = !paused
     else if (k === 'm') toggle()
     else if (k === 'u') ui.flip()
-    else return false
+    else return signKey(k)
     return true
   },
 }
