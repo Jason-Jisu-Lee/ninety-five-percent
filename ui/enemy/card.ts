@@ -31,7 +31,7 @@ export function enemyCard() {
     draw(g: Ctx) {
       if (!p) return
       const k = PREY[p.kind], about = wrap(k.text, PW - IN * 2), list = traits(k).map(([name, say]) => [name, wrap(say, PW - IN * 2 - COL)] as const)
-      const facts = [['Health', p.hp < k.hp ? `${Math.ceil(p.hp)} / ${k.hp}` : k.hp], ['Blood', k.blood], ['Power', k.power], ['Speed', k.speed]]
+      const whole = Math.round, facts = [['Health', p.hp < k.hp ? `${Math.ceil(p.hp)} / ${whole(k.hp)}` : whole(k.hp)], ['Blood', whole(k.blood)], ['Power', whole(k.power)], ['Speed', whole(k.speed)]]
       tall = 82 + about.length * 11 + list.reduce((n, [, say]) => n + say.length * 11 + 4, 0) + (list.length ? 6 : 0)
       top = H - tall >> 1
       g.globalAlpha = SEE

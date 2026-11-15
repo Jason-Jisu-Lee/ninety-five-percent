@@ -1,10 +1,10 @@
 import type { Enemy } from '../../data/enemies/enemies'
 
 export const traits = (k: Enemy) => ([
-  [k.power, 'Fights back', `${k.power} damage every ${Math.max(1, Math.round(k.strike))} s while held`],
+  [k.power, 'Fights back', `${Math.round(k.power)} damage every ${Math.max(1, Math.round(k.strike))} s while held`],
   [k.grip, 'Breaks free', 'Escapes a hold after a moment and keeps its wounds'],
   [k.dodge, 'Sidestep', 'Darts sideways when approached'],
-  [k.fast && !k.dodge, 'Burst', `Flees at speed ${k.fast} for a moment`],
+  [k.fast && !k.dodge, 'Burst', `Flees at speed ${Math.round(k.fast)} for a moment`],
   [k.cover, 'Hides', 'Slips into the grass when chased'],
   [k.land, 'Sits', 'Lands to rest and is slower to notice danger'],
   [k.zone === 'swarm', 'Swarm', 'Gathers in swarms and never flees'],
