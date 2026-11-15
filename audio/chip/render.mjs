@@ -8,13 +8,14 @@ import { parse, WHOLE } from './mml.mjs'
 import { render, wav } from './synth.mjs'
 
 const root = join(import.meta.dirname, '../..'), songs = join(root, 'audio/songs'), out = join(root, 'assets/audio')
-const only = process.argv[2] ?? '', KEYS = ['a', 'b', 'w', 'n'], PEAK = .89, LOUD = .14, tmp = join(tmpdir(), 'chip.wav')
+const only = process.argv[2] ?? '', PEAK = .89, LOUD = .085, tmp = join(tmpdir(), 'chip.wav')
+if (!only) for (const dir of ['soundtrack', 'effects']) rmSync(join(out, dir), { recursive: true, force: true })
 mkdirSync(join(out, 'soundtrack'), { recursive: true })
 mkdirSync(join(out, 'effects'), { recursive: true })
 
 for (const file of readdirSync(songs)) {
   if (!file.includes(only)) continue
-  const s = (await import(pathToFileURL(join(songs, file)))).default, bar = WHOLE / 4 * s.beats, name = file.replace('.mjs', '')
+  const s = (await import(pathToFileURL(join(songs, file)))).default, bar = WHOLE / 4 * s.beats, name = file.replace('.mjs', ''), KEYS = Object.keys(s.loop)
   const size = ['intro', 'loop'].map(part => {
     const ends = KEYS.map(k => {
       const p = parse(s[part][k], k === 'n', bar)
@@ -33,11 +34,11 @@ for (const file of readdirSync(songs)) {
 rmSync(tmp, { force: true })
 
 if (!only || only === 'fx') {
-  const made = Object.entries(effects).map(([name, fx]) => {
-    const mix = render({ bpm: 150 }, fx)
+  const made = Object.entries(effects).map(([name, { ring, send, ...fx }]) => {
+    const mix = render({ bpm: 150, ring, send }, fx)
     return { name, mono: mix.l.map((v, i) => (v + mix.r[i]) / 2), peak: mix.peak }
   })
-  const gain = .7 / Math.max(...made.map(m => m.peak))
+  const gain = .4 / Math.max(...made.map(m => m.peak))
   for (const m of made) writeFileSync(join(out, 'effects', m.name + '.wav'), wav([m.mono], gain))
   console.log(made.length, 'effects')
 }

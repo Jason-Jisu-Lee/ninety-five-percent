@@ -48,6 +48,8 @@ export const stage1: Scene = {
     if (fade > 0) return void (frozen || sim.idle(dt, clock += dt))
     if (paused || opts.shown()) return
     sim.step(dt, clock += dt)
+    save.time += dt
+    if (sim.sel) save.hand += dt
     if ((kept += dt) < 5) return
     kept = 0
     store()
@@ -68,6 +70,10 @@ export const stage1: Scene = {
     if (aim && fade <= 0) ring(g, aim.x, Math.round(aim.y - aim.h * .7), 8, UI.text)
     if (sim.sel && sim.glow > 0) outline(g, spr, x - half, y - half, C.yellow)
     g.drawImage(spr, x - half, y - half)
+    if (held) {
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) drawPrey(g, { ...held, x: held.x + dx, y: held.y + dy }, clock, false, C.red)
+      drawPrey(g, held, clock)
+    }
     fx.numbers(g)
     if (held) bar(g, Math.round(held.x), Math.round(held.y - held.h * .7) + (Math.sin(fly.ang) > .35 ? 7 : -9), Math.max(0, held.hp) / PREY[held.kind].hp, Math.min(40, 10 + 2 * PREY[held.kind].hp))
     if (fade > 0) title.draw(g, fade)

@@ -12,5 +12,5 @@ export const FOREST = {
   t0: '#6a4a31', t1: '#4b3324', t2: '#33231a',
   wSh: '#3b7175', w1: '#2d5c63', w2: '#24495a', w3: '#1c3a4c', glint: '#8fc4c2',
   r0: '#33403c', r1: '#5c6660', r2: '#8a938a',
-  white: '#ece5d5', yellow: '#f2cf47', pink: '#e58aa0', seed: '#8a5a1a', husk: '#c9a45c',
+  white: '#ece5d5', yellow: '#f2cf47', pink: '#e58aa0', red: '#d8442c', seed: '#8a5a1a', husk: '#c9a45c',
 }

@@ -47,6 +47,8 @@ export function hunt() {
     }
     if (h.hp > 0) return
     save.energy += k.energy
+    save.earned += k.energy
+    save.caught[h.kind] = (save.caught[h.kind] ?? 0) + 1
     fx.hit(mx, my - fly.h * .7 - 20, '+' + k.energy, C.yellow)
     if (q?.kind === h.kind && ++save.count >= q.n) [save.quest, save.count] = [save.quest + 1, 0]
     prey.kill(h, t)
@@ -54,7 +56,10 @@ export function hunt() {
     mind.settle(t)
   }
   function perch(r: Perch, top: number, dt: number) {
-    if (!fly.perched && gap(r) < 3) Object.assign(fly, { perched: true, speed: 0, x: r.x, y: r.y, base: r.h })
+    if (!fly.perched && gap(r) < 3) {
+      Object.assign(fly, { perched: true, speed: 0, x: r.x, y: r.y, base: r.h })
+      save.rests++
+    }
     if (!fly.perched) return fly.seek(r.x, r.y, top * (s.sel ? 1 : FLY.cruise) * (s.stamina > 0 ? 1 : STAMINA.spent), dt, r.h)
     s.stamina = Math.min(100, s.stamina + STAMINA.regen * dt)
     if (!s.sel && s.stamina >= STAMINA.wake) leave()

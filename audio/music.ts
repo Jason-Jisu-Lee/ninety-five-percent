@@ -3,6 +3,8 @@ import { save, store } from '../core/save'
 const SCALE = [0, 2, 4, 7, 9], ROOTS = [0, -3, -5, -7], BEAT = .6, hz = (n: number) => 146.83 * 2 ** (n / 12)
 let ac: AudioContext | undefined, out: GainNode, wet: GainNode, at = 0, beat = 0
 
+const level = () => save.music ? (save.vol / 5) ** 2 : 0
+
 function tone(f: number, len: number, vol: number, soft: boolean) {
   const o = ac!.createOscillator(), g = ac!.createGain()
   o.type = soft ? 'sine' : 'triangle'
@@ -31,7 +33,7 @@ export function wake() {
   const echo = ac.createDelay(), back = ac.createGain()
   out = ac.createGain()
   wet = ac.createGain()
-  out.gain.value = +save.music
+  out.gain.value = level()
   echo.delayTime.value = BEAT * .75
   back.gain.value = .35
   out.connect(ac.destination)
@@ -41,8 +43,10 @@ export function wake() {
   setInterval(tick, 150)
 }
 
-export function toggle() {
-  save.music = !save.music
+export function tune(vol = save.vol, on = vol > 0) {
+  Object.assign(save, { vol: vol || save.vol, music: on })
   store()
-  if (ac) out.gain.setTargetAtTime(+save.music, ac.currentTime, .05)
+  if (ac) out.gain.setTargetAtTime(level(), ac.currentTime, .05)
 }
+
+export const toggle = () => tune(save.vol, !save.music)

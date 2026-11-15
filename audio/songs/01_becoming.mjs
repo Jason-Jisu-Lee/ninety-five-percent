@@ -1,11 +1,11 @@
 import { oct } from '../chip/kit.mjs'
 
-const head = `
+export const head = `
 | o4 a4. >d f+4. e16 f+16
 | o5 e4. c+ <a2
 | o4 b4. >d f+4. g16 f+16
 | o5 g4 f+ e e4 c+ e`
-const again = `
+export const again = `
 | o4 a4. >d f+4. e16 f+16
 | o5 e4. c+ <a4 >c+ e
 | o4 b4. >d f+4. g16 f+16
@@ -14,27 +14,27 @@ const again = `
 | o5 f+4 e c+ d4 f+ b
 | o5 g4 f+ e c+4 e g
 | o5 f+4. d d2`
-const thirds = `
+export const thirds = `
 | o4 f+4. a >d4. c+16 d16
 | o5 c+4. <a e4 a >c+
 | o4 f+4. b >d4. e16 d16
 | o4 b4 a g >c+4 d e`
-const bassA = `
+export const bassA = `
 | o2 ${oct('d')}
 | o2 ${oct('c+')}
 | o1 ${oct('b')}
 | o2 g g >g <g a a >a <a`
-const bassEnd = `
+export const bassEnd = `
 | o2 g g >g <g a a >a <a
 | o2 f+ f+ >f+ <f+ o1 b b >b <b
 | o2 e e >e <e o1 a a >a <a`
-const beat = '| k h s h k k s h'
+export const beat = '| k h s h k k s h'
 
 export default {
   title: 'Becoming',
   bpm: 126,
   beats: 4,
-  tail: 8,
+  tail: 28,
   intro: {
     a: `@1 v10 x0 q8 ~0 l16
 | o4 d f+ a >d f+ a >d <a f+ d <a f+ d f+ a >d

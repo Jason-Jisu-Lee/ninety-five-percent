@@ -4,12 +4,13 @@ export const SR = 48000
 const OS = 4, FS = SR * OS, STEP = 16, TAPS = 127, CHUNK = 1 << 14, TAU = Math.PI * 2, RELEASE = .003 * FS
 const DUTY = [.125, .25, .5, .75]
 const VIB = [0, [.28, 10, 5.5], [.2, 18, 6], [.12, 30, 6.5]]
-const MIX = { a: [.8, .5], b: [.5, .8], w: [.85, .85], n: [.55, .55] }
+const KIND = { a: 'p', b: 'p', c: 'p', w: 'w', n: 'n', t: 't', s: 's' }
+const MIX = { a: [.8, .5, 0], b: [.5, .8, 0], c: [.65, .65, 0], w: [.85, .85, 0], n: [.55, .55, 0], t: [.9, 1.1, 1], s: [.75, .6, .3] }
 const HITS = {
   k: [15, 5000, 500, .018, 15, .11],
-  s: [15, 30000, 9000, .025, 13, .15],
-  h: [15, 131072, 131072, 1, 6, .04],
-  o: [15, 131072, 131072, 1, 6, .22],
+  s: [15, 22000, 8000, .025, 13, .15],
+  h: [15, 131072, 131072, 1, 5, .04],
+  o: [15, 131072, 131072, 1, 5, .22],
   c: [15, 90000, 30000, .25, 11, .8],
   t: [7, 16000, 9000, .06, 13, .2],
   m: [7, 24000, 14000, .06, 13, .18],
@@ -69,20 +70,30 @@ function voice(kind, list) {
           const note = e.m.length ? e.m[(tt * 40 | 0) % e.m.length] : e.m, vb = VIB[e.vib]
           let f = 440 * 2 ** ((note - 69 + e.sw * tt / e.len) / 12)
           if (vb && tt > vb[0]) f *= 2 ** (vb[1] / 1200 * Math.sin(TAU * vb[2] * (tt - vb[0])))
-          const inc = f / FS, d = DUTY[e.duty], tab = kind === 'w' && WAVES[e.duty % 4][Math.max(0, Math.min(3, e.v))]
-          const amp = (tab ? 1 / 32 : (e.x ? Math.max(0, e.v - (tt * 64 / e.x | 0)) : e.v) / 15) * Math.min(1, (e.s1 - s) / RELEASE)
-          const G = tab
-            ? u => {
-              const x = u * 32, n = x | 0
-              return tab.cum[n] + (x - n) * tab.smp[n]
+          const inc = f / FS, tail = Math.min(1, (e.s1 - s) / RELEASE)
+          if (kind === 't' || kind === 's') {
+            const amp = e.v / 30 * tail * (kind === 't' ? Math.min(1, tt / .004) * Math.exp(-tt / e.tau)
+              : e.x ? Math.min(1, tt / (e.x * .012)) : tt < e.rise ? tt / e.rise : Math.exp(-4.6 * (tt - e.rise) / (e.len - e.rise)))
+            for (let j = s - s0; j < m - s0; j++) {
+              if ((ph += inc) >= 1) ph--
+              out[j] = (kind === 's' ? Math.sin(TAU * ph) : 1 - 4 * Math.abs((ph + .25) % 1 - .5)) * amp
             }
-            : u => u < d ? u * (1 - d) : d * (1 - u)
-          let g0 = G(ph)
-          for (let j = s - s0; j < m - s0; j++) {
-            if ((ph += inc) >= 1) ph--
-            const g1 = G(ph)
-            out[j] = (g1 - g0) / inc * amp
-            g0 = g1
+          } else {
+            const d = DUTY[e.duty], tab = kind === 'w' && WAVES[e.duty % 4][Math.max(0, Math.min(3, e.v))]
+            const amp = (tab ? 1 / 32 : (e.x ? Math.max(0, e.v - (tt * 64 / e.x | 0)) : e.v) / 15) * tail
+            const G = tab
+              ? u => {
+                const x = u * 32, n = x | 0
+                return tab.cum[n] + (x - n) * tab.smp[n]
+              }
+              : u => u < d ? u * (1 - d) : d * (1 - u)
+            let g0 = G(ph)
+            for (let j = s - s0; j < m - s0; j++) {
+              if ((ph += inc) >= 1) ph--
+              const g1 = G(ph)
+              out[j] = (g1 - g0) / inc * amp
+              g0 = g1
+            }
           }
         }
         s = m
@@ -119,53 +130,70 @@ function shrink(h, out) {
   }
 }
 
-function master(x, fade) {
-  const hp = 1 / (1 + TAU * 25 / SR), lp = 1 - Math.exp(-TAU * 13000 / SR)
-  let a = 0, b = 0, c = 0, peak = 0, sum = 0
+function master(x, fade, tone) {
+  const hp = 1 / (1 + TAU * 25 / SR), lp = 1 - Math.exp(-TAU * tone / SR)
+  let a = 0, b = 0, c = 0, d = 0, peak = 0, sum = 0
   for (let i = 0; i < x.length; i++) {
     a = hp * (a + x[i] - b)
     b = x[i]
     c += lp * (a - c)
-    x[i] = c * Math.min(1, (x.length - i) / fade)
+    d += lp * (c - d)
+    x[i] = d * Math.min(1, (x.length - i) / fade)
     peak = Math.max(peak, Math.abs(x[i]))
     sum += x[i] ** 2
   }
   return [peak, sum]
 }
 
-export function render({ bpm, swing = .5 }, src, seconds, fade = .005) {
+export function render({ bpm, swing = .5, echo = [.75, .35], send = {}, tone = 6500, ring = 0 }, src, seconds, fade = .005) {
   const at = t => {
     const b = t / 48, w = b % 1
     return (b - w + (w < .5 ? w * 2 * swing : swing + (w - .5) * 2 * (1 - swing))) * 60 / bpm
   }
-  let last = 0
-  const voices = Object.entries(src).filter(e => e[1]).map(([key, mml]) => {
-    const kind = key === 'n' || key === 'w' ? key : 'p', { notes } = parse(mml, kind === 'n')
-    const list = notes.map((n, j) => {
-      const s0 = Math.round(at(n.t) * FS), hit = HITS[n.m], next = notes[j + 1]
+  const voices = []
+  let last = 0, turn = 0
+  for (const [key, mml] of Object.entries(src)) {
+    const kind = KIND[key[0]], lanes = [[], [], [], []], [gl, gr, gs] = MIX[key[0]]
+    for (const n of parse(mml, kind === 'n').notes) {
+      const s0 = Math.round(at(n.t) * FS), off = Math.round(at(n.t + n.d * n.q / 8) * FS), hit = HITS[n.m], tau = (n.x || 3) * .07
       if (kind === 'n' && !hit) throw Error(`no drum "${n.m}"`)
-      const s1 = hit ? Math.min(next ? Math.round(at(next.t) * FS) : Infinity, s0 + hit[5] * FS | 0) : Math.round(at(n.t + n.d * n.q / 8) * FS)
-      last = Math.max(last, s1)
-      return { ...n, s0, s1, hit, len: (s1 - s0) / FS }
-    })
-    return { gain: MIX[key], fill: voice(kind, list) }
-  })
-  const n = Math.ceil((seconds ?? last / FS + .03) * SR), l = new Float32Array(n), r = new Float32Array(n), h = taps()
-  const one = new Float64Array(CHUNK), L = new Float64Array(CHUNK), R = new Float64Array(CHUNK), dl = shrink(h, l), dr = shrink(h, r)
+      if (kind === 't' || kind === 's') [n.m].flat().forEach((m, c) => lanes[kind === 't' ? turn++ % 4 : c % 4].push({ ...n, m, s0, s1: kind === 't' ? s0 + tau * 7 * FS | 0 : off, tau }))
+      else lanes[0].push({ ...n, s0, s1: kind === 'n' ? s0 + hit[5] * FS | 0 : off, hit })
+    }
+    for (const list of lanes) {
+      list.forEach((e, j) => {
+        if (list[j + 1]) e.s1 = Math.min(e.s1, list[j + 1].s0)
+        e.len = (e.s1 - e.s0) / FS
+        e.rise = Math.min(e.len * .35, 1.2)
+        last = Math.max(last, e.s1)
+      })
+      if (list.length) voices.push({ gain: [gl, gr, send[key] ?? gs], fill: voice(kind, list) })
+    }
+  }
+  const n = Math.ceil((seconds ?? last / FS + .03 + ring) * SR), outs = [0, 1, 2, 3].map(() => new Float32Array(n)), [l, r, el, er] = outs, h = taps()
+  const one = new Float64Array(CHUNK), bus = outs.map(() => new Float64Array(CHUNK)), down = outs.map(o => shrink(h, o)), D = Math.round(echo[0] * 60 / bpm * SR)
   for (let s = 0; s < n * OS + TAPS; s += CHUNK) {
-    L.fill(0)
-    R.fill(0)
+    for (const b of bus) b.fill(0)
     for (const v of voices) {
+      const [gl, gr, gs] = v.gain
       v.fill(one, s)
       for (let j = 0; j < CHUNK; j++) {
-        L[j] += one[j] * v.gain[0]
-        R[j] += one[j] * v.gain[1]
+        bus[0][j] += one[j] * gl
+        bus[1][j] += one[j] * gr
+        bus[2][j] += one[j] * gl * gs
+        bus[3][j] += one[j] * gr * gs
       }
     }
-    dl(L, s / OS)
-    dr(R, s / OS)
+    down.forEach((d, i) => d(bus[i], s / OS))
   }
-  const [pl, sl] = master(l, fade * SR), [pr, sr] = master(r, fade * SR)
+  for (let i = D; i < n; i++) {
+    const a = echo[1] * er[i - D], b = echo[1] * el[i - D]
+    l[i] += a
+    r[i] += b
+    el[i] += a
+    er[i] += b
+  }
+  const [pl, sl] = master(l, fade * SR, tone), [pr, sr] = master(r, fade * SR, tone)
   return { l, r, peak: Math.max(pl, pr), rms: Math.sqrt((sl + sr) / n / 2) }
 }
 

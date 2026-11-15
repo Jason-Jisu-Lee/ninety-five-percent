@@ -21,7 +21,7 @@ export default {
   title: 'On the Wing',
   bpm: 160,
   beats: 4,
-  tail: 8,
+  tail: 32,
   intro: {
     a: `@1 v12 x0 q8 ~0 l16
 | o5 e <b >e <b >f+ <b >f+ <b >g <b >g <b >a <b >a <b
