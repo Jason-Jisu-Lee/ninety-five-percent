@@ -27,7 +27,7 @@ export function settings(toMenu: () => void, reset: () => void) {
   const game = menu([tally, item('Main Menu', () => {
     shut()
     toMenu()
-  }), ask], MX, B - 14)
+  })], MX, B - 14)
   const home = menu([tally, ask], MX, B - 14)
   const confirm = menu([item('Hard Reset', () => {
     shut()

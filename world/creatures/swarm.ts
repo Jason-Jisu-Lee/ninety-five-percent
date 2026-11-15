@@ -1,9 +1,9 @@
-import { PREY } from '../../data/stage1/enemies'
+import { PREY, type Kind } from '../../data/enemies/enemies'
 import { H, W } from '../../data/look/screen'
 import { move } from './move'
-import { errand, type Kind, type Prey } from './prey'
+import { errand, type Prey } from './prey'
 
-export function swarm() {
+export function swarm(kinds: Kind[]) {
   const R = Math.random, list: Prey[] = [], due: { kind: Kind; at: number }[] = []
   const add = (kind: Kind, edge: boolean) => {
     const k = PREY[kind], side = R() * 4 | 0, u = R()
@@ -17,13 +17,21 @@ export function swarm() {
     list.splice(list.indexOf(p), 1)
     due.push({ kind: p.kind, at: t + PREY[p.kind].back * (.7 + R() * .6) })
   }
-  for (const kind of Object.keys(PREY) as Kind[]) {
+  for (const kind of kinds) {
     if (PREY[kind].stay) due.push({ kind, at: PREY[kind].back * .4 })
     else for (let i = 0; i < PREY[kind].count; i++) add(kind, false)
   }
   return {
     list,
     kill: drop,
+    at(x: number, y: number) {
+      let best: Prey | null = null, near = 0
+      for (const p of list) {
+        const k = PREY[p.kind], d = Math.hypot(p.x - x, p.y - p.h * .7 - y)
+        if (d < Math.max(k.len, k.wing * 2 + k.wide) / 2 + 4 && (!best || d < near)) [best, near] = [p, d]
+      }
+      return best
+    },
     step(dt: number, t: number, tx: number, ty: number, held: Prey | null) {
       for (let i = due.length; i--;) if (t >= due[i].at) add(due.splice(i, 1)[0].kind, true)
       for (let i = list.length; i--;) {

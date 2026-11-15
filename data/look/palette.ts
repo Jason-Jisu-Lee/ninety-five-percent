@@ -4,6 +4,11 @@ export const UI = {
   text: '#e9e2d4',
   dim: '#8f877b',
   accent: '#7fb062',
+  ally: '#8fc4c2',
+  foe: '#d8442c',
+  gold: '#c9a45c',
+  night: '#0a1312',
+  line: '#33403c',
 }
 
 export const FOREST = {

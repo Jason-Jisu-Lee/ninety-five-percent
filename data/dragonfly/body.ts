@@ -1,5 +1,5 @@
 export const DF = {
-  scale: 2.43,
+  scale: 2.19,
   headings: 32,
   flapFrames: 8,
   amp: 1,
@@ -11,15 +11,11 @@ export const DF = {
   abdomen: { from: 1.2, to: 10.4, band: 1.5, baseWidth: .85, width: .5 },
   head: { y: -2.25, rx: 1.05, ry: .8 },
   eyes: { x: .68, y: -2.4, rx: .62, ry: .72 },
-  jaw: { x: .34, y: -2.95 },
-  legs: [
-    [[.9, -1.3], [1.5, -2.9], [.55, -4.2]],
-    [[1.1, -.7], [2.1, -2.7], [.9, -4.5]],
-    [[1.1, -.1], [2.6, -1.9], [1.3, -4.7]],
-  ],
+  jaw: { x: .3, y: -3.1 },
   headAt: 2.3,
   mouth: 3.9,
+  mid: -3.3,
 }
 
-export const GROW = { tail: .4, fork: .3, jaw: .3 }
+export const GROW = { tail: .4, fork: .3, head: .09 }
 export const LEAN = { bank: .16, sway: .5 }

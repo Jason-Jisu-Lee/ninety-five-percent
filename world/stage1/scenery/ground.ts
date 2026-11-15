@@ -5,12 +5,14 @@ import { pixels } from '../../../core/draw/pixels'
 import { rng } from '../../../core/math/rng'
 import { FOREST as C } from '../../../data/look/palette'
 import { H, W } from '../../../data/look/screen'
-import { CLOVER, CLUMPS, DAISIES, DANDELIONS, LADYBUGS, LEAVES, MUSHROOMS, PEBBLES, REEDS, ROSETTES, STALKS, STONES, TWIGS } from '../../../data/stage1/map'
-import { clover, daisy, dandelion, mushroom } from './flora'
+import { CLOVER, CLUMPS, DAISIES, DANDELIONS, LADYBUGS, LEAVES, LILIES, LOG, MUSHROOMS, PADS, PEBBLES, POND, REEDS, ROSETTES, SCREE, SLABS, STALKS, STONES, TWIGS } from '../../../data/stage1/map'
+import { clover, daisy, dandelion, lily, mushroom } from './flora'
 import { clump } from './grass'
 import { ladybug, leaf, pebble } from './litter'
-import { pond } from './pond'
+import { log, logShade } from './log'
+import { depth, pads, water } from './pond'
 import { reed } from './reeds'
+import { scree, slab } from './rocks'
 import { twig } from './twig'
 
 export const ground = once(() => {
@@ -28,12 +30,17 @@ export const ground = once(() => {
     p.set(x, y, nl > .56 ? (dither(x, y, Math.min(.5, (nl - .56) * 5)) ? C.g2 : C.g1)
       : nd > .57 && dither(x, y, Math.min(.5, (nd - .57) * 5)) ? C.g0 : C.g1)
   }
-  pond(p)
+  scree(p, SCREE)
+  water(p, depth, 1, 0, 190, POND.x + POND.r, H)
+  pads(p, PADS)
+  for (const [x, y] of LILIES) lily(p, x, y)
+  logShade(p, LOG)
   for (const [x, y, n] of CLOVER) clover(p, x, y, R, n)
   for (const [x, y, ang, len] of LEAVES) leaf(p, x, y, ang, len)
   for (const t of TWIGS) twig(p, t)
-  for (const [x, y, rx, ry] of [...PEBBLES, ...STONES].sort((a, b) => a[1] - b[1])) pebble(p, x, y, rx, ry)
+  for (const [x, y, rx, ry, flat] of [...PEBBLES, ...STONES, ...SLABS.map(s => [...s, 1])].sort((a, b) => a[1] - b[1])) (flat ? slab : pebble)(p, x, y, rx, ry)
   for (const [x, y] of LADYBUGS) ladybug(p, x, y)
+  log(p, LOG)
   for (const [, draw] of tall.sort((a, b) => a[0] - b[0])) draw()
   return p.done()
 })

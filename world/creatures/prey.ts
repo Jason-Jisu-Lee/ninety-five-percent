@@ -1,9 +1,8 @@
-import { PREY } from '../../data/stage1/enemies'
+import { PREY, type Kind } from '../../data/enemies/enemies'
 import { H, W } from '../../data/look/screen'
 import { FLOWERS, SITES, SWARMS } from '../../data/stage1/map'
 import { depth } from '../stage1/scenery/pond'
 
-export type Kind = keyof typeof PREY
 export type Prey = { kind: Kind; x: number; y: number; h: number; ang: number; hp: number; wings: boolean; flash: number; seed: number; age: number; gx: number; gy: number; wait: number; fear: number; tired: number; free: number; vx: number; vy: number }
 
 const R = Math.random

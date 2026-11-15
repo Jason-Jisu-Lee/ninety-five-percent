@@ -2,7 +2,7 @@ import { turn } from '../../core/math/angle'
 import { clamp } from '../../core/math/clamp'
 import { vnoise } from '../../core/math/noise'
 import { H, W } from '../../data/look/screen'
-import { PREY } from '../../data/stage1/enemies'
+import { PREY } from '../../data/enemies/enemies'
 import { COVER, SWARM } from '../../data/stage1/map'
 import { errand, type Prey } from './prey'
 

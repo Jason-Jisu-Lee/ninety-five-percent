@@ -1,7 +1,7 @@
 import { wrap } from '../../core/math/angle'
 import { between } from '../../core/math/between'
 import { AUTO } from '../../data/dragonfly/auto'
-import { PREY } from '../../data/stage1/enemies'
+import { PREY } from '../../data/enemies/enemies'
 import type { Prey } from '../creatures/prey'
 import type { Flight } from './flight'
 

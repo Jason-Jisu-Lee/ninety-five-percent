@@ -1,0 +1,20 @@
+import { clamp } from '../../core/math/clamp'
+import type { Ctx } from '../../core/screen/canvas'
+import { PREY } from '../../data/enemies/enemies'
+import { UI } from '../../data/look/palette'
+import { W } from '../../data/look/screen'
+import type { Prey } from '../../world/creatures/prey'
+import { box } from '../parts/panel'
+import { text, width } from '../text/text'
+import { tone } from './tone'
+
+export function tag(g: Ctx, p: Prey, reach: number) {
+  const k = PREY[p.kind], w = Math.max(width(k.name), 22) + 10, x = clamp(Math.round(p.x - w / 2), 2, W - w - 2), py = Math.round(p.y - p.h * .7)
+  const y = py - reach - 23 < 28 ? py + reach + 5 : py - reach - 23
+  box(g, x, y, w, 19, UI.border, UI.panel)
+  text(g, k.name, x + w / 2, y + 11, tone(p.kind), 'c')
+  g.fillStyle = UI.line
+  g.fillRect(x + 4, y + 14, w - 8, 2)
+  g.fillStyle = UI.foe
+  g.fillRect(x + 4, y + 14, Math.ceil((w - 8) * clamp(p.hp / k.hp)), 2)
+}

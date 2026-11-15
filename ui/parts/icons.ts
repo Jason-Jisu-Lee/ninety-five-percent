@@ -18,6 +18,11 @@ export function icon(g: Ctx, name: keyof typeof ART, x: number, y: number, col: 
   })
 }
 
+export function drop(g: Ctx, x: number, y: number, col: string) {
+  g.fillStyle = col
+  ;[1, 1, 3, 3, 5, 5, 3].forEach((w, j) => g.fillRect(x - (w >> 1), y - 3 + j, w, 1))
+}
+
 export function gem(g: Ctx, x: number, y: number, col: string) {
   g.fillStyle = col
   for (let i = -2; i <= 2; i++) g.fillRect(x - 2 + Math.abs(i), y + i, 5 - 2 * Math.abs(i), 1)

@@ -1,17 +1,16 @@
 import { turn, wrap } from '../../core/math/angle'
 import { between } from '../../core/math/between'
 import { clamp } from '../../core/math/clamp'
-import { save } from '../../core/save/save'
+import { own } from '../../core/save/save'
 import { DF } from '../../data/dragonfly/body'
 import { FLY, VARY } from '../../data/dragonfly/flight'
-import { boost } from '../../data/dragonfly/stats'
 import { H, W } from '../../data/look/screen'
 import { fidget } from './fidget'
 
 export function flight(x: number, y: number) {
   const f = { x, y, ang: -Math.PI / 2, speed: 0, base: FLY.height, h: FLY.height, flap: 0, heading: 0, frame: 0, lean: 0, perched: false }
-  const n = DF.flapFrames, [close, open] = FLY.hover, agile = () => boost('agility', save.lv.agility), rest = fidget(f)
-  const top = () => FLY.top * boost('speed', save.lv.speed)
+  const n = DF.flapFrames, [close, open] = FLY.hover, agile = () => own('agility'), rest = fidget(f)
+  const top = () => FLY.top * own('speed')
   let spin = 0, glide = between(VARY.glide)
   return Object.assign(f, {
     top,

@@ -3,6 +3,7 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "resolveJsonModule": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["vite/client"],
     "strict": true,
@@ -11,5 +12,5 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["core", "world", "ui", "data", "audio", "demo", "vite.config.ts"]
+  "include": ["core", "world", "ui", "data", "audio", "demo"]
 }

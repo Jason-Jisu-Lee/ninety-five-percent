@@ -13,11 +13,11 @@ const vite = await createServer({ root, server: { middlewareMode: true, hmr: fal
 const load = p => vite.ssrLoadModule(p)
 const { u32 } = await load('/core/screen/canvas.ts'), { DF } = await load('/data/dragonfly/body.ts'), { COLORS, COLOR } = await load('/data/dragonfly/colors.ts')
 const { REST } = await load('/data/dragonfly/flight.ts'), { STATS } = await load('/data/dragonfly/stats.ts'), { FOREST: C, UI } = await load('/data/look/palette.ts')
-const { PREY, TIERS } = await load('/data/stage1/enemies.ts'), { look } = await load('/world/dragonfly/sprite/look.ts'), { size, sprite } = await load('/world/dragonfly/sprite/sprite.ts')
+const { PREY, TIERS, cast } = await load('/data/enemies/enemies.ts'), { look } = await load('/world/dragonfly/sprite/look.ts'), { size, sprite } = await load('/world/dragonfly/sprite/sprite.ts')
 const { drawBug } = await load('/world/creatures/draw.ts'), { glyph } = await load('/ui/text/text.ts')
 
 const board = boards(u32, glyph, UI.text), S = size(DF.scale), NONE = [0, 0], N = DF.flapFrames, pad = n => String(n + 1).padStart(2, '0')
-const fly = (col, st = NONE, frame = N, heading = 0, grab = false, tilt = 0, lean = 0) => {
+const fly = (col, st = NONE, frame = N, heading = 0, grab = 0, tilt = 0, lean = 0) => {
   const [pf, ph] = frame < N ? [0, DF.hindLead].map(o => DF.amp * Math.sin(2 * Math.PI * frame / N + o)) : [tilt, tilt]
   return { u: sprite(heading * 2 * Math.PI / DF.headings, pf, ph, look(col, st), DF.lift, grab, DF.scale, frame >= N, lean).p.u, w: S, h: S }
 }
@@ -50,23 +50,25 @@ grid(PARTS.flatMap(([s, st]) => [0, 1, 2, 3].map(n => [s, st(n), n])), 4, 80, 84
   b.text(`${s ? STATS[s].name : 'Both'} Level ${n * 5 || 1}`, x + 40, y + 71)
 }, 'dragonfly/upgrades.png')
 strip(Array.from({ length: N }, (_, f) => fly(COLOR, NONE, f)), 'dragonfly/states/fly.png')
-strip([-1, 1].map(lean => fly(COLOR, NONE, 2, 0, false, 0, lean)), 'dragonfly/states/bank.png')
-strip([0, REST.tilt, -REST.tilt].map(t => fly(COLOR, NONE, N, 0, false, t)), 'dragonfly/states/rest.png')
-strip([0, 4].map(f => fly(COLOR, NONE, f, 0, true)), 'dragonfly/states/eat.png')
+strip([-1, 1].map(lean => fly(COLOR, NONE, 2, 0, 0, 0, lean)), 'dragonfly/states/bank.png')
+strip([0, REST.tilt, -REST.tilt].map(t => fly(COLOR, NONE, N, 0, 0, t)), 'dragonfly/states/rest.png')
+strip([[0, 1], [2, 2], [4, 1], [6, 2]].map(([f, grab]) => fly(COLOR, NONE, f, 0, grab)), 'dragonfly/states/eat.png')
 strip(Array.from({ length: 8 }, (_, i) => fly(COLOR, NONE, 2, i * 4)), 'dragonfly/states/turn.png')
 
-const title = { fly: 'housefly' }, cast = Object.entries(PREY).map(([kind, k], i) => ({ k, name: title[kind] ?? kind, dir: `stage1/enemies/${i + 1}_${title[kind] ?? kind}` }))
-for (const { k, dir } of cast) {
-  const left = [...new Set(Array.from({ length: k.hp - 1 }, (_, i) => Math.max(1, Math.ceil(k.len * (k.hp - 1 - i) / k.hp))))]
-  strip([bug(k), bug(k, k.len, 'in')], `${dir}/fly.png`)
-  strip([bug(k, k.len, 'hit')], `${dir}/hit.png`)
-  if (k.land) strip([bug(k, k.len, 'rest')], `${dir}/rest.png`)
-  if (left.length) strip(left.map(n => bug(k, n, 'out', !!k.grip)), `${dir}/eaten.png`)
+for (const stage of [1, 2]) {
+  const list = cast(stage).map((kind, i) => ({ k: PREY[kind], dir: `stage${stage}/enemies/${i + 1}_${kind}` }))
+  for (const { k, dir } of list) {
+    const left = [...new Set(Array.from({ length: k.len - 1 }, (_, i) => k.len - 1 - i))]
+    strip([bug(k), bug(k, k.len, 'in')], `${dir}/fly.png`)
+    strip([bug(k, k.len, 'hit')], `${dir}/hit.png`)
+    if (k.land) strip([bug(k, k.len, 'rest')], `${dir}/rest.png`)
+    if (left.length) strip(left.map(n => bug(k, n, 'out', !!k.grip)), `${dir}/eaten.png`)
+  }
+  grid(list, 3, 84, 56, (b, { k }, x, y) => {
+    const s = bug(k)
+    b.blit(s.u, s.w, x + 42 - (s.w >> 1), y + 18 - (s.h >> 1))
+    b.text(k.name, x + 42, y + 34)
+    b.text(TIERS[k.tier], x + 42, y + 44, UI.dim)
+  }, `stage${stage}/enemies.png`, 8)
 }
-grid(cast, 3, 84, 56, (b, { k, name }, x, y) => {
-  const s = bug(k)
-  b.blit(s.u, s.w, x + 42 - (s.w >> 1), y + 18 - (s.h >> 1))
-  b.text(name, x + 42, y + 34)
-  b.text(TIERS[k.tier], x + 42, y + 44, UI.dim)
-}, 'stage1/enemies.png', 8)
 await vite.close()

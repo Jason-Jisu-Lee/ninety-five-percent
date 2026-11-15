@@ -3,14 +3,14 @@ import { JAW, WING } from '../../../data/dragonfly/colors'
 import type { Look } from './look'
 import type { Place, Raster } from './raster'
 
-export function body({ S, body: solid, put, line }: Raster, T: Place, col: Look, a: number, K: number, lean: number) {
-  const B = DF.abdomen, TH = DF.thorax, HD = DF.head, E = DF.eyes, J = DF.jaw, [fast, bite] = col.st, c = S / 2
+export function body({ S, body: solid, put, line }: Raster, T: Place, col: Look, a: number, K: number, lean: number, grab: number) {
+  const B = DF.abdomen, TH = DF.thorax, HD = DF.head, E = DF.eyes, J = DF.jaw, [fast, bite] = col.st, c = S / 2, big = 1 + GROW.head * bite
   const ca = Math.cos(a), sa = Math.sin(a), side = ca * -.6 + sa * -.8, end = B.to + GROW.tail * fast
   const bow = (by: number) => -lean * LEAN.sway * ((by - B.from) / (end - B.from)) ** 2
   for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
     const sx = x + .5 - c, sy = y + .5 - c, bx = (sx * ca + sy * sa) / K, by = (-sx * sa + sy * ca) / K, ax = Math.abs(bx)
     if (((ax - E.x) / E.rx) ** 2 + ((by - E.y) / E.ry) ** 2 <= 1) put([x, y], col.eye, 2, 1)
-    else if ((bx / HD.rx) ** 2 + ((by - HD.y) / HD.ry) ** 2 <= 1) put([x, y], col.head, 2, 1)
+    else if ((bx / HD.rx / big) ** 2 + ((by - HD.y) / HD.ry / big) ** 2 <= 1) put([x, y], col.head, 2, 1)
     else if ((bx / TH.rx) ** 2 + (by / TH.ry) ** 2 <= 1) {
       const l = (sx * -.6 + sy * -.8) / (1.6 * K)
       put([x, y], l > .45 ? col.thoraxHi : l < -.5 ? col.thoraxDk : col.thorax, 2, 1)
@@ -27,10 +27,9 @@ export function body({ S, body: solid, put, line }: Raster, T: Place, col: Look,
   }
   for (const i of ring) put([i % S, i / S | 0], WING.outline, 2)
   for (const s of [-1, 1]) {
-    const jx = J.x + .04 * bite, len = .1 + GROW.jaw * bite, tip = T(s * jx * (bite > 1 ? .25 : .4), J.y - len)
-    if (bite) line(bite > 1 ? [T(s * jx, J.y), T(s * (jx + .12), J.y - len * .55), tip] : [T(s * jx, J.y), tip], JAW, 0)
-    if (bite > 2) put(tip, WING.sheen, 0)
+    if (bite || grab) put(T(grab > 1 || bite > 1 ? s * J.x * (bite > 2 ? 1.6 : 1) : 0, J.y - (big - 1) * HD.ry), JAW, 0)
     if (fast) line([T(s * .2 + bow(end), end), T(s * (.2 + .28 * fast) + bow(end), end + GROW.fork * fast)], col.tip, 2)
     put(T(s * E.x - .2 * (ca + sa), E.y - .2 * (ca - sa)), WING.fill, 0)
   }
+  if (bite > 2) put(T(0, J.y - (big - 1) * HD.ry), WING.sheen, 0)
 }

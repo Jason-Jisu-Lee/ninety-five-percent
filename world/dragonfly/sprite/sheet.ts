@@ -11,8 +11,8 @@ const n = DF.flapFrames, HELD = [0, REST.tilt, -REST.tilt, VARY.dihedral]
 
 function sheet(col: Look, K: number) {
   const S = size(K), cache = new Map<number, HTMLCanvasElement[]>()
-  return (heading: number, frame: number, grab = false, lean = 0) => {
-    const key = heading * 512 + frame * 8 + +grab * 4 + lean + 1, hit = cache.get(key)
+  return (heading: number, frame: number, grab = 0, lean = 0) => {
+    const key = heading * 1024 + frame * 16 + grab * 4 + lean + 1, hit = cache.get(key)
     if (hit) return hit
     const a = heading * 2 * Math.PI / DF.headings, shade = pixels(S, S), still = frame >= n && frame < n + 3
     const [pf, ph] = frame < n ? [0, DF.hindLead].map(o => DF.amp * Math.sin(2 * Math.PI * frame / n + o)) : [HELD[frame - n], HELD[frame - n]]
