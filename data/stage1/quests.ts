@@ -1,4 +1,4 @@
-import type { PREY } from './prey'
+import type { PREY } from './enemies'
 
 export const QUESTS: { kind: keyof typeof PREY; n: number; text: string }[] = [
   { kind: 'gnat', n: 10, text: 'Catch 10 gnats' },

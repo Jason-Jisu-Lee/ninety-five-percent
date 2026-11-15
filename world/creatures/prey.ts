@@ -1,8 +1,8 @@
 import { turn } from '../../core/angle'
 import { vnoise } from '../../core/noise'
-import { PREY } from '../../data/prey'
+import { PREY } from '../../data/stage1/enemies'
 import { H, W } from '../../data/screen'
-import { COVER, FLOWERS, SITES, SWARM } from '../../data/stage1'
+import { COVER, FLOWERS, SITES, SWARM, SWARMS } from '../../data/stage1/scene'
 import { depth } from '../stage1/pond'
 
 export type Kind = keyof typeof PREY
@@ -11,11 +11,11 @@ export type Prey = { kind: Kind; x: number; y: number; h: number; ang: number; h
 const R = Math.random
 
 export function errand(p: Prey) {
-  const k = PREY[p.kind], r = k.land ? 2 : 14
-  if (k.zone === 'water') do [p.gx, p.gy] = [R() * 300, 232 + R() * 124]; while (depth(p.gx, p.gy) < 6)
+  const k = PREY[p.kind], r = k.land ? 2 : k.zone === 'swarm' ? 0 : 13
+  if (k.zone === 'water') do [p.gx, p.gy] = [R() * 280, 236 + R() * 120]; while (depth(p.gx, p.gy) < 6)
   else if (k.zone === 'cross') [p.gx, p.gy] = [40 + R() * (W - 80), 50 + R() * (H - 80)]
   else {
-    const list = k.zone === 'flowers' ? FLOWERS : SITES, [x, y] = list[R() * list.length | 0]
+    const list = k.zone === 'swarm' ? SWARMS : k.zone === 'flowers' ? FLOWERS : SITES, [x, y] = list[R() * list.length | 0]
     p.gx = x + (R() - .5) * 2 * r
     p.gy = y + (R() - .5) * 2 * r
   }
@@ -28,8 +28,8 @@ export function move(p: Prey, dt: number, t: number, tx: number, ty: number) {
   p.tired -= dt
   if (k.zone === 'swarm') {
     const far = 1 + 9 * Math.exp(-p.age * 1.6), n = (o: number) => (vnoise(t * 1.4 + p.seed * 50, o, 3) - .5) * 2 * SWARM.r * far
-    p.x = SWARM.x + (vnoise(t * .12, 1, 8) - .5) * SWARM.drift * 2 + n(0)
-    p.y = SWARM.y + (vnoise(t * .12, 5, 8) - .5) * SWARM.drift + n(7) * .7
+    p.x = p.gx + (vnoise(t * .12 + p.gx, 1, 8) - .5) * SWARM.drift * 2 + n(0)
+    p.y = p.gy + (vnoise(t * .12 + p.gx, 5, 8) - .5) * SWARM.drift + n(7) * .7
     p.h = k.h + Math.sin(t * 3 + p.seed * 9) * 2
     return false
   }

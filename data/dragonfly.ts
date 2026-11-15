@@ -1,5 +1,6 @@
 export const DF = {
-  scale: 3,
+  scale: 2.7,
+  color: 'azure' as Color,
   headings: 32,
   flapFrames: 8,
   amp: 1,
@@ -21,18 +22,30 @@ export const DF = {
   mouth: 3.9,
 }
 
-export const BODY = {
-  blue: { abd: '#3aa6c8', abdDk: '#17485c', tip: '#0f2f3b', thorax: '#2d7f93', thoraxHi: '#67c4d2', thoraxDk: '#174a57', head: '#2a6d82', eye: '#14394a' },
-  red: { abd: '#d8442c', abdDk: '#6a1d14', tip: '#3a110b', thorax: '#9b3220', thoraxHi: '#e0714f', thoraxDk: '#561a10', head: '#a33a26', eye: '#3e130d' },
-  emerald: { abd: '#5fc06a', abdDk: '#1f5228', tip: '#123319', thorax: '#3f9450', thoraxHi: '#8ad884', thoraxDk: '#1f4f2a', head: '#3d8a4c', eye: '#123a22' },
-  amber: { abd: '#e2a634', abdDk: '#6e4512', tip: '#3b240a', thorax: '#b5792a', thoraxHi: '#f0c560', thoraxDk: '#5e3b12', head: '#b37a2c', eye: '#3c2610' },
+export const GROW = { tail: .4, fork: .3, jaw: .3, wing: .04, chest: .06, girth: .12 }
+
+export const COLORS = {
+  reed: ['#b9a57a'],
+  bark: ['#8a6a4a', '', '#ead9ab', '#c9a45c'],
+  moss: ['#8b9a57'],
+  slate: ['#7f95a3'],
+  ash: ['#a9aba3'],
+  smoke: ['#5d6263', '#c9c0b2'],
+  clay: ['#b0714f'],
+  dusk: ['#8c7a99'],
+  azure: ['#3aa6c8'],
+  scarlet: ['#d8442c'],
+  emerald: ['#5fc06a'],
+  amber: ['#e2a634'],
 }
+
+export type Color = keyof typeof COLORS
 
 export const JAW = '#c9a45c'
 
-export const WING = { fill: '#cfe6e4', vein: '#8fc4c2', costa: '#344244', stigma: '#181e1e', outline: '#14301f', shadow: '#14301f' }
+export const WING = { fill: '#cfe6e4', vein: '#8fc4c2', sheen: '#f3faf8', costa: '#344244', stigma: '#181e1e', spot: '#f2cf47', outline: '#14301f', shadow: '#14301f' }
 
-export const FLY = { top: 150, cruise: .55, turn: 5.5, accel: 4.5, arrive: 4, height: 20, bob: 1.5, beat: 4, catch: 10, reach: 24 }
+export const FLY = { top: 135, cruise: .55, turn: 5.5, accel: 4.5, arrive: 4, height: 18, bob: 1.35, beat: 4, catch: 9, reach: 22 }
 export const STAMINA = { hover: 1, sprint: 5, regen: 12, tired: 10, wake: 80, show: 25, spent: .6 }
-export const HUNT = { sight: 150, shun: 8, patience: [2.5, 5], calm: [.4, 1.6] }
+export const AUTO = { tier: 0, sight: 80, chase: .8, far: .45, dart: .1, shun: 8, patience: [2.5, 5], calm: [.3, 1.2] }
 export const GLOW = 2

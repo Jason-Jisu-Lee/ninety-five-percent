@@ -1,15 +1,15 @@
 import { save } from '../../core/save'
-import { DF, FLY, GLOW, STAMINA } from '../../data/dragonfly'
+import { AUTO, DF, FLY, GLOW, STAMINA } from '../../data/dragonfly'
 import { FOREST as C } from '../../data/palette'
-import { BITE, FREE, PREY } from '../../data/prey'
-import { QUESTS } from '../../data/quests'
-import { HOME, PERCHES } from '../../data/stage1'
+import { BITE, FREE, PREY } from '../../data/stage1/enemies'
+import { QUESTS } from '../../data/stage1/quests'
+import { HOME, PERCHES } from '../../data/stage1/scene'
 import { boost } from '../../data/stats'
 import { brain } from '../dragonfly/brain'
 import { flight } from '../dragonfly/flight'
-import { cells } from '../prey/draw'
-import type { Prey } from '../prey/prey'
-import { swarm } from '../prey/swarm'
+import { cells } from '../creatures/draw'
+import type { Prey } from '../creatures/prey'
+import { swarm } from '../creatures/swarm'
 import { effects } from './effects'
 
 export type Perch = (typeof PERCHES)[number]
@@ -21,7 +21,7 @@ export function hunt() {
   const gap = (o: Perch) => Math.hypot(o.x - fly.x, o.y - fly.y)
   const over = (o: Perch, x: number, y: number, r: number) => Math.hypot(o.x - x, o.y - o.h * .7 - y) < r
   const perches = () => [...PERCHES].sort((a, b) => gap(a) - gap(b))
-  const perchAt = (x: number, y: number) => PERCHES.find(p => over(p, x, y, 12)) ?? null
+  const perchAt = (x: number, y: number) => PERCHES.find(p => over(p, x, y, 11)) ?? null
   const onFly = (x: number, y: number) => Math.hypot(ahead(-3.3)[0] - x, ahead(-3.3)[1] - fly.h * .7 - y) < FLY.reach
   function leave() {
     s.rest = null
@@ -68,7 +68,7 @@ export function hunt() {
       if (s.sel && (was || at)) {
         leave()
         s.rest = at === was ? null : at
-      } else if (onFly(x, y) && (s.sel || !was)) s.glow = (s.sel = !s.sel) ? GLOW : 0
+      } else if (onFly(x, y) && (s.sel || !was)) [s.sel, s.glow] = [!s.sel, GLOW]
     },
     idle(dt: number, t: number) {
       prey.step(dt, t, -999, -999, null)
@@ -97,7 +97,7 @@ export function hunt() {
       let reach = FLY.catch
       for (const p of prey.list) {
         const d = Math.hypot(p.x - hx, p.y - hy)
-        if (d < reach && p.free <= 0) [s.held, reach] = [p, d]
+        if (d < reach && p.free <= 0 && (s.sel || PREY[p.kind].tier <= AUTO.tier)) [s.held, reach] = [p, d]
       }
       if (s.held) [s.bite, s.hold] = [BITE.every, 0]
     },

@@ -13,3 +13,4 @@ export const GROWTH = 1.5
 export const cost = (s: Stat, lv: number) => Math.round(STATS[s].cost * GROWTH ** (lv - 1))
 export const boost = (s: Stat, lv: number) => 1 + STATS[s].step * (lv - 1)
 export const gain = (s: Stat) => `+${STATS[s].step < 1 ? Math.round(STATS[s].step * 100) + '%' : STATS[s].step} ${STATS[s].unit}`
+export const stage = (lv: number) => Math.min(3, (lv + 1) / 3 | 0)

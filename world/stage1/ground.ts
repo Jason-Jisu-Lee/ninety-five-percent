@@ -5,8 +5,8 @@ import { pixels } from '../../core/pixels'
 import { rng } from '../../core/rng'
 import { FOREST as C } from '../../data/palette'
 import { H, W } from '../../data/screen'
-import { CLOVER, CLUMPS, DAISIES, DANDELIONS, LEAVES, PEBBLES, REEDS, STONES } from '../../data/stage1'
-import { clover, daisy, dandelion } from './flora'
+import { CLOVER, CLUMPS, DAISIES, DANDELIONS, LEAVES, MUSHROOMS, PEBBLES, REEDS, STONES } from '../../data/stage1/scene'
+import { clover, daisy, dandelion, mushroom } from './flora'
 import { clump } from './grass'
 import { leaf, pebble } from './litter'
 import { pond } from './pond'
@@ -19,6 +19,7 @@ export const ground = once(() => {
     ...DAISIES.map(([x, y, rot]): [number, () => void] => [y, () => daisy(p, x, y, rot)]),
     ...DANDELIONS.map(([x, y]): [number, () => void] => [y, () => dandelion(p, x, y, R)]),
     ...REEDS.map(([x, y, len, lean]): [number, () => void] => [y, () => reed(p, x, y, len, lean)]),
+    ...MUSHROOMS.map(([x, y, r]): [number, () => void] => [y, () => mushroom(p, x, y, r)]),
   ]
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const nl = fbm(x / 110, y / 110, 5), nd = fbm(x / 90 + 40, y / 90, 9)

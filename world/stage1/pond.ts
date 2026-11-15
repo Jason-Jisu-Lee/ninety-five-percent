@@ -4,7 +4,7 @@ import { vnoise } from '../../core/noise'
 import type { Pixels } from '../../core/pixels'
 import { FOREST as C } from '../../data/palette'
 import { H } from '../../data/screen'
-import { PADS, POND } from '../../data/stage1'
+import { PADS, POND } from '../../data/stage1/scene'
 
 export const depth = (x: number, y: number) =>
   POND.r - Math.hypot(x - POND.x, y - POND.y) + (vnoise(Math.atan2(y - POND.y, x - POND.x) * 14, 0, 3) - .5) * 14
