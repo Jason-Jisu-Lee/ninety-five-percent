@@ -10,7 +10,7 @@ import { tip } from './tip'
 const X = 8, Y = 30, P = 16, BX = 68, BW = 38, TX = 66, TY = 8, TS = 15
 
 export function upgrades() {
-  let open = true, hot = -1, tab = false
+  let open = true, hot = -1, tab = false, stuck: number[] | null = null
   const rows = () => NAMES.filter(s => !full(s, save.lv[s]))
   const row = (x: number, y: number) => open && x >= X && x < BX + BW && y >= Y && y < Y + P * rows().length && (y - Y) % P < 14 ? (y - Y) / P | 0 : -1
   const onTab = (x: number, y: number) => x >= TX && x < TX + TS && y >= TY && y < TY + TS
@@ -20,14 +20,18 @@ export function upgrades() {
       open = !open
     },
     hover(x: number, y: number) {
-      hot = row(x, y)
+      if (stuck && Math.hypot(x - stuck[0], y - stuck[1]) > 2) stuck = null
+      hot = stuck ? -1 : row(x, y)
       tab = onTab(x, y)
       return tab || hot >= 0 && x >= BX && can(hot)
     },
     click(x: number, y: number) {
-      const i = row(x, y)
+      const i = row(x, y), n = rows().length
       if (onTab(x, y)) open = !open
-      else if (i >= 0 && x >= BX) buy(rows()[i])
+      else if (i >= 0 && x >= BX && !stuck) {
+        buy(rows()[i])
+        if (rows().length < n) stuck = [x, y]
+      }
       return i >= 0 || onTab(x, y)
     },
     draw(g: Ctx) {
