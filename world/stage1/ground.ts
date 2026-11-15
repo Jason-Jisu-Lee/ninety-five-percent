@@ -5,26 +5,31 @@ import { pixels } from '../../core/pixels'
 import { rng } from '../../core/rng'
 import { FOREST as C } from '../../data/palette'
 import { H, W } from '../../data/screen'
-import { CLOVER, CLUMPS, DAISIES, DANDELION, LEAF, PEBBLES } from '../../data/stage1'
+import { CLOVER, CLUMPS, DAISIES, DANDELIONS, LEAVES, PEBBLES, REEDS, STONES } from '../../data/stage1'
 import { clover, daisy, dandelion } from './flora'
 import { clump } from './grass'
 import { leaf, pebble } from './litter'
 import { pond } from './pond'
-import { trunk } from './trunk'
+import { reed } from './reeds'
+import { twig } from './twig'
 
 export const ground = once(() => {
-  const p = pixels(W, H), R = rng(2026), byY = (a: number[], b: number[]) => a[1] - b[1]
+  const p = pixels(W, H), R = rng(2026), tall: [number, () => void][] = [
+    ...CLUMPS.map(([x, y, n, len]): [number, () => void] => [y, () => clump(p, x, y, R, n, len)]),
+    ...DAISIES.map(([x, y, rot]): [number, () => void] => [y, () => daisy(p, x, y, rot)]),
+    ...DANDELIONS.map(([x, y]): [number, () => void] => [y, () => dandelion(p, x, y, R)]),
+    ...REEDS.map(([x, y, len, lean]): [number, () => void] => [y, () => reed(p, x, y, len, lean)]),
+  ]
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const nl = fbm(x / 110, y / 110, 5), nd = fbm(x / 90 + 40, y / 90, 9)
     p.set(x, y, nl > .56 ? (dither(x, y, Math.min(.5, (nl - .56) * 5)) ? C.g2 : C.g1)
       : nd > .57 && dither(x, y, Math.min(.5, (nd - .57) * 5)) ? C.g0 : C.g1)
   }
   pond(p)
-  trunk(p)
   for (const [x, y, n] of CLOVER) clover(p, x, y, R, n)
-  leaf(p, LEAF.x, LEAF.y, LEAF.ang, LEAF.len)
-  for (const [x, y, rx, ry] of [...PEBBLES].sort(byY)) pebble(p, x, y, rx, ry)
-  for (const [x, y, a, b] of [...CLUMPS, ...DAISIES, DANDELION].sort(byY))
-    b ? clump(p, x, y, R, a, b) : a ? daisy(p, x, y, a) : dandelion(p, x, y, R)
+  for (const [x, y, ang, len] of LEAVES) leaf(p, x, y, ang, len)
+  twig(p)
+  for (const [x, y, rx, ry] of [...PEBBLES, ...STONES].sort((a, b) => a[1] - b[1])) pebble(p, x, y, rx, ry)
+  for (const [, draw] of tall.sort((a, b) => a[0] - b[0])) draw()
   return p.done()
 })

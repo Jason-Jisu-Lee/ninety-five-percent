@@ -1,4 +1,5 @@
 import { ctx, mk, type Ctx } from './canvas'
+import { H, W } from '../data/screen'
 import { bayer } from './dither'
 
 const tmp = ctx(mk(1, 1)), masks: CanvasPattern[] = []
@@ -24,4 +25,9 @@ export function dissolve(g: Ctx, src: HTMLCanvasElement, x: number, y: number, l
   tmp.fillStyle = mask(n)
   tmp.fillRect(0, 0, c.width, c.height)
   g.drawImage(c, 0, 0, w, h, x, y, w, h)
+}
+
+export function veil(g: Ctx, level: number) {
+  g.fillStyle = mask(Math.round(level * 16))
+  g.fillRect(0, 0, W, H)
 }

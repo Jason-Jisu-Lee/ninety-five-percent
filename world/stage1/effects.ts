@@ -4,9 +4,9 @@ import { FOREST as C, UI } from '../../data/palette'
 import { text } from '../../ui/text'
 
 export function effects() {
-  let nums: { x: number; y: number; v: number; age: number }[] = [], bits: { x: number; y: number; h: number; vx: number; age: number; n: number }[] = []
+  let nums: { x: number; y: number; s: string; col: string; age: number }[] = [], bits: { x: number; y: number; h: number; vx: number; age: number; n: number }[] = []
   return {
-    hit: (x: number, y: number, v: number) => nums.push({ x, y, v, age: 0 }),
+    hit: (x: number, y: number, s: string, col = UI.text) => nums.push({ x, y, s, col, age: 0 }),
     shed(x: number, y: number, h: number, n: number) {
       for (const s of [-1, 1]) bits.push({ x: x + s * 2, y, h, vx: s * (8 + Math.random() * 10), age: 0, n })
     },
@@ -31,7 +31,7 @@ export function effects() {
       }
     },
     numbers(g: Ctx) {
-      for (const n of nums) text(g, String(Math.round(n.v)), Math.round(n.x), Math.round(n.y - n.age * 22), 10, UI.text, 'c', UI.panel)
+      for (const n of nums) text(g, n.s, Math.round(n.x), Math.round(n.y - n.age * 22), n.col, 'c', UI.panel)
     },
   }
 }

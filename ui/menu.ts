@@ -14,7 +14,11 @@ export function menu(items: Item[], x: number, bottom: number, w = 96, h = 22, p
     return i >= 0
   }
   return {
+    top,
     hover,
+    focus(i: number) {
+      sel = i
+    },
     click(px: number, py: number) {
       if (hover(px, py)) items[sel].run()
     },
@@ -28,7 +32,7 @@ export function menu(items: Item[], x: number, bottom: number, w = 96, h = 22, p
       items.forEach((it, i) => {
         const y = top + i * pitch
         panel(g, x, y, w, h, i === sel ? UI.accent : UI.border, UI.panel)
-        text(g, it.label, x + w / 2, y + 15, 11, i === sel ? UI.accent : UI.text, 'c')
+        text(g, it.label, x + w / 2, y + 15, i === sel ? UI.accent : UI.text, 'c')
       })
     },
   }

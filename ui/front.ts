@@ -1,11 +1,13 @@
 import { ctx, mk, type Ctx } from '../core/canvas'
 import { dissolve } from '../core/dissolve'
+import { save } from '../core/save'
 import { H, W } from '../data/screen'
 import { logo } from './logo'
 import { menu } from './menu'
 
-export function front(start: () => void) {
-  const layer = ctx(mk(W, H)), buttons = menu([{ label: 'Start', run: start }, { label: 'Settings', run() {} }, { label: 'Exit', run: () => close() }], W - 118, H - 16)
+export function front(start: () => void, options: () => void) {
+  const layer = ctx(mk(W, H)), go = { run: start, get label() { return save.started ? 'Continue' : 'Start' } }
+  const buttons = menu([go, { label: 'Settings', run: options }, { label: 'Exit', run: () => close() }], W - 118, H - 16)
   return {
     ...buttons,
     draw(g: Ctx, level: number) {

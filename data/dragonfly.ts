@@ -1,5 +1,5 @@
 export const DF = {
-  scale: 4,
+  scale: 3,
   headings: 32,
   flapFrames: 8,
   amp: 1,
@@ -32,4 +32,7 @@ export const JAW = '#c9a45c'
 
 export const WING = { fill: '#cfe6e4', vein: '#8fc4c2', costa: '#344244', stigma: '#181e1e', outline: '#14301f', shadow: '#14301f' }
 
-export const FLY = { cruise: 120, chase: 240, dart: 320, turn: 8, accel: 6, arrive: 4, height: 26, bob: 2, beat: 4, catch: 13, rest: .6 }
+export const FLY = { top: 150, cruise: .55, turn: 5.5, accel: 4.5, arrive: 4, height: 20, bob: 1.5, beat: 4, catch: 10, reach: 24 }
+export const STAMINA = { hover: 1, sprint: 5, regen: 12, tired: 10, wake: 80, show: 25, spent: .6 }
+export const HUNT = { sight: 150, shun: 8, patience: [2.5, 5], calm: [.4, 1.6] }
+export const GLOW = 2

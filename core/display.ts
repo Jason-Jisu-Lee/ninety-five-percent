@@ -4,19 +4,17 @@ import { ctx, mk } from './canvas'
 export const canvas = document.querySelector('canvas')!
 export const world = ctx(mk(W, H))
 const out = ctx(canvas)
-let k = 0
 
 export function fit() {
-  const d = devicePixelRatio || 1, vw = Math.round(innerWidth * d), vh = Math.round(innerHeight * d)
-  const s = Math.max(1, Math.floor(Math.min(vw / W, vh / H)))
+  const d = devicePixelRatio || 1, s = Math.min(innerWidth / W, innerHeight / H), k = Math.max(1, Math.ceil(s * d - .001))
   Object.assign(canvas.style, {
-    width: W * s / d + 'px',
-    height: H * s / d + 'px',
-    left: (vw - W * s >> 1) / d + 'px',
-    top: (vh - H * s >> 1) / d + 'px',
+    width: W * s + 'px',
+    height: H * s + 'px',
+    left: Math.round((innerWidth - W * s) * d / 2) / d + 'px',
+    top: Math.round((innerHeight - H * s) * d / 2) / d + 'px',
+    imageRendering: Math.abs(s * d - k) < .001 ? 'pixelated' : 'auto',
   })
-  if (s === k) return
-  k = s
+  if (canvas.width === W * k) return
   canvas.width = W * k
   canvas.height = H * k
 }

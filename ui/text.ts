@@ -1,26 +1,36 @@
 import { ctx, mk, type Ctx } from '../core/canvas'
+import { FONT } from '../data/font'
 
-const pad = ctx(mk(400, 40), { willReadFrequently: true }), cache = new Map<string, { c: HTMLCanvasElement; w: number }>()
+const cache = new Map<string, HTMLCanvasElement>()
 
-function raster(str: string, size: number, col: string) {
-  const key = size + col + str, hit = cache.get(key)
-  if (hit) return hit
-  pad.clearRect(0, 0, 400, 40)
-  pad.font = `${size}px "Pixelify Sans", monospace`
-  pad.fillStyle = '#fff'
-  pad.fillText(str, 1, size + 3)
-  const w = Math.ceil(pad.measureText(str).width) + 2, h = size + 8
-  const id = pad.getImageData(0, 0, w, h).data, c = mk(w, h), g = ctx(c)
-  g.fillStyle = col
-  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) if (id[(j * w + i) * 4 + 3] > 110) g.fillRect(i, j, 1, 1)
-  if (cache.size > 400) cache.clear()
-  const r = { c, w: w - 2 }
-  cache.set(key, r)
-  return r
+export const glyph = (ch: string) => [...FONT[ch] ?? ''].map(c => parseInt(c, 32))
+
+function span(ch: string) {
+  const m = glyph(ch).reduce((a, b) => a | b, 0)
+  return m ? 5 - Math.log2(m & -m) : 3
 }
 
-export function text(g: Ctx, str: string, x: number, y: number, size: number, col: string, align?: 'c' | 'r', edge?: string) {
-  const t = raster(str, size, col), left = (align === 'c' ? Math.round(x - t.w / 2) : align === 'r' ? Math.round(x - t.w) : x) - 1, top = y - size - 3
-  if (edge) for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) g.drawImage(raster(str, size, edge).c, left + dx, top + dy)
-  g.drawImage(t.c, left, top)
+export const width = (str: string) => [...str].reduce((w, ch) => w + span(ch) + 1, -1)
+
+function raster(str: string, col: string, k: number) {
+  const key = k + col + str, hit = cache.get(key)
+  if (hit) return hit
+  const c = mk(Math.max(1, width(str)) * k, 9 * k), g = ctx(c)
+  let x = 0
+  g.fillStyle = col
+  for (const ch of str) {
+    glyph(ch).forEach((row, j) => {
+      for (let i = 0; i < 5; i++) if (row >> 4 - i & 1) g.fillRect((x + i) * k, j * k, k, k)
+    })
+    x += span(ch) + 1
+  }
+  if (cache.size > 400) cache.clear()
+  cache.set(key, c)
+  return c
+}
+
+export function text(g: Ctx, str: string, x: number, y: number, col: string, align?: 'c' | 'r', edge?: string, k = 1) {
+  const t = raster(str, col, k), left = align === 'c' ? Math.round(x - t.width / 2) : align === 'r' ? x - t.width : x, top = y - 7 * k
+  if (edge) for (let i = 0; i < 9; i++) g.drawImage(raster(str, edge, k), left + (i % 3 - 1) * k, top + ((i / 3 | 0) - 1) * k)
+  g.drawImage(t, left, top)
 }
