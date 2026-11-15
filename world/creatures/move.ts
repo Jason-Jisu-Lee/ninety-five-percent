@@ -1,4 +1,5 @@
 import { turn } from '../../core/math/angle'
+import { clamp } from '../../core/math/clamp'
 import { vnoise } from '../../core/math/noise'
 import { H, W } from '../../data/look/screen'
 import { PREY } from '../../data/stage1/enemies'
@@ -26,7 +27,7 @@ export function move(p: Prey, dt: number, t: number, tx: number, ty: number) {
     p.fear = k.wind
     p.tired = k.wind + k.tire * (.5 + R())
     p.wait = 0
-    if (k.dodge) [p.gx, p.gy, p.ang] = [Math.min(Math.max(p.x + Math.cos(a) * k.dodge, 12), W - 12), Math.min(Math.max(p.y + Math.sin(a) * k.dodge, 24), H - 8), a]
+    if (k.dodge) [p.gx, p.gy, p.ang] = [clamp(p.x + Math.cos(a) * k.dodge, 12, W - 12), clamp(p.y + Math.sin(a) * k.dodge, 24, H - 8), a]
   }
   let want = Math.atan2(p.gy - p.y, p.gx - p.x), sp = k.speed * (k.sit ? Math.min(1, .25 + gd / 24) : 1), low = false
   if (!k.dodge && (p.fear > 0 || near < k.flee * 1.5)) {

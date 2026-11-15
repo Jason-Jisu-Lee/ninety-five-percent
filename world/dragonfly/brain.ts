@@ -1,11 +1,12 @@
 import { wrap } from '../../core/math/angle'
+import { between } from '../../core/math/between'
 import { AUTO } from '../../data/dragonfly/auto'
 import { PREY } from '../../data/stage1/enemies'
 import type { Prey } from '../creatures/prey'
 import type { Flight } from './flight'
 
 export function brain(fly: Flight) {
-  const R = Math.random, shy = new WeakMap<Prey, number>(), between = ([a, b]: number[]) => a + R() * (b - a)
+  const R = Math.random, shy = new WeakMap<Prey, number>()
   let target: Prey | null = null, look = 0, calm = 0, bored = 0, quit = 0, chain = 0, far = false
   function spot(list: Prey[], t: number, sight: number) {
     let best: Prey | null = null, near = sight

@@ -2,8 +2,6 @@ import { toggle } from '../../audio/player/music'
 import type { Scene } from '../../core/loop/scene'
 import { save, store, wipe } from '../../core/save/save'
 import { FADE } from '../../data/stage1/map'
-import { meterKey } from '../../demo/meter'
-import { signKey } from '../../demo/sign'
 import { front } from '../../ui/front/front'
 import { intro } from '../../ui/front/intro'
 import { hud } from '../../ui/hud/hud'
@@ -84,7 +82,7 @@ export const stage1: Scene = {
     else if (k === 'p' || k === ' ') paused = !paused
     else if (k === 'm') toggle()
     else if (k === 'u') ui.flip()
-    else return signKey(k) || meterKey(k)
+    else return false
     return true
   },
 }

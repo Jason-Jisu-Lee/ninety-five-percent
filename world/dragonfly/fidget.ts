@@ -1,8 +1,9 @@
+import { between } from '../../core/math/between'
 import { DF } from '../../data/dragonfly/body'
 import { REST } from '../../data/dragonfly/flight'
 
 export function fidget(f: { ang: number; frame: number; lean: number }) {
-  const R = Math.random, n = DF.flapFrames, between = ([a, b]: number[]) => a + R() * (b - a)
+  const R = Math.random, n = DF.flapFrames
   let still = REST.every[0], busy = 0, act = 0
   return (dt: number) => {
     busy -= dt

@@ -1,4 +1,5 @@
 import { toggle, tune } from '../../audio/player/music'
+import { clamp } from '../../core/math/clamp'
 import { save } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { UI } from '../../data/look/palette'
@@ -10,7 +11,7 @@ const level = () => save.music ? save.vol : 0
 export const volume = {
   at: (x: number, y: number, left: number, top: number) => y < top - 2 || y >= top + 11 || x < left || x >= left + 96 ? -1 : x < left + 16 ? 0 : (x - left - 16) / 8 + 1 | 0,
   set: (v: number) => v ? tune(v) : toggle(),
-  nudge: (d: number) => tune(Math.max(0, Math.min(10, level() + d))),
+  nudge: (d: number) => tune(clamp(level() + d, 0, 10)),
   draw(g: Ctx, left: number, top: number) {
     const on = level()
     icon(g, 'note', left, top, on ? UI.text : UI.dim)
