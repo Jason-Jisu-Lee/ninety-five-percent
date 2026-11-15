@@ -46,9 +46,9 @@ export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live
   }
   if (live) for (const p of hot === sim.mark ? [hot] : [sim.mark, hot]) if (p) marks(g, Math.round(p.x), Math.round(p.y - p.h * .7), span(p), UI.foe)
   fx.numbers(g)
-  if (live && hot) tag(g, hot, span(hot))
+  if (live && hot) tag(g, hot, span(hot), hot === held && fly.y < hot.y)
   if (!live) return
-  if (sim.health < sim.cap) bar(g, x, y - 26, Math.max(0, sim.health / sim.cap), 18, UI.foe)
+  if (sim.health < sim.cap) bar(g, x, y - 26, Math.max(0, sim.health / sim.cap), 18, UI.ally)
   if (sim.sel || sim.shown > 0 || sim.stamina < (fly.perched ? 99 : STAMINA.show))
     bar(g, x, y - 23, sim.stamina / 100, 18, sim.stamina < STAMINA.tired ? C.pink : UI.accent, fly.perched && sim.stamina < STAMINA.wake ? STAMINA.wake / 100 : 0)
 }
