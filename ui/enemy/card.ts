@@ -1,4 +1,4 @@
-import type { Ctx } from '../../core/screen/canvas'
+import { ctx, mk, type Ctx } from '../../core/screen/canvas'
 import { PREY, TIERS } from '../../data/enemies/enemies'
 import { UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
@@ -10,7 +10,7 @@ import { wrap } from '../text/wrap'
 import { tone } from './tone'
 import { traits } from './traits'
 
-const PW = 256, X = W - PW >> 1, IN = 12, COL = 72, SEE = .86
+const PW = 256, X = W - PW >> 1, IN = 12, COL = 72, SEE = .84, sheet = ctx(mk(PW, H))
 
 export function enemyCard() {
   let p: Prey | null = null, hot = false, top = 0, tall = 0
@@ -34,8 +34,10 @@ export function enemyCard() {
       const whole = Math.round, facts = [['Health', p.hp < k.hp ? `${Math.ceil(p.hp)} / ${whole(k.hp)}` : whole(k.hp)], ['Blood', whole(k.blood)], ['Power', whole(k.power)], ['Speed', whole(k.speed)]]
       tall = 82 + about.length * 11 + list.reduce((n, [, say]) => n + say.length * 11 + 4, 0) + (list.length ? 6 : 0)
       top = H - tall >> 1
+      sheet.clearRect(0, 0, PW, H)
+      panel(sheet, 0, 0, PW, tall, UI.border, UI.panel)
       g.globalAlpha = SEE
-      panel(g, X, top, PW, tall, UI.border, UI.panel)
+      g.drawImage(sheet.canvas, 0, 0, PW, tall, X, top, PW, tall)
       g.globalAlpha = 1
       box(g, X + PW - 19, top + 6, 11, 11, hot ? UI.accent : UI.border, UI.panel)
       icon(g, 'x', X + PW - 16, top + 9, UI.text)
