@@ -5,10 +5,10 @@ import { pixels } from '../../core/pixels'
 import { rng } from '../../core/rng'
 import { FOREST as C } from '../../data/palette'
 import { H, W } from '../../data/screen'
-import { CLOVER, CLUMPS, DAISIES, DANDELIONS, LEAVES, MUSHROOMS, PEBBLES, REEDS, STONES } from '../../data/stage1/scene'
+import { CLOVER, CLUMPS, DAISIES, DANDELIONS, LADYBUGS, LEAVES, MUSHROOMS, PEBBLES, REEDS, ROSETTES, STALKS, STONES, TWIGS } from '../../data/stage1/scene'
 import { clover, daisy, dandelion, mushroom } from './flora'
 import { clump } from './grass'
-import { leaf, pebble } from './litter'
+import { ladybug, leaf, pebble } from './litter'
 import { pond } from './pond'
 import { reed } from './reeds'
 import { twig } from './twig'
@@ -18,7 +18,9 @@ export const ground = once(() => {
     ...CLUMPS.map(([x, y, n, len]): [number, () => void] => [y, () => clump(p, x, y, R, n, len)]),
     ...DAISIES.map(([x, y, rot]): [number, () => void] => [y, () => daisy(p, x, y, rot)]),
     ...DANDELIONS.map(([x, y]): [number, () => void] => [y, () => dandelion(p, x, y, R)]),
+    ...ROSETTES.map(([x, y]): [number, () => void] => [y, () => dandelion(p, x, y, R, false)]),
     ...REEDS.map(([x, y, len, lean]): [number, () => void] => [y, () => reed(p, x, y, len, lean)]),
+    ...STALKS.map(([x, y, len, lean]): [number, () => void] => [y, () => reed(p, x, y, len, lean, true)]),
     ...MUSHROOMS.map(([x, y, r]): [number, () => void] => [y, () => mushroom(p, x, y, r)]),
   ]
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -29,8 +31,9 @@ export const ground = once(() => {
   pond(p)
   for (const [x, y, n] of CLOVER) clover(p, x, y, R, n)
   for (const [x, y, ang, len] of LEAVES) leaf(p, x, y, ang, len)
-  twig(p)
+  for (const t of TWIGS) twig(p, t)
   for (const [x, y, rx, ry] of [...PEBBLES, ...STONES].sort((a, b) => a[1] - b[1])) pebble(p, x, y, rx, ry)
+  for (const [x, y] of LADYBUGS) ladybug(p, x, y)
   for (const [, draw] of tall.sort((a, b) => a[0] - b[0])) draw()
   return p.done()
 })

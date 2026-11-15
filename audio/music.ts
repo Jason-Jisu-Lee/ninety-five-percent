@@ -1,52 +1,44 @@
+import becoming from '../assets/audio/soundtrack/02_becoming_2.ogg'
+import wing from '../assets/audio/soundtrack/03_on_the_wing.ogg'
 import { save, store } from '../core/save'
 
-const SCALE = [0, 2, 4, 7, 9], ROOTS = [0, -3, -5, -7], BEAT = .6, hz = (n: number) => 146.83 * 2 ** (n / 12)
-let ac: AudioContext | undefined, out: GainNode, wet: GainNode, at = 0, beat = 0
+const TRACKS = [['Becoming II', becoming], ['On the Wing', wing]], bins = new Uint8Array(32)
+let ac: AudioContext | undefined, el: HTMLAudioElement, out: GainNode, scope: AnalyserNode, at = 0
 
 const level = () => save.music ? (save.vol / 5) ** 2 : 0
 
-function tone(f: number, len: number, vol: number, soft: boolean) {
-  const o = ac!.createOscillator(), g = ac!.createGain()
-  o.type = soft ? 'sine' : 'triangle'
-  o.frequency.value = f
-  g.gain.setValueAtTime(0, at)
-  g.gain.linearRampToValueAtTime(vol, at + (soft ? len * .35 : .02))
-  g.gain.exponentialRampToValueAtTime(.0001, at + len)
-  o.connect(g).connect(soft ? out : wet)
-  o.start(at)
-  o.stop(at + len + .05)
-}
-
-function tick() {
-  at = Math.max(at, ac!.currentTime)
-  while (at < ac!.currentTime + .4) {
-    if (beat % 8 === 0) for (const n of [0, 7]) tone(hz(ROOTS[beat / 8 % 4] + n), BEAT * 9, .05, true)
-    if (Math.random() < (beat % 2 ? .3 : .65)) tone(hz(SCALE[Math.random() * 5 | 0] + 12 * (1 + (Math.random() * 2 | 0))), 1.6, .05, false)
-    at += BEAT
-    beat++
-  }
+function play(i: number) {
+  at = i % TRACKS.length
+  el.src = TRACKS[at][1]
+  if (save.music) el.play()
 }
 
 export function wake() {
   if (ac) return void ac.resume()
   ac = new AudioContext()
-  const echo = ac.createDelay(), back = ac.createGain()
+  el = new Audio()
   out = ac.createGain()
-  wet = ac.createGain()
+  scope = ac.createAnalyser()
+  scope.fftSize = 64
   out.gain.value = level()
-  echo.delayTime.value = BEAT * .75
-  back.gain.value = .35
-  out.connect(ac.destination)
-  wet.connect(out)
-  wet.connect(echo).connect(back).connect(echo)
-  back.connect(out)
-  setInterval(tick, 150)
+  ac.createMediaElementSource(el).connect(scope).connect(out).connect(ac.destination)
+  el.onended = () => play(at + 1)
+  play(0)
 }
 
 export function tune(vol = save.vol, on = vol > 0) {
   Object.assign(save, { vol: vol || save.vol, music: on })
   store()
-  if (ac) out.gain.setTargetAtTime(level(), ac.currentTime, .05)
+  if (!ac) return
+  out.gain.setTargetAtTime(level(), ac.currentTime, .05)
+  if (on) el.play()
+  else el.pause()
 }
 
 export const toggle = () => tune(save.vol, !save.music)
+export const playing = () => ac && save.music ? TRACKS[at][0] : ''
+
+export function beat() {
+  scope.getByteFrequencyData(bins)
+  return bins
+}

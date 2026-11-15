@@ -12,7 +12,7 @@ const R = Math.random
 
 export function errand(p: Prey) {
   const k = PREY[p.kind], r = k.land ? 2 : k.zone === 'swarm' ? 0 : 13
-  if (k.zone === 'water') do [p.gx, p.gy] = [R() * 280, 236 + R() * 120]; while (depth(p.gx, p.gy) < 6)
+  if (k.zone === 'water') do [p.gx, p.gy] = [R() * 300, 222 + R() * 138]; while (depth(p.gx, p.gy) < 6)
   else if (k.zone === 'cross') [p.gx, p.gy] = [40 + R() * (W - 80), 50 + R() * (H - 80)]
   else {
     const list = k.zone === 'swarm' ? SWARMS : k.zone === 'flowers' ? FLOWERS : SITES, [x, y] = list[R() * list.length | 0]

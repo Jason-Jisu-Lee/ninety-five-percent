@@ -2,7 +2,7 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dragonfly Sound Samples</title>
+<title>Ninety-Five Percent Sound Samples</title>
 <link rel="icon" href="data:,">
 <style>
 body{margin:0;padding:24px 16px;background:#0a1312;color:#e9e2d4;font:16px/1.4 ui-monospace,Consolas,monospace}
@@ -15,84 +15,26 @@ audio{display:block;width:100%;margin-top:8px}
 button{border:2px solid #c9c0b2;background:#100d0b;color:#e9e2d4;font:inherit;text-align:left;padding:8px 12px;cursor:pointer}
 button:hover,button:focus-visible{border-color:#7fb062;outline:0}
 button:active{background:#1c4730}
-#live{margin-top:8px}
 </style>
 <main>
-<article><b>00 In the game now</b><small>Random soft plucks over a slow pad, made live</small><button id="live">Play</button></article>
 <div id="tracks"></div>
 <div id="fx"></div>
 </main>
 <script>
 const TRACKS = [
-  ['01_becoming', 'Becoming', 'Kept as it was, softer'],
-  ['02_becoming_2', 'Becoming II', 'Starts in the minor, ends on the original second half'],
-  ['03_on_the_wing', 'On the Wing', 'Kept as it was, softer'],
-  ['04_on_the_wing_2', 'On the Wing II', 'Lower and darker, with a slow build before the arpeggios'],
-  ['05_reed_rest', 'Reed Rest', 'Arpeggios from the first bar, new climax'],
-  ['06_afterglow', 'Afterglow', 'Royal Road, slow and wistful'],
-  ['07_long_way_home', 'Long Way Home', 'Royal Road, driving'],
-  ['08_glass_wings', 'Glass Wings', 'Royal Road, music-box waltz'],
-  ['09_last_light', 'Last Light', 'Royal Road, fast and bittersweet'],
-  ['10_still_water', 'Still Water', 'The in-game plucks and pad joined with the chip voices'],
+  ['11_ninety_five', 'Ninety-Five', 'New Royal Road: anthem with a three-three-two hook, last chorus a step higher'],
+  ['12_low_sun', 'Low Sun', 'New Royal Road: chill, half-time drums, seventh chords'],
+  ['13_before_the_rain', 'Before the Rain', 'New Royal Road: fast riff, stop-start verse, long-note chorus'],
+  ['07_long_way_home', 'Long Way Home', 'Older Royal Road you have not ruled on'],
+  ['02_becoming_2', 'Becoming II', 'In the game'],
+  ['03_on_the_wing', 'On the Wing', 'In the game'],
 ]
 const FX = { tick: 'Pointer lands on something', click: 'Something pressed or picked', chime: 'Something good happened' }
-const SCALE = [0, 2, 4, 7, 9], ROOTS = [0, -3, -5, -7], BEAT = .6, hz = n => 146.83 * 2 ** (n / 12)
-const tracks = document.querySelector('#tracks'), fx = document.querySelector('#fx'), live = document.querySelector('#live')
-let ac, wet, out, timer, at = 0, beat = 0
-
-function tone(f, len, vol, soft) {
-  const o = ac.createOscillator(), g = ac.createGain()
-  o.type = soft ? 'sine' : 'triangle'
-  o.frequency.value = f
-  g.gain.setValueAtTime(0, at)
-  g.gain.linearRampToValueAtTime(vol, at + (soft ? len * .35 : .02))
-  g.gain.exponentialRampToValueAtTime(.0001, at + len)
-  o.connect(g).connect(soft ? out : wet)
-  o.start(at)
-  o.stop(at + len + .05)
-}
-
-function step() {
-  at = Math.max(at, ac.currentTime)
-  while (at < ac.currentTime + .4) {
-    if (beat % 8 === 0) for (const n of [0, 7]) tone(hz(ROOTS[beat / 8 % 4] + n), BEAT * 9, .05, true)
-    if (Math.random() < (beat % 2 ? .3 : .65)) tone(hz(SCALE[Math.random() * 5 | 0] + 12 * (1 + (Math.random() * 2 | 0))), 1.6, .05, false)
-    at += BEAT
-    beat++
-  }
-}
-
-function stop() {
-  clearInterval(timer)
-  ac?.close()
-  ac = undefined
-  live.textContent = 'Play'
-}
-
-live.onclick = () => {
-  if (ac) return stop()
-  document.querySelectorAll('audio').forEach(a => a.pause())
-  ac = new AudioContext()
-  const echo = ac.createDelay(), back = ac.createGain()
-  out = ac.createGain()
-  wet = ac.createGain()
-  echo.delayTime.value = BEAT * .75
-  back.gain.value = .35
-  out.connect(ac.destination)
-  wet.connect(out)
-  wet.connect(echo).connect(back).connect(echo)
-  back.connect(out)
-  at = beat = 0
-  timer = setInterval(step, 150)
-  live.textContent = 'Stop'
-}
+const tracks = document.querySelector('#tracks'), fx = document.querySelector('#fx')
 tracks.innerHTML = TRACKS.map(([file, name, use]) =>
   `<article><b>${file.slice(0, 2)} ${name}</b><small>${use}</small><audio controls preload="metadata" src="../assets/audio/soundtrack/${file}.ogg"></audio></article>`).join('')
 fx.innerHTML = Object.entries(FX).map(([name, use]) => `<button data-fx="${name}">${name}<small>${use}</small></button>`).join('')
-tracks.addEventListener('play', e => {
-  if (ac) stop()
-  document.querySelectorAll('audio').forEach(a => a === e.target || a.pause())
-}, true)
+tracks.addEventListener('play', e => document.querySelectorAll('audio').forEach(a => a === e.target || a.pause()), true)
 fx.addEventListener('click', e => {
   const name = e.target.closest('button')?.dataset.fx
   if (name) new Audio(`../assets/audio/effects/${name}.wav`).play()

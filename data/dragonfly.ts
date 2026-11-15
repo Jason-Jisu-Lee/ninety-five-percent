@@ -1,5 +1,6 @@
 export const DF = {
-  scale: 2.7,
+  scale: 2.43,
+  giant: 12,
   color: 'azure' as Color,
   headings: 32,
   flapFrames: 8,
@@ -22,7 +23,7 @@ export const DF = {
   mouth: 3.9,
 }
 
-export const GROW = { tail: .4, fork: .3, jaw: .3, wing: .04, chest: .06, girth: .12 }
+export const GROW = { tail: .4, fork: .3, jaw: .3 }
 
 export const COLORS = {
   reed: ['#b9a57a'],
@@ -43,9 +44,10 @@ export type Color = keyof typeof COLORS
 
 export const JAW = '#c9a45c'
 
-export const WING = { fill: '#cfe6e4', vein: '#8fc4c2', sheen: '#f3faf8', costa: '#344244', stigma: '#181e1e', spot: '#f2cf47', outline: '#14301f', shadow: '#14301f' }
+export const WING = { fill: '#cfe6e4', vein: '#8fc4c2', sheen: '#f3faf8', costa: '#344244', stigma: '#181e1e', outline: '#14301f', shadow: '#14301f' }
 
-export const FLY = { top: 135, cruise: .55, turn: 5.5, accel: 4.5, arrive: 4, height: 18, bob: 1.35, beat: 4, catch: 9, reach: 22 }
+export const FLY = { top: 122, cruise: .55, turn: 5.5, accel: 4.5, arrive: 4, height: 16, bob: 1.2, beat: 4, catch: 8, reach: 20 }
 export const STAMINA = { hover: 1, sprint: 5, regen: 12, tired: 10, wake: 80, show: 25, spent: .6 }
-export const AUTO = { tier: 0, sight: 80, chase: .8, far: .45, dart: .1, shun: 8, patience: [2.5, 5], calm: [.3, 1.2] }
+export const AUTO = { tier: 0, sight: 100, near: 60, chain: 4, chase: .9, shun: 8, patience: [2.5, 5], sit: [1, 3], bored: [6, 12], home: .7 }
+export const REST = { every: [3, 8], flick: .32, droop: [1, 2.5], tilt: .3 }
 export const GLOW = 2

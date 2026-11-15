@@ -21,3 +21,7 @@ export function leaf(p: Pixels, x: number, y: number, ang: number, len: number) 
     return Math.abs(ly) < .7 || (Math.abs(ly) * 1.2 - lx + 200) % 6 < 1 ? C.seed : ly > hw(u) - 1.7 ? C.t0 : C.husk
   })
 }
+
+export function ladybug(p: Pixels, x: number, y: number) {
+  for (const [dx, dy, col] of [[0, 0, C.red], [1, 0, C.red], [0, 1, C.red], [1, 1, C.r0], [2, 0, C.r0]] as const) p.set(x + dx, y + dy, col)
+}

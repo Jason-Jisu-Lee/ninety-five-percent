@@ -11,8 +11,8 @@ globalThis.ImageData = class {
 const root = join(import.meta.dirname, '..'), out = join(root, 'assets/sprites')
 const vite = await createServer({ root, server: { middlewareMode: true, hmr: false, ws: false }, appType: 'custom', logLevel: 'error' })
 const load = p => vite.ssrLoadModule(p)
-const { u32 } = await load('/core/canvas.ts'), { COLORS, DF } = await load('/data/dragonfly.ts'), { FOREST: C, UI } = await load('/data/palette.ts')
-const { NAMES, STATS } = await load('/data/stats.ts'), { PREY, TIERS } = await load('/data/stage1/enemies.ts'), { ALLIES } = await load('/data/stage1/allies.ts')
+const { u32 } = await load('/core/canvas.ts'), { COLORS, DF, REST: { tilt: REST_TILT } } = await load('/data/dragonfly.ts'), { FOREST: C, UI } = await load('/data/palette.ts')
+const { STATS } = await load('/data/stats.ts'), { PREY, TIERS } = await load('/data/stage1/enemies.ts')
 const { look } = await load('/world/dragonfly/look.ts'), { size, sprite } = await load('/world/dragonfly/sprite.ts')
 const { drawBug } = await load('/world/creatures/draw.ts'), { glyph } = await load('/ui/text.ts')
 
@@ -73,10 +73,10 @@ function board(w, h, bg = 0) {
   }
 }
 
-const S = size(DF.scale), NONE = NAMES.map(() => 0), GROUND = u32(C.g1), pad = n => String(n + 1).padStart(2, '0')
-const fly = (col, st = NONE, frame = DF.flapFrames, heading = 0, grab = false) => {
-  const [pf, ph] = [0, DF.hindLead].map(o => frame < DF.flapFrames ? DF.amp * Math.sin(2 * Math.PI * frame / DF.flapFrames + o) : 0)
-  return { u: sprite(heading * 2 * Math.PI / DF.headings, pf, ph, look(col, st), DF.lift, grab, DF.scale).p.u, w: S, h: S }
+const S = size(DF.scale), NONE = [0, 0], REST = DF.flapFrames, GROUND = u32(C.g1), pad = n => String(n + 1).padStart(2, '0')
+const fly = (col, st = NONE, frame = REST, heading = 0, grab = false, tilt = 0) => {
+  const [pf, ph] = frame < REST ? [0, DF.hindLead].map(o => DF.amp * Math.sin(2 * Math.PI * frame / REST + o)) : [tilt, tilt]
+  return { u: sprite(heading * 2 * Math.PI / DF.headings, pf, ph, look(col, st), DF.lift, grab, DF.scale, frame >= REST).p.u, w: S, h: S }
 }
 const strip = (frames, path) => {
   const b = board(frames.reduce((n, f) => n + f.w, 0), frames[0].h)
@@ -95,7 +95,6 @@ const grid = (items, cols, cw, ch, draw, path, k = 4) => {
 const bug = (k, n = k.len, { pose = 'out', wings = true } = {}) => {
   const B = 2 * Math.max(k.len, k.wing + k.wide) + 5, b = board(B, B), h = pose === 'rest' ? 0 : 10, m = B >> 1
   drawBug(b.g, k, { x: m, y: m + h * .7, h, ang: -Math.PI / 2, flash: +(pose === 'hit'), seed: 0, wings }, n, pose === 'in' ? .5 / k.beat : 0)
-  if (pose === 'load') for (const s of [-1, 1]) Object.assign(b.g, { fillStyle: k.load }).fillRect(m + s * 3, m + 1, 1, 2)
   return b
 }
 
@@ -104,20 +103,20 @@ mkdirSync(out, { recursive: true })
 
 const colors = Object.keys(COLORS)
 colors.forEach((c, i) => strip([fly(c)], `dragonfly/colors/${pad(i)}_${c}.png`))
-grid(colors, 4, 78, 88, (b, c, x, y, i) => {
-  b.blit(fly(c).u, S, x + 2, y)
-  b.text(`${pad(i)} ${c}`, x + 39, y + 74)
+grid(colors, 4, 78, 80, (b, c, x, y, i) => {
+  b.blit(fly(c).u, S, x + 5, y)
+  b.text(`${pad(i)} ${c}`, x + 39, y + 68)
 }, 'dragonfly/colors.png')
 
-const worn = (i, n) => NAMES.map((_, j) => i < 0 || j === i ? n : 0), level = n => 'Level ' + (n ? 3 * n - 1 : 1)
-NAMES.forEach((s, i) => [1, 2, 3].forEach(n => strip([fly(DF.color, worn(i, n))], `dragonfly/upgrades/${s}_${n}.png`)))
-grid([...NAMES, ''].flatMap((s, i) => [0, 1, 2, 3].map(n => [s, i, n])), 4, 80, 90, (b, [s, i, n], x, y) => {
-  b.blit(fly(DF.color, worn(s ? i : -1, n)).u, S, x + 3, y + 2)
-  b.text(`${s ? STATS[s].name : 'All five'} ${level(n)}`, x + 40, y + 77)
+const PARTS = [['speed', n => [n, 0]], ['power', n => [0, n]], ['', n => [n, n]]]
+for (const [s, st] of PARTS) if (s) [1, 2, 3].forEach(n => strip([fly(DF.color, st(n))], `dragonfly/upgrades/${s}_${n}.png`))
+grid(PARTS.flatMap(([s, st]) => [0, 1, 2, 3].map(n => [s, st(n), n])), 4, 80, 84, (b, [s, st, n], x, y) => {
+  b.blit(fly(DF.color, st).u, S, x + 6, y + 2)
+  b.text(`${s ? STATS[s].name : 'Both'} Level ${n * 5 || 1}`, x + 40, y + 71)
 }, 'dragonfly/upgrades.png')
 
-strip(Array.from({ length: DF.flapFrames }, (_, f) => fly(DF.color, NONE, f)), 'dragonfly/states/fly.png')
-strip([fly(DF.color)], 'dragonfly/states/rest.png')
+strip(Array.from({ length: REST }, (_, f) => fly(DF.color, NONE, f)), 'dragonfly/states/fly.png')
+strip([0, REST_TILT, -REST_TILT].map(t => fly(DF.color, NONE, REST, 0, false, t)), 'dragonfly/states/rest.png')
 strip([0, 4].map(f => fly(DF.color, NONE, f, 0, true)), 'dragonfly/states/eat.png')
 strip(Array.from({ length: 8 }, (_, i) => fly(DF.color, NONE, 2, i * 4)), 'dragonfly/states/turn.png')
 
@@ -135,18 +134,5 @@ grid(cast, 3, 84, 56, (b, { k, name }, x, y) => {
   b.text(name, x + 42, y + 34)
   b.text(TIERS[k.tier], x + 42, y + 44, UI.dim)
 }, 'stage1/enemies.png', 8)
-
-for (const [name, k] of Object.entries(ALLIES)) {
-  const dir = `stage1/allies/${name}`
-  strip([bug(k), bug(k, k.len, { pose: 'in' })], `${dir}/fly.png`)
-  strip([bug(k, k.len, { pose: 'load' })], `${dir}/carry.png`)
-  strip([bug(k, k.len, { pose: 'rest' })], `${dir}/rest.png`)
-  strip([bug(k, k.len, { pose: 'hit' })], `${dir}/hit.png`)
-}
-grid(Object.entries(ALLIES), 1, 60, 46, (b, [name, k], x, y) => {
-  const s = bug(k, k.len, { pose: 'load' })
-  b.blit(s.u, s.w, x + 30 - (s.w >> 1), y + 16 - (s.h >> 1))
-  b.text(name, x + 30, y + 32)
-}, 'stage1/allies.png', 6)
 
 await vite.close()

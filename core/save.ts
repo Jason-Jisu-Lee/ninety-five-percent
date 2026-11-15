@@ -1,6 +1,6 @@
 import { cost, NAMES, type Stat } from '../data/stats'
 
-const KEY = 'becoming-a-dragonfly'
+const KEY = 'ninety-five-percent'
 const fresh = () => ({ energy: 0, lv: Object.fromEntries(NAMES.map(s => [s, 1])) as Record<Stat, number>, quest: 0, count: 0, started: false, music: true, vol: 5, time: 0, hand: 0, earned: 0, bought: 0, rests: 0, caught: {} as Record<string, number> })
 
 function read() {

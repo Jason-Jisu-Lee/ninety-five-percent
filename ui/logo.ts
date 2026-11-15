@@ -16,8 +16,8 @@ function line(g: Ctx, str: string, x: number, y: number, s: number, top: string,
 }
 
 export const logo = once(() => {
-  const c = mk(220, 54), g = ctx(c)
-  line(g, 'BECOMING A', 2, 2, 2, '#c9c0b2', '#8f877b')
-  line(g, 'DRAGONFLY', 2, 22, 4, '#ece5d5', '#c9c0b2')
+  const c = mk(204, 64), g = ctx(c)
+  line(g, 'NINETY-FIVE', 2, 2, 3, '#ece5d5', '#c9c0b2')
+  line(g, 'PERCENT', 2, 34, 3, '#c9c0b2', '#8f877b')
   return c
 })

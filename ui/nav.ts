@@ -20,8 +20,8 @@ export function nav(acts: (() => void)[]) {
       for (let i = 0; i < 3; i++) {
         const x = X + i * P
         box(g, x, Y, S, S, i === hot ? UI.accent : UI.border, UI.panel)
-        icon(g, i > 1 ? 'gear' : i ? 'note' : paused ? 'play' : 'pause', x + 4, Y + 4, i === 1 && muted ? UI.dim : UI.text)
-        if (i === 1 && muted) icon(g, 'slash', x + 4, Y + 4, UI.text)
+        icon(g, i > 1 ? 'gear' : i ? paused ? 'play' : 'pause' : 'note', x + 4, Y + 4, !i && muted ? UI.dim : UI.text)
+        if (!i && muted) icon(g, 'slash', x + 4, Y + 4, UI.text)
       }
     },
   }

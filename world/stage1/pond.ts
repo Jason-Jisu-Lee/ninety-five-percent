@@ -4,7 +4,8 @@ import { vnoise } from '../../core/noise'
 import type { Pixels } from '../../core/pixels'
 import { FOREST as C } from '../../data/palette'
 import { H } from '../../data/screen'
-import { PADS, POND } from '../../data/stage1/scene'
+import { LILIES, PADS, POND } from '../../data/stage1/scene'
+import { lily } from './flora'
 
 export const depth = (x: number, y: number) =>
   POND.r - Math.hypot(x - POND.x, y - POND.y) + (vnoise(Math.atan2(y - POND.y, x - POND.x) * 14, 0, 3) - .5) * 14
@@ -14,7 +15,7 @@ const inside = ([cx, cy, r]: number[], x: number, y: number) => ((x - cx) / r) *
 export const onPad = (x: number, y: number) => PADS.some(q => inside(q, x, y))
 
 export function pond(p: Pixels) {
-  for (let y = 200; y < H; y++) for (let x = 0; x < POND.x + POND.r; x++) {
+  for (let y = 190; y < H; y++) for (let x = 0; x < POND.x + POND.r; x++) {
     const e = depth(x, y)
     if (e < -10 || e < -4 && !dither(x, y, .5)) continue
     p.set(x, y, e < 0 ? C.t1 : e < 2.5 ? C.t2 : depth(x - 1, y - 4) < 2.5 ? C.w3 : e < 9 ? C.wSh
@@ -30,4 +31,5 @@ export function pond(p: Pixels) {
         : x - cx + y - cy < -r * .55 && dither(x, y, .5) ? C.g3 : C.g2
     })
   }
+  for (const [x, y] of LILIES) lily(p, x, y)
 }

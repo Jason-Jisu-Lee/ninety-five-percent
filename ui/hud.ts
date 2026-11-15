@@ -5,13 +5,14 @@ import { UI } from '../data/palette'
 import { H, W } from '../data/screen'
 import { energy } from './energy'
 import { nav } from './nav'
+import { now } from './now'
 import { quest } from './quest'
 import { statCard } from './stat_card'
 import { text } from './text'
 import { upgrades } from './upgrades'
 
 export function hud(pause: () => void, options: () => void) {
-  const bar = nav([pause, toggle, options]), list = upgrades()
+  const bar = nav([toggle, pause, options]), list = upgrades()
   return {
     flip: list.flip,
     hover(x: number, y: number) {
@@ -25,6 +26,7 @@ export function hud(pause: () => void, options: () => void) {
       if (card) statCard(g, 8, 116)
       quest(g)
       bar.draw(g, paused, !save.music)
+      now(g, W - 73, 20)
       if (paused) text(g, 'Paused', W / 2, H / 2 + 7, UI.text, 'c', UI.panel, 2)
     },
   }

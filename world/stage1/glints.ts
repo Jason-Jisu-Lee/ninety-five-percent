@@ -8,7 +8,7 @@ import { depth, onPad } from './pond'
 const spots = once(() => {
   const R = rng(5), out: { x: number; y: number; len: number; ph: number }[] = []
   while (out.length < 12) {
-    const x = R() * 290 | 0, y = 236 + R() * (H - 236) | 0, len = 3 + (R() * 4 | 0)
+    const x = R() * 310 | 0, y = 222 + R() * (H - 222) | 0, len = 3 + (R() * 4 | 0)
     if (depth(x, y) > 14 && depth(x + len + 4, y) > 14 && !onPad(x - 6, y - 6) && !onPad(x + len + 6, y)) out.push({ x, y, len, ph: R() * 6 })
   }
   return out
