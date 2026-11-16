@@ -29,9 +29,10 @@ const TRACKS = [
   ['03_on_the_wing', 'On the Wing', 'Stage 1'],
 ]
 const FX = { tick: 'Pointer lands on something', click: 'Something pressed or picked', chime: 'Something good happened' }
+const SOFT = [['Now', '../assets/audio/soundtrack'], ['1 Softer', 'soft/1'], ['2 Much softer', 'soft/2']]
 const tracks = document.querySelector('#tracks'), fx = document.querySelector('#fx')
 tracks.innerHTML = TRACKS.map(([file, name, use]) =>
-  `<article><b>${file.slice(0, 2)} ${name}</b><small>${use}</small><audio controls preload="metadata" src="../assets/audio/soundtrack/${file}.ogg"></audio></article>`).join('')
+  `<article><b>${file.slice(0, 2)} ${name}</b><small>${use}</small>${SOFT.map(([tag, dir]) => `<small>${tag}</small><audio controls preload="metadata" src="${dir}/${file}.ogg"></audio>`).join('')}</article>`).join('')
 fx.innerHTML = Object.entries(FX).map(([name, use]) => `<button data-fx="${name}">${name}<small>${use}</small></button>`).join('')
 document.querySelectorAll('audio').forEach(a => a.volume = .6)
 tracks.addEventListener('play', e => document.querySelectorAll('audio').forEach(a => a === e.target || a.pause()), true)

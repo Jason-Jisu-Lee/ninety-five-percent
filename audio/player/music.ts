@@ -40,6 +40,13 @@ export function mood(game: boolean) {
   }, 400)
 }
 
+export function hush(quiet: boolean) {
+  if (!ac) return
+  out.gain.setTargetAtTime(quiet ? 0 : level(), ac.currentTime, .1)
+  if (quiet) el.pause()
+  else play(0)
+}
+
 export function tune(vol = save.vol, on = vol > 0) {
   Object.assign(save, { vol: vol || save.vol, music: on })
   store()

@@ -20,7 +20,6 @@ import type { Perch } from './hunt/sim'
 import { glints } from './scenery/glints'
 import { ground } from './scenery/ground'
 
-const EDGE = [[1, 0], [-1, 0], [0, 1], [0, -1]]
 const span = (p: Prey) => Math.ceil(Math.max(PREY[p.kind].len, PREY[p.kind].wing * 2 + PREY[p.kind].wide) / 2) + 3
 
 export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live: boolean, aim: Perch | null, hot: Prey | null) {
@@ -40,7 +39,6 @@ export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live
   }
   g.drawImage(spr, x - half, y - half)
   if (held) {
-    for (const [dx, dy] of EDGE) drawPrey(g, { ...held, x: held.x + dx, y: held.y + dy }, clock, false, C.red)
     drawPrey(g, held, clock)
     if (held !== hot) bar(g, Math.round(held.x), Math.round(held.y - held.h * .7) + (Math.sin(fly.ang) > .35 ? 7 : -9), Math.max(0, held.hp) / PREY[held.kind].hp, Math.min(40, 10 + 2 * PREY[held.kind].hp), UI.foe)
   }

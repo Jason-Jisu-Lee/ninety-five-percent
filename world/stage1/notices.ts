@@ -1,7 +1,9 @@
+import { hush } from '../../audio/player/music'
 import { evolve, save } from '../../core/save/save'
 import { PREY } from '../../data/enemies/enemies'
 import { enemyCard } from '../../ui/enemy/card'
 import { dialog } from '../../ui/parts/dialog'
+import { story } from '../../ui/parts/story'
 import { shop } from '../../ui/shop/shop'
 import type { Prey } from '../creatures/prey'
 import type { Perch } from './hunt/sim'
@@ -18,11 +20,16 @@ export const rise = () => ask.open(['This will reset all in-game progress.'], [[
   evos.open()
 }], ['Cancel', none]])
 
-export const mourn = (refund: number) => ask.open(['The dragonfly died.', 'It revives without its upgrades.', `Blood refunded: ${refund}`], [['Continue', none]])
+export const fate = story([["You've lost half your blood points spent this run"]], () => hush(false), 0, 1.2)
+
+export function mourn() {
+  hush(true)
+  fate.begin()
+}
 
 function attack(p: Prey) {
   if (!PREY[p.kind].power || save.warned) return run.sim.aim(p)
-  ask.open(['This enemy fights back.', 'If the dragonfly dies, it revives without its upgrades.', 'Half of the blood spent on them is refunded.'], [['Attack', () => {
+  ask.open(['There is less than 95% chance you will catch this enemy successfully.'], [['Attack', () => {
     save.warned = true
     run.sim.aim(p)
   }], ['Cancel', none]])
