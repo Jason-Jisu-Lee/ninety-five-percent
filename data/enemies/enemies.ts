@@ -11,7 +11,7 @@ const HUE: Record<string, string> = {
 }
 const hue = (name: string) => HUE[name] ?? name
 
-export const TIERS = ['Easy', 'Normal', 'Slightly difficult', 'Difficult', 'Very difficult']
+const TIERS = ['Easy', 'Normal', 'Slightly difficult', 'Difficult', 'Very difficult']
 export const PREY = Object.fromEntries(Object.entries(list).map(([kind, e]) =>
   [kind, { ...e, tier: Math.max(0, TIERS.indexOf(e.tier)), body: hue(e.body), band: hue(e.band), eye: hue(e.eye), tint: hue(e.tint), rim: hue(e.rim) }])) as Record<Kind, Enemy>
 export const cast = (stage: number) => (Object.keys(PREY) as Kind[]).filter(k => PREY[k].stage === stage)

@@ -1,6 +1,6 @@
-import becoming from '../../assets/audio/soundtrack/02_becoming_2.ogg'
+import becoming from '../../assets/audio/soundtrack/01_becoming_2.ogg'
+import anthem from '../../assets/audio/soundtrack/02_ninety_five.ogg'
 import wing from '../../assets/audio/soundtrack/03_on_the_wing.ogg'
-import anthem from '../../assets/audio/soundtrack/11_ninety_five.ogg'
 import { save, store } from '../../core/save/save'
 import { hear } from './hear'
 

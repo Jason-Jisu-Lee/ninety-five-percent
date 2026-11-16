@@ -5,11 +5,9 @@ import { H, W } from '../../data/look/screen'
 import { text } from '../text/text'
 
 const PAGES = [
-  ['Dragonflies are said to catch', '95 percent of what they hunt.'],
-  ['The deadliest hunter alive', 'feeds on gnats.'],
-  ['It was not always so.', 'Once their kind ruled the sky,', 'and 95 percent meant', 'every living creature.'],
-  ['The giants are gone.', 'The hunger never left.'],
-  ['Start small.', 'Take back the sky.'],
+  ['Of every hundred it hunts,', 'the dragonfly takes ninety-five.'],
+  ['Before the first bird flew,', 'giants of its blood ruled the sky.'],
+  ['Take it back.'],
 ]
 const IN = .6, PAGE = 4.4, EDGE = .7, END = IN + PAGES.length * PAGE
 

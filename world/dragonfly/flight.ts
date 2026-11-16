@@ -12,16 +12,21 @@ export function flight(x: number, y: number) {
   const n = DF.flapFrames, [close, open] = FLY.hover, agile = () => own('agility'), rest = fidget(f)
   const top = () => FLY.top * own('speed')
   let spin = 0, glide = between(VARY.glide)
+  function seek(tx: number, ty: number, max: number, dt: number, th = FLY.height) {
+    const d = Math.hypot(tx - f.x, ty - f.y), want = Math.atan2(ty - f.y, tx - f.x), was = f.ang, rate = FLY.turn * agile()
+    if (d > 2) f.ang = turn(f.ang, want, rate * dt)
+    const off = wrap(want - f.ang), face = Math.max(0, Math.cos(off)), far = clamp((d - close) / (open - close))
+    const goal = Math.min(max, d * FLY.arrive, d * rate * FLY.tight / (Math.abs(Math.sin(off)) + 1e-6)) * (face + (1 - face) * far)
+    spin += (wrap(f.ang - was) / (dt || 1) / rate - spin) * Math.min(1, dt * 8)
+    f.speed += (goal - f.speed) * Math.min(1, dt * (goal < f.speed ? FLY.brake : FLY.accel * agile()))
+    f.base += (th - f.base) * Math.min(1, dt * 3)
+  }
   return Object.assign(f, {
     top,
-    seek(tx: number, ty: number, max: number, dt: number, th = FLY.height) {
-      const d = Math.hypot(tx - f.x, ty - f.y), want = Math.atan2(ty - f.y, tx - f.x), was = f.ang, rate = FLY.turn * agile()
-      if (d > 2) f.ang = turn(f.ang, want, rate * dt)
-      const off = wrap(want - f.ang), face = Math.max(0, Math.cos(off)), far = clamp((d - close) / (open - close))
-      const goal = Math.min(max, d * FLY.arrive, d * rate * FLY.tight / (Math.abs(Math.sin(off)) + 1e-6)) * (face + (1 - face) * far)
-      spin += (wrap(f.ang - was) / (dt || 1) / rate - spin) * Math.min(1, dt * 8)
-      f.speed += (goal - f.speed) * Math.min(1, dt * (goal < f.speed ? FLY.brake : FLY.accel * agile()))
-      f.base += (th - f.base) * Math.min(1, dt * 3)
+    seek,
+    chase(p: { x: number; y: number; vx: number; vy: number; h: number }, max: number, dt: number) {
+      const lead = Math.min(FLY.lead, Math.hypot(p.x - f.x, p.y - f.y) / top())
+      seek(p.x + p.vx * lead, p.y + p.vy * lead, max, dt, p.h)
     },
     step(dt: number, t: number) {
       if (f.perched) rest(dt)

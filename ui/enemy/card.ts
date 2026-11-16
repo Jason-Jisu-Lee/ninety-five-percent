@@ -1,5 +1,5 @@
 import { ctx, mk, type Ctx } from '../../core/screen/canvas'
-import { PREY, TIERS } from '../../data/enemies/enemies'
+import { PREY } from '../../data/enemies/enemies'
 import { UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
 import type { Prey } from '../../world/creatures/prey'
@@ -32,7 +32,7 @@ export function enemyCard() {
       if (!p) return
       const k = PREY[p.kind], about = wrap(k.text, PW - IN * 2), list = traits(k).map(([name, say]) => [name, wrap(say, PW - IN * 2 - COL)] as const)
       const whole = Math.round, facts = [['Health', p.hp < k.hp ? `${Math.ceil(p.hp)} / ${whole(k.hp)}` : whole(k.hp)], ['Blood', whole(k.blood)], ['Power', whole(k.power)], ['Speed', whole(k.speed)]]
-      tall = 82 + about.length * 11 + list.reduce((n, [, say]) => n + say.length * 11 + 4, 0) + (list.length ? 6 : 0)
+      tall = 70 + about.length * 11 + list.reduce((n, [, say]) => n + say.length * 11 + 4, 0) + (list.length ? 6 : 0)
       top = H - tall >> 1
       sheet.clearRect(0, 0, PW, H)
       panel(sheet, 0, 0, PW, tall, UI.border, UI.panel)
@@ -42,8 +42,7 @@ export function enemyCard() {
       box(g, X + PW - 19, top + 6, 11, 11, hot ? UI.accent : UI.border, UI.panel)
       icon(g, 'x', X + PW - 16, top + 9, UI.text)
       text(g, k.name, X + IN, top + 24, tone(p.kind), undefined, undefined, 2)
-      text(g, TIERS[k.tier], X + IN, top + 38, UI.dim)
-      let y = top + 55
+      let y = top + 43
       for (const line of about) text(g, line, X + IN, (y += 11) - 11, UI.text)
       y += 7
       facts.forEach(([name, n], i) => {

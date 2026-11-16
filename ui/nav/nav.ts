@@ -2,7 +2,6 @@ import type { Ctx } from '../../core/screen/canvas'
 import { UI } from '../../data/look/palette'
 import { W } from '../../data/look/screen'
 import { icon } from '../parts/icons'
-import { box } from '../parts/panel'
 
 const Y = 8, S = 17, P = 21
 
@@ -19,10 +18,9 @@ export function nav(acts: (() => void)[]) {
     },
     draw(g: Ctx, paused: boolean, muted: boolean) {
       acts.forEach((_, i) => {
-        const x = X + i * P
-        box(g, x, Y, S, S, i === hot ? UI.accent : UI.border, UI.panel)
-        icon(g, i > 1 ? 'gear' : i ? paused ? 'play' : 'pause' : 'note', x + 4, Y + 4, !i && muted ? UI.dim : UI.text)
-        if (!i && muted) icon(g, 'slash', x + 4, Y + 4, UI.text)
+        const pad = i > 1 ? 3 : 4, x = X + i * P + pad, lit = i === hot ? UI.accent : UI.text
+        icon(g, i > 1 ? 'gear' : i ? paused ? 'play' : 'pause' : 'note', x, Y + pad, !i && muted ? UI.dim : lit, UI.panel)
+        if (!i && muted) icon(g, 'slash', x, Y + pad, lit, UI.panel)
       })
     },
   }

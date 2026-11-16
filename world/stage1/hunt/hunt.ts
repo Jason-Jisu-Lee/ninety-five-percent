@@ -24,18 +24,21 @@ export function hunt() {
   }
   return Object.assign(s, {
     aim(p: Prey | null) {
-      if (s.sel) s.mark = p
+      if (!s.sel) return
+      s.mark = p
+      if (p) s.leave()
     },
     click(x: number, y: number) {
       const at = s.perchAt(x, y), was = s.rest
       s.cursor = [x, y]
+      s.mark = null
       if (s.sel && (was || at)) {
         s.leave()
         s.rest = at === was ? null : at
       } else if (s.onFly(x, y) && s.free()) {
-        ;[s.sel, s.shown, s.mark] = [!s.sel, SHOWN, null]
+        ;[s.sel, s.shown] = [!s.sel, SHOWN]
         if (s.sel) s.leave()
-      } else s.mark = null
+      }
     },
     idle(dt: number, t: number) {
       prey.step(dt, t, -999, -999, null)
@@ -54,7 +57,8 @@ export function hunt() {
       if (s.held) eat(s, s.held, dt, t)
       else if (s.rest) perch(s, s.rest, dt, t)
       else if (s.sel) {
-        fly.seek(s.cursor[0], s.cursor[1] + fly.h * .7, top, dt)
+        if (s.mark) fly.chase(s.mark, top, dt)
+        else fly.seek(s.cursor[0], s.cursor[1] + fly.h * .7, top, dt)
         if (s.stamina <= 0) [s.sel, s.mark, s.rest] = [false, null, s.near()[0]]
       } else if (s.stamina < STAMINA.tired || !mind.step(dt, t, prey.list)) s.rest = s.pick()
       fly.step(dt, t)

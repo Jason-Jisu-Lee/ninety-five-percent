@@ -16,7 +16,7 @@ export type Perch = (typeof PERCHES)[number]
 export function sim() {
   const fly = flight(HOME.x, HOME.y), mind = brain(fly)
   const s = {
-    fly, mind, prey: swarm(cast(1)), fx: effects(), held: null as Prey | null, mark: null as Prey | null, sel: false, shown: 0, stamina: 100,
+    fly, mind, prey: swarm(cast(1)), fx: effects(), held: null as Prey | null, mark: null as Prey | null, sel: !AUTO.on, shown: 0, stamina: 100,
     health: own('health'), cap: own('health'), rest: null as Perch | null, cursor: [HOME.x, HOME.y], bite: 0, hold: 0, strike: 0, hurt: 0, refund: -1,
   }
   const gap = (o: Perch) => Math.hypot(o.x - fly.x, o.y - fly.y), near = () => [...PERCHES].sort((a, b) => gap(a) - gap(b))
@@ -27,7 +27,7 @@ export function sim() {
     ahead,
     perchAt: (x: number, y: number) => PERCHES.find(p => Math.hypot(p.x - x, p.y - p.h * .7 - y) < 10) ?? null,
     onFly: (x: number, y: number) => Math.hypot(ahead(DF.mid)[0] - x, ahead(DF.mid)[1] - fly.h * .7 - y) < FLY.reach,
-    free: () => s.sel || !s.rest || s.stamina >= STAMINA.wake,
+    free: () => AUTO.on && (s.sel || !s.rest || s.stamina >= STAMINA.wake),
     pick: () => near()[mind.roam() ? 1 + Math.random() * (PERCHES.length - 1) | 0 : +(Math.random() > AUTO.home)],
     leave() {
       s.rest = null
@@ -36,7 +36,7 @@ export function sim() {
     die(h?: Prey) {
       if (h) h.free = FIGHT.free
       Object.assign(fly, { x: HOME.x, y: HOME.y, speed: 0, perched: false })
-      Object.assign(s, { held: null, mark: null, sel: false, rest: null, stamina: 100, refund: fall() })
+      Object.assign(s, { held: null, mark: null, sel: !AUTO.on, rest: null, stamina: 100, refund: fall() })
       s.health = s.cap = own('health')
     },
   })

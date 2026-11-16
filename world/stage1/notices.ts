@@ -4,10 +4,11 @@ import { enemyCard } from '../../ui/enemy/card'
 import { dialog } from '../../ui/parts/dialog'
 import { shop } from '../../ui/shop/shop'
 import type { Prey } from '../creatures/prey'
+import type { Perch } from './hunt/sim'
 import { restart, run } from './run'
 
 const TWICE = 350, none = () => {}
-let tapped: Prey | null = null, tap = 0, prior: Prey | null = null
+let tapped: Prey | null = null, tap = 0, prior: Prey | null = null, seat: Perch | null = null
 
 export const ask = dialog(), card = enemyCard(), evos = shop()
 
@@ -31,9 +32,10 @@ export function tapEnemy(p: Prey | null) {
   const { sim } = run, now = performance.now()
   if (p && p === tapped && now - tap < TWICE) {
     sim.aim(prior)
+    if (!prior) sim.rest = seat
     card.open(p)
   } else if (p) {
-    prior = sim.mark
+    ;[prior, seat] = [sim.mark, sim.rest]
     if (!run.paused && sim.sel) attack(p)
   }
   ;[tapped, tap] = [p, now]

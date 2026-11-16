@@ -47,8 +47,7 @@ export function brain(fly: Flight) {
     step(dt: number, t: number, list: Prey[]) {
       if (target && (t > quit || target.free > 0)) shy.set(target, t + AUTO.shun)
       if (!target || !list.includes(target) || shy.has(target) && shy.get(target)! > t) return !!(target = null)
-      const top = fly.top(), lead = Math.min(.8, Math.hypot(target.x - fly.x, target.y - fly.y) / top)
-      fly.seek(target.x + target.vx * lead, target.y + target.vy * lead, top * AUTO.chase, dt, target.h)
+      fly.chase(target, fly.top() * AUTO.chase, dt)
       return true
     },
   }
