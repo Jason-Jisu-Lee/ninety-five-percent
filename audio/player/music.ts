@@ -4,10 +4,10 @@ import anthem from '../../assets/audio/soundtrack/11_ninety_five.ogg'
 import { save, store } from '../../core/save/save'
 import { hear } from './hear'
 
-const FRONT = [['Becoming II', becoming]], GAME = [['Ninety-Five', anthem], ['On the Wing', wing]], bins = new Uint8Array(512)
+const FRONT = [['Becoming II', becoming]], GAME = [['Ninety-Five', anthem], ['On the Wing', wing]], bins = new Uint8Array(512), LOUD = .6
 let ac: AudioContext | undefined, el: HTMLAudioElement, out: GainNode, scope: AnalyserNode, list = FRONT, at = 0
 
-const level = () => save.music ? (save.vol / 5) ** 2 : 0
+const level = () => save.music ? (save.vol / 5) ** 2 * LOUD : 0
 const go = () => void (save.music && el.play().catch(() => {}))
 
 function play(i: number) {

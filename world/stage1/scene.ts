@@ -6,7 +6,7 @@ import { front } from '../../ui/front/front'
 import { intro } from '../../ui/front/intro'
 import { hud } from '../../ui/hud/hud'
 import { settings } from '../../ui/settings/settings'
-import { glow, pick, tick } from '../../ui/track/track'
+import { glow, tick } from '../../ui/track/track'
 import type { Prey } from '../creatures/prey'
 import { tools } from './dev'
 import type { Perch } from './hunt/sim'
@@ -87,7 +87,6 @@ export const stage1: Scene = {
     if (!ui.click(x, y) && !tapEnemy(run.sim.prey.at(x, y, hot)) && !run.paused) run.sim.click(x, y)
   },
   key(k) {
-    if (k === '1' || k === '2') return pick(+k - 1), true
     if (story.on()) return k === 'Escape' ? story.skip() : story.next(), true
     if (top()) return top()!.key(k)
     if (k === 'm') return toggle(), true

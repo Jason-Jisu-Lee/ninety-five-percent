@@ -24,7 +24,7 @@ export function hud(pause: () => void, options: () => void, evolve: () => void, 
       if (card) statCard(g, 8, 116)
       quest(g)
       bar.draw(g, paused, !save.music)
-      now(g, W - 71)
+      now(g, W - 73)
       dev.draw(g)
       rise.draw(g)
       list.draw(g)

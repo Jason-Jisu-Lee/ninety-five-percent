@@ -37,9 +37,10 @@ const tracks = document.querySelector('#tracks'), fx = document.querySelector('#
 tracks.innerHTML = TRACKS.map(([file, name, use]) =>
   `<article><b>${file.slice(0, 2)} ${name}</b><small>${use}</small><audio controls preload="metadata" src="../assets/audio/soundtrack/${file}.ogg"></audio></article>`).join('')
 fx.innerHTML = Object.entries(FX).map(([name, use]) => `<button data-fx="${name}">${name}<small>${use}</small></button>`).join('')
+document.querySelectorAll('audio').forEach(a => a.volume = .6)
 tracks.addEventListener('play', e => document.querySelectorAll('audio').forEach(a => a === e.target || a.pause()), true)
 fx.addEventListener('click', e => {
   const name = e.target.closest('button')?.dataset.fx
-  if (name) new Audio(`../assets/audio/effects/${name}.wav`).play()
+  if (name) Object.assign(new Audio(`../assets/audio/effects/${name}.wav`), { volume: .6 }).play()
 })
 </script>

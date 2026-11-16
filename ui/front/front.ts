@@ -20,7 +20,7 @@ export function front(start: () => void, options: () => void) {
       layer.drawImage(logo(), 20, 18)
       buttons.draw(layer)
       sound.draw(layer, false, !save.music)
-      now(layer, W - 29)
+      now(layer, W - 31)
       dissolve(g, layer.canvas, 0, 0, level)
     },
   }
