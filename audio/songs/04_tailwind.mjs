@@ -4,19 +4,23 @@ const hook = `
 | o5 f+4. e4 f+ a4
 | o5 g+4. f+4 e <b4`
 const verse = `
-| r o5 c+ c+ <b >c+4 e4
-| o4 b4. g+ b2
-| r o5 c+ c+ <b >c+4 f+4
-| o5 e2 r8 <b >c+ e
-| o5 f+4. e d4 <a4
-| o5 c+4. <b a4 >e4
-| o5 d4. c+ <b4 >d4
-| o5 e2. r4`
-const lift = `
-| o5 a2. f+4
-| o5 b2. g+4
-| o6 d2 c+4 <a4
-| o5 b2 r8 e f+ g+`
+| o5 e8 a8 r8 b8 ^4 o6 c+8 o5 b8
+| o5 g+4 e8 b8 ^2
+| o5 a8 f+8 r8 o6 c+8 ^4 o5 b8 a8
+| o5 g+2 r8 e8 f+8 g+8
+| o5 a8 o6 d8 r8 e8 ^4 f+8 e8
+| o6 c+4 o5 a8 o6 e8 ^2
+| o6 d8 c+8 o5 b8 f+8 ^4 a8 b8
+| o5 g+2 r8 b8 o6 c+8 d8`
+const rise = `
+| o5 f+8 a8 o6 d4 ^8 o5 b8 a4
+| o5 g+4 b8 o6 e8 ^4 d8 o5 b8
+| o6 c+4. o5 b8 g+8 e8 g+4
+| o5 a2 r8 a8 b8 o6 c+8
+| o6 d4. f+8 ^4 e8 d8
+| o6 e4 o5 b8 g+8 ^4 b8 o6 c+8
+| o6 c+4. o5 a8 ^4 b8 o6 c+8
+| o6 e4 c+8 o5 a8 ^2`
 const first = `${hook}
 | o5 c+4. e4 g+ e4
 | o5 f+2. e f+
@@ -49,11 +53,6 @@ const strum = `@0 v7 x3 q8 l8
 | o4 e a >c+ <a e a >c+ <a
 | o4 f+ b >d <b f+ b >d <b
 | o4 e g+ b g+ e g+ b >e<`
-const climb = `@1 x0 q6 l16
-| v5 o4 [f+ a >d <a]4
-| v6 [g+ b >e <b]4
-| v7 [a >d f+ d<]4
-| v8 [b >e g+ e<]2 [g+ b >e <b]2`
 const under = `@1 v8 x14 q8 l8
 | o4 a2 >d2
 | o4 b2 g+2
@@ -105,11 +104,6 @@ const road = `
 | o2 [c+]8
 | o1 [b]8
 | o2 [e]4 e f+ g+ b`
-const pump = `
-| o2 [d]8
-| o2 [e]8
-| o2 [d]8
-| o2 e e e e e4 r4`
 const four = `
 | o2 ${oct('d')}
 | o2 ${oct('e')}
@@ -165,22 +159,19 @@ export default {
   },
   loop: {
     a: `@2 v11 x14 q8 ~2 l8 ${verse}
-v12 x0 q7 ${lift}
-v13 ${first} ${second}
+v12 x0 q7 ${rise}
 v10 x14 q8 ${calm}
 v13 x0 q7 ${first} ${second} |`,
-    b: `${strum} ${climb} ${under} ${thirds} ${drops} ${under} ${thirds} |`,
-    c: `[| r1]12 ${spinA} ${spinB} [| r1]8 ${spinA} ${spinB} |`,
-    w: `@1 v3 q7 l8 ${road} ${pump} ${driveA} ${driveB} ${still} ${driveA} ${driveB} |`,
+    b: `${strum} ${under} ${drops} ${under} ${thirds} |`,
+    c: `[| r1]8 ${spinB} [| r1]8 ${spinA} ${spinB} |`,
+    w: `@1 v3 q7 l8 ${road} ${driveB} ${still} ${driveA} ${driveB} |`,
     n: `v12 l8 [${beat}]3 | k h s h k s s16 s16 s
 [${beat}]3 | k h s h s s16 s16 s s
-| k h k h k h k h | k h k h k s k s | k s k s k s k s | s16 s16 s16 s16 s16 s16 s16 s16 s4 r4
-v13 ${full} ${roll}
-${crash} [${hats}]6 | k h h h s h h h k8 s8 c4
+${full} | k h h h s h h h k8 s8 c4
 v10 l8 [| k4 h h s4 h h]7 | k4 h h s s16 s16 s s
 v13 ${full} ${roll}
 ${crash} [${hats}]6 | k h h h s h h h k8 s8 s s s s |`,
-    s: `v5 x0 [| r1]12 ${warm} ${D} ${E} ${A} ${A} ${warm} | o3 {b>df+}1 ${E} ${A} ${A}
+    s: `v5 x0 [| r1]8 ${warm} | o3 {b>df+}1 ${E} ${A} ${A}
 ${Fm} ${D} ${A} ${E} ${Fm} ${D} ${E} ${E} ${warm} ${D} ${E} ${A} ${A} ${warm} | o3 {b>df+}1 ${E} ${A} ${A} |`,
   },
 }

@@ -2,6 +2,7 @@ import type { Ctx } from '../../core/screen/canvas'
 import { UI } from '../../data/look/palette'
 import { W } from '../../data/look/screen'
 import { icon } from '../parts/icons'
+import { spot } from './smooth'
 
 const Y = 8, S = 17, P = 21
 
@@ -17,11 +18,8 @@ export function nav(acts: (() => void)[]) {
       return i >= 0
     },
     draw(g: Ctx, paused: boolean, muted: boolean) {
-      acts.forEach((_, i) => {
-        const pad = i > 1 ? 3 : 4, x = X + i * P + pad, lit = i === hot ? UI.accent : UI.text
-        icon(g, i > 1 ? 'gear' : i ? paused ? 'play' : 'pause' : 'note', x, Y + pad, !i && muted ? UI.dim : lit, UI.panel)
-        if (!i && muted) icon(g, 'slash', x, Y + pad, lit, UI.panel)
-      })
+      Object.assign(spot, { x: X, y: Y, n: acts.length, hot, muted })
+      if (acts.length > 1) icon(g, paused ? 'play' : 'pause', X + P + 4, Y + 4, hot === 1 ? UI.accent : UI.text, UI.panel)
     },
   }
 }

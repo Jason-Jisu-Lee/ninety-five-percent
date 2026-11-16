@@ -4,8 +4,6 @@ import { UI } from '../../data/look/palette'
 
 const N = 4, PITCH = 3.5, tall = Array<number>(N).fill(0)
 
-export const WIDE = (N - 1) * PITCH + 2
-
 export const sway = (dt: number) => group(N).forEach((want, i) => tall[i] = ease(tall[i], want, dt))
 
 export function bars(g: Ctx, x: number, k: number) {
