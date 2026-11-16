@@ -9,7 +9,7 @@ export const STATS = {
 export type Stat = keyof typeof STATS
 
 export const NAMES = Object.keys(STATS) as Stat[]
-export const BASE: Record<Stat, number> = { speed: 1, power: 1, agility: 1, health: 1, stamina: 1 }
+const BASE: Record<Stat, number> = { speed: 1, power: 1, agility: 1, health: 1, stamina: 1 }
 const GROWTH = 1.5
 export const cost = (s: Stat, lv: number) => Math.round(STATS[s].cost * GROWTH ** (lv - 1))
 export const boost = (s: Stat, lv: number) => BASE[s] * (1 + STATS[s].step * (lv - 1))
