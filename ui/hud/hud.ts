@@ -7,10 +7,10 @@ import { blood } from '../blood/blood'
 import { devConsole, type Tool } from '../dev/console'
 import { evolveButton } from '../evolve/button'
 import { nav } from '../nav/nav'
-import { now } from '../nav/track'
 import { quest } from '../quest/quest'
 import { statCard } from '../upgrades/card'
 import { text } from '../text/text'
+import { now } from '../track/track'
 import { upgrades } from '../upgrades/upgrades'
 
 export function hud(pause: () => void, options: () => void, evolve: () => void, tools: Tool[]) {
@@ -24,7 +24,7 @@ export function hud(pause: () => void, options: () => void, evolve: () => void, 
       if (card) statCard(g, 8, 116)
       quest(g)
       bar.draw(g, paused, !save.music)
-      now(g, W - 73, 20)
+      now(g, W - 71)
       dev.draw(g)
       rise.draw(g)
       list.draw(g)

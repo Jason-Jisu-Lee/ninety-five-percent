@@ -11,7 +11,7 @@ function frame(now: number) {
   last = now
   scene.update(dt, t += dt)
   scene.draw(world, t)
-  present()
+  present(scene.over)
 }
 
 export function start(s: Scene) {

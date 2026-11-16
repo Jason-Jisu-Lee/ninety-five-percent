@@ -4,7 +4,9 @@ import { bayer } from './dither'
 
 const tmp = ctx(mk(1, 1)), masks: CanvasPattern[] = []
 
-function mask(n: number) {
+export const shade = { n: 0 }
+
+export function mask(n: number) {
   if (masks[n]) return masks[n]
   const c = mk(4, 4), g = ctx(c)
   for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) if (bayer(x, y) * 16 < n) g.fillRect(x, y, 1, 1)
@@ -28,6 +30,7 @@ export function dissolve(g: Ctx, src: HTMLCanvasElement, x: number, y: number, l
 }
 
 export function veil(g: Ctx, level: number) {
+  shade.n = Math.max(shade.n, Math.round(level * 16))
   g.fillStyle = mask(Math.round(level * 16))
   g.fillRect(0, 0, W, H)
 }

@@ -1,4 +1,5 @@
 import '../../ui/page/page.css'
+import { wake } from '../../audio/player/music'
 import { stage1 } from '../../world/stage1/scene'
 import { fit } from '../screen/display'
 import { listen } from '../input/input'
@@ -8,3 +9,4 @@ fit()
 addEventListener('resize', fit)
 listen()
 start(stage1)
+wake()

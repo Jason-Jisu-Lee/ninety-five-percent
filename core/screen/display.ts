@@ -1,5 +1,5 @@
 import { H, W } from '../../data/look/screen'
-import { ctx, mk } from './canvas'
+import { ctx, mk, type Ctx } from './canvas'
 
 export const canvas = document.querySelector('canvas')!
 export const world = ctx(mk(W, H))
@@ -19,9 +19,10 @@ export function fit() {
   canvas.height = H * k
 }
 
-export function present() {
+export function present(over: (g: Ctx, k: number) => void) {
   out.imageSmoothingEnabled = false
   out.drawImage(world.canvas, 0, 0, canvas.width, canvas.height)
+  over(out, canvas.width / W)
 }
 
 export function toWorld(e: MouseEvent): [number, number] {

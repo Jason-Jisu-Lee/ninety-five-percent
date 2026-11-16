@@ -14,5 +14,7 @@ export const rgb = (h: string) => {
   return [n >> 16 & 255, n >> 8 & 255, n & 255]
 }
 
+export const blend = (a: string, b: string, t: number) => `rgb(${rgb(a).map((v, i) => Math.round(v + (rgb(b)[i] - v) * t))})`
+
 const packed: Record<string, number> = {}
 export const u32 = (h: string) => packed[h] ??= (([r, g, b]) => (0xff000000 | b << 16 | g << 8 | r) >>> 0)(rgb(h))
