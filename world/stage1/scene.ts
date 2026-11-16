@@ -54,8 +54,8 @@ export const stage1: Scene = {
     if (fate.on()) return sim.idle(dt, clock += dt)
     if (run.paused || top()) return
     for (let i = 0; i < run.rate; i++) sim.step(dt, clock += dt)
-    if (sim.refund >= 0) mourn()
-    sim.refund = -1
+    if (sim.fell) mourn()
+    sim.fell = false
     save.time += dt * run.rate
     if (sim.sel) save.hand += dt * run.rate
     if ((kept += dt) < 5) return
@@ -65,7 +65,7 @@ export const stage1: Scene = {
   draw(g) {
     render(g, run.sim, clock, fade <= 0, aim, top() ? null : hot)
     if (fade > 0) title.draw(g, fade)
-    else ui.draw(g, run.sim.sel, run.paused)
+    else ui.draw(g, run.paused)
     story.draw(g)
     for (let i = layers.length; i--;) layers[i].draw(g)
     fate.draw(g)
@@ -98,7 +98,6 @@ export const stage1: Scene = {
     if (fade > 0) return !going && title.key(k)
     if (k === 'Escape') opts.open(true)
     else if (k === 'p' || k === ' ') run.paused = !run.paused
-    else if (k === 'u') ui.flip()
     else return false
     return true
   },

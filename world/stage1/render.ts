@@ -1,10 +1,8 @@
-import { save } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { DF } from '../../data/dragonfly/body'
 import { COLOR } from '../../data/dragonfly/colors'
 import { FIGHT } from '../../data/dragonfly/fight'
 import { FLY, STAMINA } from '../../data/dragonfly/flight'
-import { stage } from '../../data/dragonfly/stats'
 import { PREY } from '../../data/enemies/enemies'
 import { FOREST as C, UI } from '../../data/look/palette'
 import { PERCHES } from '../../data/stage1/map'
@@ -24,7 +22,7 @@ const span = (p: Prey) => Math.ceil(Math.max(PREY[p.kind].len, PREY[p.kind].wing
 
 export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live: boolean, aim: Perch | null, hot: Prey | null) {
   const { fly, prey, fx, held } = sim, chew = held ? 1 + +(sim.bite > FIGHT.bite * .55) : 0
-  const [spr, sh] = wear(COLOR, [stage(save.lv.speed), stage(save.lv.power)])(fly.heading, fly.frame, chew, fly.lean), half = spr.width >> 1
+  const [spr, sh] = wear(COLOR, [0, 0])(fly.heading, fly.frame, chew, fly.lean), half = spr.width >> 1
   const x = Math.round(fly.x) + (sim.hurt > 0 ? sim.hurt * 40 & 1 || -1 : 0), y = Math.round(fly.y - fly.h * .7), mid = sim.ahead(DF.mid)
   g.drawImage(ground(), 0, 0)
   glints(g, clock)

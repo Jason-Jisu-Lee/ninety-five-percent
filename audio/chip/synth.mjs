@@ -21,7 +21,7 @@ function events(key, mml, at, [late, loud], rand) {
   return lanes.filter(l => l.length).map(list => ({ kind, list }))
 }
 
-export function render({ bpm, swing = .5, echo = [.75, .35], send = {}, tone = 5800, ring = 0, feel = [0, 0] }, src, seconds, fade = .005) {
+export function render({ bpm, swing = .5, echo = [.75, .35], send = {}, tone = 4200, ring = 0, feel = [0, 0] }, src, seconds, fade = .005) {
   const at = t => {
     const b = t / 48, w = b % 1
     return (b - w + (w < .5 ? w * 2 * swing : swing + (w - .5) * 2 * (1 - swing))) * 60 / bpm

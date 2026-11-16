@@ -17,7 +17,7 @@ export function sim() {
   const fly = flight(HOME.x, HOME.y), mind = brain(fly)
   const s = {
     fly, mind, prey: swarm(cast(1)), fx: effects(), held: null as Prey | null, mark: null as Prey | null, sel: !AUTO.on, shown: 0, stamina: 100,
-    health: own('health'), cap: own('health'), rest: null as Perch | null, cursor: [HOME.x, HOME.y], bite: 0, hold: 0, strike: 0, hurt: 0, refund: -1,
+    health: own('health'), cap: own('health'), rest: null as Perch | null, cursor: [HOME.x, HOME.y], bite: 0, hold: 0, strike: 0, hurt: 0, fell: false,
   }
   const gap = (o: Perch) => Math.hypot(o.x - fly.x, o.y - fly.y), near = () => [...PERCHES].sort((a, b) => gap(a) - gap(b))
   const ahead = (d: number) => [fly.x + Math.cos(fly.ang) * d * DF.scale, fly.y + Math.sin(fly.ang) * d * DF.scale]
@@ -36,7 +36,8 @@ export function sim() {
     die(h?: Prey) {
       if (h) h.free = FIGHT.free
       Object.assign(fly, { x: HOME.x, y: HOME.y, speed: 0, perched: false })
-      Object.assign(s, { held: null, mark: null, sel: !AUTO.on, rest: null, stamina: 100, refund: fall() })
+      Object.assign(s, { held: null, mark: null, sel: !AUTO.on, rest: null, stamina: 100, fell: true })
+      fall()
       s.health = s.cap = own('health')
     },
   })

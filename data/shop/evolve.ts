@@ -1,1 +1,1 @@
-export const EVOLVE = { cost: 100, per: 100, refund: .5 }
+export const EVOLVE = { cost: 30, points: 1 }

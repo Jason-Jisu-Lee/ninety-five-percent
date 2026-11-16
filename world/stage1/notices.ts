@@ -1,5 +1,5 @@
 import { hush } from '../../audio/player/music'
-import { evolve, save } from '../../core/save/save'
+import { evolve, progress, save } from '../../core/save/save'
 import { PREY } from '../../data/enemies/enemies'
 import { enemyCard } from '../../ui/enemy/card'
 import { dialog } from '../../ui/parts/dialog'
@@ -40,10 +40,11 @@ export function tapEnemy(p: Prey | null) {
   if (p && p === tapped && now - tap < TWICE) {
     sim.aim(prior)
     if (!prior) sim.rest = seat
+    if (sim.fly.perched) progress('look')
     card.open(p)
   } else if (p) {
     ;[prior, seat] = [sim.mark, sim.rest]
-    if (!run.paused && sim.sel) attack(p)
+    if (!run.paused && sim.sel && !sim.fly.perched) attack(p)
   }
   ;[tapped, tap] = [p, now]
   return !!p

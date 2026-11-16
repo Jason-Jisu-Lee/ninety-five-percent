@@ -1,4 +1,4 @@
-import { save, worth } from '../../core/save/save'
+import { save } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { FOREST as C, UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
@@ -25,7 +25,7 @@ export function evolveButton(run: () => void) {
       text(g, 'Evolve', X + 5, Y + 11, ok ? UI.text : UI.dim)
       drop(g, X + BW - width(String(EVOLVE.cost)) - 9, Y + 7, ok ? C.red : UI.dim)
       text(g, String(EVOLVE.cost), X + BW - 4, Y + 11, ok ? UI.text : UI.dim, 'r')
-      if (hot) note(g, ['Resets this run', `Evolution points gained: ${worth()}`], X + BW, Y - 4, true, true)
+      if (hot) note(g, ['Resets this run', `Evolution points gained: ${EVOLVE.points}`], X + BW, Y - 4, true, true)
     },
   }
 }
