@@ -5,6 +5,7 @@ export const UI = {
   dim: '#8f877b',
   accent: '#7fb062',
   ally: '#8fc4c2',
+  lit: '#dffaf8',
   foe: '#d8442c',
   gold: '#c9a45c',
   night: '#0a1312',

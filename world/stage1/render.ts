@@ -8,8 +8,7 @@ import { FOREST as C, UI } from '../../data/look/palette'
 import { PERCHES } from '../../data/stage1/map'
 import { tag } from '../../ui/enemy/tag'
 import { bar } from '../../ui/parts/bar'
-import { marks, spot } from '../../ui/parts/marks'
-import { ring } from '../../ui/parts/ring'
+import { marks } from '../../ui/parts/marks'
 import { drawPrey } from '../creatures/draw'
 import type { Prey } from '../creatures/prey'
 import { wear } from '../dragonfly/sprite/sheet'
@@ -31,8 +30,7 @@ export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live
   g.drawImage(sh, Math.round(fly.x + fly.h * .45) - half, Math.round(fly.y) - half)
   for (const p of prey.list) drawPrey(g, p, clock)
   if (live && sim.sel) {
-    for (const r of PERCHES) if (r !== aim && r !== sim.rest) spot(g, r.x, Math.round(r.y - r.h * .7), UI.ally)
-    if (aim) ring(g, aim.x, Math.round(aim.y - aim.h * .7), 7, UI.ally)
+    for (const r of PERCHES) if (r === aim || r !== sim.rest) marks(g, r.x, Math.round(r.y - r.h * .7), r === aim ? 6 : 3, r === aim ? UI.lit : UI.ally, r === aim ? 3 : 2)
     marks(g, Math.round(mid[0]), Math.round(mid[1] - fly.h * .7), FLY.reach - 2, UI.ally, 4)
   }
   g.drawImage(spr, x - half, y - half)

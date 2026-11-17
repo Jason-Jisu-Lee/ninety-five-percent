@@ -16,7 +16,7 @@ iframe{flex:1;border:0}
 <nav></nav>
 <iframe allow="autoplay"></iframe>
 <script>
-const PAGES = [['Blood counter', 'blood.html'], ['Rest spot', 'rest.html'], ['Enemies', 'enemies.html']]
+const PAGES = []
 const frame = document.querySelector('iframe'), tabs = PAGES.map(([name, src]) => {
   const b = document.querySelector('nav').appendChild(document.createElement('button'))
   b.textContent = name
@@ -26,5 +26,5 @@ const frame = document.querySelector('iframe'), tabs = PAGES.map(([name, src]) =
   }
   return b
 })
-tabs[Math.max(0, PAGES.findIndex(p => p[1] === location.hash.slice(1) + '.html'))].click()
+tabs[Math.max(0, PAGES.findIndex(p => p[1] === location.hash.slice(1) + '.html'))]?.click()
 </script>
