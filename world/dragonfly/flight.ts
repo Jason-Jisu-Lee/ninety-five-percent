@@ -9,16 +9,16 @@ import { fidget } from './fidget'
 
 export function flight(x: number, y: number) {
   const f = { x, y, ang: -Math.PI / 2, speed: 0, base: FLY.height, h: FLY.height, flap: 0, heading: 0, frame: 0, lean: 0, perched: false }
-  const n = DF.flapFrames, [close, open] = FLY.hover, agile = () => own('agility'), rest = fidget(f)
+  const n = DF.flapFrames, [close, open] = FLY.hover, rest = fidget(f)
   const top = () => FLY.top * own('speed')
   let spin = 0, glide = between(VARY.glide)
   function seek(tx: number, ty: number, max: number, dt: number, th = FLY.height) {
-    const d = Math.hypot(tx - f.x, ty - f.y), want = Math.atan2(ty - f.y, tx - f.x), was = f.ang, rate = FLY.turn * agile()
+    const d = Math.hypot(tx - f.x, ty - f.y), want = Math.atan2(ty - f.y, tx - f.x), was = f.ang, rate = FLY.turn * own('turn')
     if (d > 2) f.ang = turn(f.ang, want, rate * dt)
     const off = wrap(want - f.ang), face = Math.max(0, Math.cos(off)), far = clamp((d - close) / (open - close))
     const goal = Math.min(max, d * FLY.arrive, d * rate * FLY.tight / (Math.abs(Math.sin(off)) + 1e-6)) * (face + (1 - face) * far)
     spin += (wrap(f.ang - was) / (dt || 1) / rate - spin) * Math.min(1, dt * 8)
-    f.speed += (goal - f.speed) * Math.min(1, dt * (goal < f.speed ? FLY.brake : FLY.accel * agile()))
+    f.speed += (goal - f.speed) * Math.min(1, dt * (goal < f.speed ? FLY.brake : FLY.accel * own('accel')))
     f.base += (th - f.base) * Math.min(1, dt * 3)
   }
   return Object.assign(f, {

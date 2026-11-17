@@ -15,12 +15,12 @@ export function hunt() {
   const s = sim(), { fly, prey, fx, mind } = s
   function grab() {
     const [hx, hy] = s.ahead(DF.headAt)
-    let reach = FLY.catch
+    let reach = FLY.catch * own('reach')
     for (const p of prey.list) {
       const d = Math.hypot(p.x - hx, p.y - hy)
       if (d < reach && p.free <= 0 && (s.sel ? p === s.mark : PREY[p.kind].tier <= AUTO.tier)) [s.held, reach] = [p, d]
     }
-    if (s.held) [s.bite, s.hold, s.strike] = [FIGHT.bite, 0, PREY[s.held.kind].strike * between(FIGHT.jitter)]
+    if (s.held) [s.bite, s.hold, s.strike] = [FIGHT.bite / own('bite'), 0,PREY[s.held.kind].strike * between(FIGHT.jitter)]
   }
   return Object.assign(s, {
     aim(p: Prey | null) {

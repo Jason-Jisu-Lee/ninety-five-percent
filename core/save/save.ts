@@ -1,11 +1,12 @@
-import { BASE, type Stat } from '../../data/dragonfly/stats'
+import type { Stat } from '../../data/dragonfly/stats'
 import { EVOLVE } from '../../data/shop/evolve'
+import { gain, tally } from '../../data/shop/gains'
 import { QUESTS } from '../../data/stage1/quests'
 
 const KEY = 'ninety-five-percent'
 const fresh = () => ({
   blood: 0, quest: 0, count: 0, started: false, warned: false, points: 0, music: true, vol: 5,
-  time: 0, hand: 0, earned: 0, bought: 0, deaths: 0, caught: {} as Record<string, number>,
+  time: 0, hand: 0, earned: 0, bought: 0, deaths: 0, caught: {} as Record<string, number>, owned: [] as string[],
 })
 
 function read() {
@@ -17,7 +18,8 @@ function read() {
 }
 
 export const save = { ...fresh(), ...read() } as ReturnType<typeof fresh>
-export const own = (s: Stat) => BASE[s]
+let sum = tally(save.owned)
+export const own = (s: Stat) => sum[s]
 
 export function store() {
   try {
@@ -27,6 +29,17 @@ export function store() {
 
 export function wipe() {
   Object.assign(save, fresh(), { music: save.music, vol: save.vol })
+  sum = tally(save.owned)
+  store()
+}
+
+export const can = (it: { name: string; text: string; cost: number }) => !!gain(it.text) && !save.owned.includes(it.name) && save.points >= it.cost
+
+export function buy(it: { name: string; text: string; cost: number }) {
+  if (!can(it)) return
+  save.points -= it.cost
+  save.owned.push(it.name)
+  sum = tally(save.owned)
   store()
 }
 

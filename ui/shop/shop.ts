@@ -1,7 +1,8 @@
-import { save } from '../../core/save/save'
+import { buy, can, save } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
+import { gain } from '../../data/shop/gains'
 import { SHOP } from '../../data/shop/shop'
 import { gem } from '../parts/icons'
 import { text, width } from '../text/text'
@@ -30,11 +31,12 @@ export function shop() {
       hot = items().findIndex((_, i) => inside(x, y, cell(i)[0], cell(i)[1], CW, CH))
       over = SHOP.findIndex((c, i) => inside(x, y, spots[i] - 6, 54, width(c.name) + 12, 22))
       go = inside(x, y, R - BW, BY, BW, BH)
-      return go || over >= 0
+      return go || over >= 0 || hot >= 0 && can(items()[hot])
     },
     click() {
       if (over >= 0) [tab, hot] = [over, -1]
       else if (go) shown = false
+      else if (hot >= 0) buy(items()[hot])
     },
     key(k: string) {
       const d = k === 'ArrowRight' || k === 'd' ? 1 : k === 'ArrowLeft' || k === 'a' ? -1 : 0
@@ -61,11 +63,12 @@ export function shop() {
       })
       text(g, SHOP[tab].note, L, 88, UI.dim)
       items().forEach((it, i) => {
-        const [x, y] = cell(i), lit = i === hot
+        const [x, y] = cell(i), lit = i === hot, mine = save.owned.includes(it.name), col = !gain(it.text) || can(it) ? UI.gold : UI.dim
         frame(g, x, y, CW, CH, lit)
-        text(g, it.name, x + 7, y + 12, lit ? UI.gold : UI.text)
-        text(g, String(it.cost), x + CW - 7, y + 12, UI.gold, 'r')
-        gem(g, x + CW - width(String(it.cost)) - 13, y + 8, UI.gold)
+        text(g, it.name, x + 7, y + 12, lit ? UI.gold : mine ? UI.dim : UI.text)
+        if (mine) return text(g, 'Owned', x + CW - 7, y + 12, UI.dim, 'r')
+        text(g, String(it.cost), x + CW - 7, y + 12, col, 'r')
+        gem(g, x + CW - width(String(it.cost)) - 13, y + 8, col)
       })
       if (pick) {
         const say = wrap(pick.text[0].toUpperCase() + pick.text.slice(1), R - SIDE)
@@ -73,6 +76,7 @@ export function shop() {
         say.forEach((line, i) => text(g, line, SIDE, 254 + i * 11, UI.text))
         gem(g, SIDE + 2, 259 + say.length * 11, UI.gold)
         text(g, String(pick.cost), SIDE + 10, 263 + say.length * 11, UI.gold)
+        if (gain(pick.text)) text(g, save.owned.includes(pick.name) ? 'Owned' : can(pick) ? 'Click to buy' : 'Not enough evolution points', SIDE, 279 + say.length * 11, UI.dim)
       }
       frame(g, R - BW, BY, BW, BH, go)
       text(g, 'Continue', R - BW / 2, BY + 14, go ? UI.gold : UI.text, 'c')

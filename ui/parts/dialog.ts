@@ -1,5 +1,5 @@
 import type { Ctx } from '../../core/screen/canvas'
-import { FOREST, UI } from '../../data/look/palette'
+import { UI } from '../../data/look/palette'
 import { W } from '../../data/look/screen'
 import { text, width } from '../text/text'
 import { wrap } from '../text/wrap'
@@ -41,12 +41,19 @@ export function dialog() {
     },
     draw(g: Ctx) {
       if (!shown) return
-      const w = Math.max(...lines.map(width), acts.length * (BW + GAP)) + 24, y = TOP, by = y + h() - BH - 6
-      box(g, W - w >> 1, y, w, h(), UI.dim, FOREST.deep)
+      const w = Math.max(...lines.map(width), acts.length * (BW + GAP)) + 24, x = W - w >> 1, y = TOP, by = y + h() - BH - 6
+      g.globalAlpha = .8
+      g.fillStyle = UI.panel
+      g.fillRect(x + 2, y, w - 4, h())
+      for (const i of [0, 1]) for (const e of [x + i, x + w - 1 - i]) g.fillRect(e, y + 2 - i, 1, h() - 4 + 2 * i)
+      g.globalAlpha = 1
+      g.fillStyle = UI.dim
+      g.fillRect(x + 1, y, w - 2, 1)
       lines.forEach((l, i) => text(g, l, W / 2, y + 15 + i * 12, UI.text, 'c'))
       acts.forEach(([label], i) => {
-        box(g, bx(i), by, BW, BH, i === sel ? UI.accent : UI.border, UI.panel)
-        text(g, label, bx(i) + BW / 2, by + 11, i === sel ? UI.accent : UI.text, 'c')
+        const col = i === sel ? UI.border : UI.line
+        box(g, bx(i), by, BW, BH, col, col)
+        text(g, label, bx(i) + BW / 2, by + 11, i === sel ? UI.panel : UI.text, 'c')
       })
     },
   }
