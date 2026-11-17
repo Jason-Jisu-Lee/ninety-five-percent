@@ -20,7 +20,7 @@ export const rise = () => ask.open(['This will reset all in-game progress.'], [[
   evos.open()
 }], ['Cancel', none]])
 
-export const fate = story([["You've lost half your blood points spent this run"]], () => hush(false), 0, 1.2)
+export const fate = story([["You've lost all the blood points you've gained this run"]], () => hush(false), 0, 1.2)
 
 export function mourn() {
   hush(true)

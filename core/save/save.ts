@@ -51,6 +51,7 @@ export function progress(kind: string) {
 
 export function fall() {
   save.deaths++
+  save.blood = 0
   store()
 }
 
