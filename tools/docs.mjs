@@ -29,15 +29,16 @@ function enemies(file) {
 }
 
 function shop(file) {
-  return blocks(file, '##').map(([name, ...rest]) => ({
+  return blocks(file, '#').flatMap(([shop, ...body]) => body.join('\n').split('\n## ').slice(1).map(b => b.split('\n')).map(([name, ...rest]) => ({
+    shop: shop.trim(),
     name: name.trim(),
     note: rest.find(l => l.trim() && !l.startsWith('- '))?.trim() ?? '',
     items: items(rest).map(line => {
-      const [, title, text, cost] = line.match(/^([^:]+):\s*(.*?)\s*(?:\(cost (\d+)\))?$/) ?? []
-      if (!title) throw Error(`docs/shop.md, ${name}: "${line}" should read "Name: what it does (cost 3)"`)
-      return { name: title.trim(), text, cost: +cost || 1 }
+      const [, title, text] = line.match(/^([^:]+):\s*(.*)$/) ?? []
+      if (!title) throw Error(`docs/shop.md, ${name}: "${line}" should read "Name: what it does"`)
+      return { name: title.trim(), text }
     }),
-  }))
+  })))
 }
 
 const rows = v => Array.isArray(v) ? '[\n' + v.map(x => '  ' + JSON.stringify(x)).join(',\n') + '\n]\n'

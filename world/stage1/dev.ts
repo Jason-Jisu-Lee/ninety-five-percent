@@ -14,7 +14,8 @@ export const tools: Tool[] = import.meta.env.DEV ? [
     save.points += 5
   }],
   [() => 'Refill', () => Object.assign(run.sim, { stamina: 100, health: own('health') })],
-  [() => 'Shop', evos.open],
+  [() => 'Blood shop', () => evos.open(0)],
+  [() => 'Evo shop', () => evos.open(1)],
   [() => 'Die', () => run.sim.die()],
 ] : []
 
