@@ -1,45 +1,24 @@
+import { turn } from '../../../core/math/angle'
 import { between } from '../../../core/math/between'
+import { clamp } from '../../../core/math/clamp'
 import { own } from '../../../core/save/save'
-import { AUTO } from '../../../data/dragonfly/auto'
 import { DF } from '../../../data/dragonfly/body'
 import { FIGHT } from '../../../data/dragonfly/fight'
-import { FLY, SHOWN, STAMINA } from '../../../data/dragonfly/flight'
+import { FLY, STAMINA } from '../../../data/dragonfly/flight'
 import { PREY } from '../../../data/enemies/enemies'
 import { HOME } from '../../../data/stage1/map'
-import type { Prey } from '../../creatures/prey'
 import { eat } from './eat'
 import { perch } from './perch'
 import { sim } from './sim'
 
 export function hunt() {
-  const s = sim(), { fly, prey, fx, mind } = s
+  const s = sim(), { fly, prey, fx } = s
   function grab() {
-    const [hx, hy] = s.ahead(DF.headAt)
-    let reach = FLY.catch * own('reach')
-    for (const p of prey.list) {
-      const d = Math.hypot(p.x - hx, p.y - hy)
-      if (d < reach && p.free <= 0 && (s.sel ? p === s.mark : PREY[p.kind].tier <= AUTO.tier)) [s.held, reach] = [p, d]
-    }
-    if (s.held) [s.bite, s.hold, s.strike] = [FIGHT.bite / own('bite'), 0,PREY[s.held.kind].strike * between(FIGHT.jitter)]
+    const [hx, hy] = s.ahead(DF.headAt), p = s.mark
+    if (!p || p.free > 0 || Math.hypot(p.x - hx, p.y - hy) >= FLY.catch * own('reach')) return
+    ;[s.held, s.bite, s.hold, s.strike] = [p, FIGHT.bite / own('bite'), 0, PREY[p.kind].strike * between(FIGHT.jitter)]
   }
   return Object.assign(s, {
-    aim(p: Prey | null) {
-      if (!s.sel) return
-      s.mark = p
-      if (p) s.leave()
-    },
-    click(x: number, y: number) {
-      const at = s.perchAt(x, y), was = s.rest
-      s.cursor = [x, y]
-      s.mark = null
-      if (s.sel && (was || at)) {
-        s.leave()
-        s.rest = at === was ? null : at
-      } else if (s.onFly(x, y) && s.free()) {
-        ;[s.sel, s.shown] = [!s.sel, SHOWN]
-        if (s.sel) s.leave()
-      }
-    },
     idle(dt: number, t: number) {
       prey.step(dt, t, -999, -999, null)
       fly.seek(HOME.x, HOME.y, fly.top() * FLY.cruise, dt)
@@ -47,25 +26,28 @@ export function hunt() {
       fx.step(dt)
     },
     step(dt: number, t: number) {
-      const top = fly.top(), cap = own('health')
+      const top = fly.top(), cap = own('health'), mend = own('mend') * dt
       prey.step(dt, t, fly.x, fly.y, s.held)
       s.bite -= dt
-      s.shown -= dt
       s.hurt -= dt
       ;[s.health, s.cap] = [s.health + cap - s.cap, cap]
       if (s.mark && !prey.list.includes(s.mark)) s.mark = null
-      if (s.held) eat(s, s.held, dt, t)
-      else if (s.rest) perch(s, s.rest, dt, t)
-      else if (s.sel) {
-        if (s.mark) fly.chase(s.mark, top, dt)
-        else fly.seek(s.cursor[0], s.cursor[1] + fly.h * .7, top, dt)
-        if (s.stamina <= 0) [s.sel, s.mark, s.rest] = [false, null, s.near()[0]]
-      } else if (s.stamina < STAMINA.tired || !mind.step(dt, t, prey.list)) s.rest = s.pick()
+      if (s.away) {
+        fly.ang = turn(fly.ang, Math.PI, FLY.swing * dt)
+        fly.seek(-99, fly.y, Math.max(top, FLY.flee), dt)
+      }
+      else if (s.held) eat(s, s.held, dt, t)
+      else if (s.rest) perch(s, s.rest, dt)
+      else if (s.mark) fly.chase(s.mark, top, dt)
+      else s.roam(dt)
       fly.step(dt, t)
       fx.step(dt)
-      if (fly.perched || s.held) return
-      s.stamina = Math.max(0, s.stamina - (STAMINA.hover + (STAMINA.sprint - STAMINA.hover) * Math.min(1, fly.speed / top)) / own('stamina') * dt)
-      if (!s.rest) grab()
+      if (fly.perched || s.held || s.away) return
+      s.stamina = clamp(s.stamina + mend - (STAMINA.hover + (STAMINA.sprint - STAMINA.hover) * Math.min(1, fly.speed / top)) / own('stamina') * dt, 0, 100)
+      s.health = Math.min(cap, s.health + cap * mend / 100)
+      if (s.rest) return
+      if (s.stamina <= 0) [s.mark, s.rest] = [null, s.near()]
+      else grab()
     },
   })
 }

@@ -9,20 +9,20 @@ import type { Prey } from '../../creatures/prey'
 import type { Sim } from './sim'
 
 export function eat(s: Sim, h: Prey, dt: number, t: number) {
-  const { fly, fx } = s, k = PREY[h.kind], [mx, my] = s.ahead(DF.mouth + cells(h) / 2 / DF.scale), bite = own('power'), hit = Math.max(0, k.power - own('armour'))
+  const { fly, fx } = s, k = PREY[h.kind], [mx, my] = s.ahead(DF.mouth + cells(h) / 2 / DF.scale), bite = own('power'), hit = k.power * (1 - own('armour'))
   fly.seek(fly.x, fly.y, 0, dt)
   Object.assign(h, { x: mx, y: my, h: fly.h, ang: fly.ang })
   if (k.power && (s.strike -= dt) <= 0) {
     s.strike = k.strike * between(FIGHT.jitter)
     s.health -= hit
     s.hurt = FIGHT.flash
-    fx.hit(fly.x, fly.y - fly.h * .7 - 16, '-' + hit, C.pink)
-    if (s.health <= 0) return s.die(h)
+    fx.hit(fly.x, fly.y - fly.h * .7 - 16, '-' + Math.max(1, Math.round(hit)), C.pink)
+    if (s.health <= 0) return s.die()
   }
   if (k.grip && (s.hold += dt) > k.grip) {
     Object.assign(h, { free: FIGHT.free, fear: k.wind, tired: k.wind + k.tire, ang: fly.ang + (Math.random() - .5) * 2 })
     s.held = null
-    return s.mind.shun(h, t)
+    return
   }
   if (s.bite > 0) return
   s.bite += FIGHT.bite / own('bite')
@@ -41,5 +41,4 @@ export function eat(s: Sim, h: Prey, dt: number, t: number) {
   progress(h.kind)
   s.prey.kill(h, t)
   s.held = null
-  s.mind.settle(s.prey.list, t)
 }

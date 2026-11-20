@@ -1,5 +1,6 @@
 export const HOME = { x: 320, y: 186 }
 export const FADE = 1.2
+export const DUSK = .5
 export const Z = .9
 export const POND = { x: 63, y: 477, r: 260, wave: 14 }
 export const PADS = [[100, 318, 28, -.7], [206, 336, 21, 2.2], [34, 276, 16, .5], [160, 290, 12, 1.4], [250, 318, 11, .2]]

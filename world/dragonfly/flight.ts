@@ -8,7 +8,7 @@ import { H, W } from '../../data/look/screen'
 import { fidget } from './fidget'
 
 export function flight(x: number, y: number) {
-  const f = { x, y, ang: -Math.PI / 2, speed: 0, base: FLY.height, h: FLY.height, flap: 0, heading: 0, frame: 0, lean: 0, perched: false }
+  const f = { x, y, ang: -Math.PI / 2, speed: 0, base: FLY.height, h: FLY.height, flap: 0, heading: 0, frame: 0, lean: 0, perched: false, out: false }
   const n = DF.flapFrames, [close, open] = FLY.hover, rest = fidget(f)
   const top = () => FLY.top * own('speed')
   let spin = 0, glide = between(VARY.glide)
@@ -32,7 +32,7 @@ export function flight(x: number, y: number) {
       if (f.perched) rest(dt)
       else {
         const pace = f.speed / top(), calm = Math.abs(spin) < VARY.spin
-        f.x = clamp(f.x + Math.cos(f.ang) * f.speed * dt, 10, W - 10)
+        f.x = clamp(f.x + Math.cos(f.ang) * f.speed * dt, f.out ? -99 : 10, W - 10)
         f.y = clamp(f.y + Math.sin(f.ang) * f.speed * dt, 16, H - 4)
         f.flap += dt * FLY.beat * n * (VARY.hover - (VARY.hover - 1) * Math.min(1, pace * 2))
         f.lean = calm ? 0 : Math.sign(spin)

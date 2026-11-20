@@ -9,11 +9,10 @@ import { wrap } from '../text/wrap'
 import { emblem } from './emblem'
 
 const L = 32, R = W - L, CW = 184, CH = 17, PX = CW + 12, PY = 20, TOP = 98, ROWS = 10, SIDE = L + PX * 2 + 8, GAP = 26, BW = 96, BH = 20, BY = H - 40
-const NAMES = ['Blood', 'Evolution'], SHOPS = NAMES.map(n => SHOP.filter(t => t.shop === n + ' shop'))
-const heads = NAMES.map((_, i) => NAMES.slice(0, i).reduce((x, n) => x + width(n) * 2 + GAP, L))
+const NAMES = ['Blood shop', 'Evolution shop'], SHOPS = NAMES.map(n => SHOP.filter(t => t.shop === n))
 
 export function shop() {
-  let shown = false, side = 0, tab = 0, hot = -1, over = -1, head = -1, go = false
+  let shown = false, side = 0, tab = 0, hot = -1, over = -1, go = false, then: (() => void) | undefined
   const tabs = () => SHOPS[side], spots = () => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L)), items = () => tabs()[tab].items.slice(0, ROWS * 2)
   const cell = (i: number) => [L + (i / ROWS | 0) * PX, TOP + i % ROWS * PY]
   const inside = (x: number, y: number, bx: number, by: number, w: number, h: number) => x >= bx && x < bx + w && y >= by && y < by + h
@@ -23,27 +22,29 @@ export function shop() {
     g.fillStyle = UI.night
     g.fillRect(x + 1, y + 1, w - 2, h - 2)
   }
+  const shut = () => {
+    shown = false
+    then?.()
+  }
   return {
     shown: () => shown,
-    open(s = 1) {
-      ;[shown, side, tab, hot] = [true, s, 0, -1]
+    open(s: number, done?: () => void) {
+      ;[shown, side, tab, hot, then] = [true, s, 0, -1, done]
     },
     hover(x: number, y: number) {
       hot = items().findIndex((_, i) => inside(x, y, cell(i)[0], cell(i)[1], CW, CH))
       over = tabs().findIndex((c, i) => inside(x, y, spots()[i] - 6, 54, width(c.name) + 12, 22))
-      head = NAMES.findIndex((n, i) => i !== side && inside(x, y, heads[i] - 6, 22, width(n) * 2 + 12, 22))
       go = inside(x, y, R - BW, BY, BW, BH)
-      return go || over >= 0 || head >= 0
+      return go || over >= 0
     },
     click() {
-      if (head >= 0) [side, tab, hot, head] = [head, 0, -1, -1]
-      else if (over >= 0) [tab, hot] = [over, -1]
-      else if (go) shown = false
+      if (over >= 0) [tab, hot] = [over, -1]
+      else if (go) shut()
     },
     key(k: string) {
       const d = k === 'ArrowRight' || k === 'd' ? 1 : k === 'ArrowLeft' || k === 'a' ? -1 : 0
       if (d) [tab, hot] = [(tab + d + tabs().length) % tabs().length, -1]
-      else if (k === 'Escape' || k === 'Enter' || k === ' ') shown = false
+      else if (k === 'Escape' || k === 'Enter' || k === ' ') shut()
       return true
     },
     draw(g: Ctx) {
@@ -52,7 +53,7 @@ export function shop() {
       g.fillStyle = UI.night
       g.fillRect(0, 0, W, H)
       g.drawImage(mark, SIDE + (R - SIDE - mark.width >> 1), 40)
-      NAMES.forEach((name, i) => text(g, name, heads[i], 38, i === side ? UI.text : i === head ? UI.border : UI.dim, undefined, undefined, 2))
+      text(g, NAMES[side], L, 38, UI.text, undefined, undefined, 2)
       text(g, n, R, 38, side ? UI.gold : UI.text, 'r', undefined, 2)
       if (side) gem(g, R - width(n) * 2 - 9, 31, UI.gold)
       else drop(g, R - width(n) * 2 - 8, 31, C.red)
@@ -75,7 +76,7 @@ export function shop() {
         wrap(pick.text[0].toUpperCase() + pick.text.slice(1), R - SIDE).forEach((line, i) => text(g, line, SIDE, 254 + i * 11, UI.text))
       }
       frame(g, R - BW, BY, BW, BH, go)
-      text(g, 'Continue', R - BW / 2, BY + 14, go ? UI.gold : UI.text, 'c')
+      text(g, side ? 'Continue' : 'Return', R - BW / 2, BY + 14, go ? UI.gold : UI.text, 'c')
     },
   }
 }

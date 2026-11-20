@@ -1,0 +1,25 @@
+import type { Ctx } from '../../core/screen/canvas'
+import { UI } from '../../data/look/palette'
+import { H, W } from '../../data/look/screen'
+import { note } from '../parts/note'
+import { box } from '../parts/panel'
+import { text, width } from '../text/text'
+
+const BW = width('Feast') + 10, X = W - 8 - BW, Y = H - 23
+
+export function feastButton(run: () => void) {
+  let hot = false
+  const on = (x: number, y: number) => x >= X && x < X + BW && y >= Y && y < Y + 15
+  return {
+    hover: (x: number, y: number) => hot = on(x, y),
+    click(x: number, y: number) {
+      if (on(x, y)) run()
+      return on(x, y)
+    },
+    draw(g: Ctx) {
+      box(g, X, Y, BW, 15, hot ? UI.text : UI.gold, UI.panel)
+      text(g, 'Feast', X + 5, Y + 11, UI.text)
+      if (hot) note(g, ['Spend blood on upgrades', 'Ends this run'], X + BW, Y - 4, true, true)
+    },
+  }
+}

@@ -14,7 +14,6 @@ export const DF = {
   jaw: { x: .3, y: -3.1 },
   headAt: 2.3,
   mouth: 3.9,
-  mid: -3.3,
 }
 
 export const GROW = { tail: .4, fork: .3, head: .09 }

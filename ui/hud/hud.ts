@@ -5,14 +5,14 @@ import { UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
 import { blood } from '../blood/blood'
 import { devConsole, type Tool } from '../dev/console'
-import { evolveButton } from '../evolve/button'
+import { feastButton } from '../feast/button'
 import { nav } from '../nav/nav'
 import { quest } from '../quest/quest'
 import { text } from '../text/text'
 import { now } from '../track/track'
 
-export function hud(pause: () => void, options: () => void, evolve: () => void, tools: Tool[]) {
-  const bar = nav([toggle, pause, options]), rise = evolveButton(evolve), dev = devConsole(tools), parts = [bar, rise, dev]
+export function hud(pause: () => void, options: () => void, feast: () => void, tools: Tool[]) {
+  const bar = nav([toggle, pause, options]), meal = feastButton(feast), dev = devConsole(tools), parts = [bar, meal, dev]
   return {
     hover: (x: number, y: number) => parts.map(p => p.hover(x, y)).some(Boolean),
     click: (x: number, y: number) => parts.some(p => p.click(x, y)),
@@ -22,7 +22,7 @@ export function hud(pause: () => void, options: () => void, evolve: () => void, 
       bar.draw(g, paused, !save.music)
       now(g, W - 73)
       dev.draw(g)
-      rise.draw(g)
+      meal.draw(g)
       if (paused) text(g, 'Paused', W / 2, H / 2 + 7, UI.text, 'c', UI.panel, 2)
     },
   }
