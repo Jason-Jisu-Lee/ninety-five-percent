@@ -1,7 +1,8 @@
-import { save } from '../../core/save/save'
+import { buy, level, price, save } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { FOREST as C, UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
+import { ANATOMY } from '../../data/shop/anatomy'
 import { SHOP } from '../../data/shop/shop'
 import { drop, gem } from '../parts/icons'
 import { text, width } from '../text/text'
@@ -35,10 +36,11 @@ export function shop() {
       hot = items().findIndex((_, i) => inside(x, y, cell(i)[0], cell(i)[1], CW, CH))
       over = tabs().findIndex((c, i) => inside(x, y, spots()[i] - 6, 54, width(c.name) + 12, 22))
       go = inside(x, y, R - BW, BY, BW, BH)
-      return go || over >= 0
+      return go || over >= 0 || save.blood >= (price(items()[hot]?.name) ?? Infinity)
     },
     click() {
       if (over >= 0) [tab, hot] = [over, -1]
+      else if (hot >= 0) buy(items()[hot].name)
       else if (go) shut()
     },
     key(k: string) {
@@ -68,12 +70,17 @@ export function shop() {
       text(g, tabs()[tab].note, L, 88, UI.dim)
       items().forEach((it, i) => {
         const [x, y] = cell(i)
+        const cost = price(it.name), p = String(cost), ok = save.blood >= (cost ?? Infinity)
         frame(g, x, y, CW, CH, i === hot)
-        text(g, it.name, x + 7, y + 12, i === hot ? UI.gold : UI.text)
+        text(g, it.name, x + 7, y + 12, ANATOMY[it.name] && !cost ? UI.dim : i === hot ? UI.gold : UI.text)
+        if (!cost) return
+        text(g, p, x + CW - 7, y + 12, ok ? UI.text : UI.dim, 'r')
+        drop(g, x + CW - 12 - width(p), y + 8, ok ? C.red : UI.dim)
       })
       if (pick) {
+        const at = ANATOMY[pick.name], lines = pick.text.split('. ').concat(at ? [`Level ${level(pick.name)} of ${at[2].length}`] : [])
         text(g, pick.name, SIDE, 238, UI.gold)
-        pick.text.split('. ').flatMap(s => wrap(s.charAt(0).toUpperCase() + s.slice(1), R - SIDE)).forEach((line, i) => text(g, line, SIDE, 254 + i * 11, UI.text))
+        lines.flatMap(s => wrap(s.charAt(0).toUpperCase() + s.slice(1), R - SIDE)).forEach((line, i) => text(g, line, SIDE, 254 + i * 11, UI.text))
       }
       frame(g, R - BW, BY, BW, BH, go)
       text(g, side ? 'Continue' : 'Return', R - BW / 2, BY + 14, go ? UI.gold : UI.text, 'c')
