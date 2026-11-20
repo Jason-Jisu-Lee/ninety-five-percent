@@ -73,7 +73,7 @@ export function shop() {
       })
       if (pick) {
         text(g, pick.name, SIDE, 238, UI.gold)
-        wrap(pick.text[0].toUpperCase() + pick.text.slice(1), R - SIDE).forEach((line, i) => text(g, line, SIDE, 254 + i * 11, UI.text))
+        pick.text.split('. ').flatMap(s => wrap(s.charAt(0).toUpperCase() + s.slice(1), R - SIDE)).forEach((line, i) => text(g, line, SIDE, 254 + i * 11, UI.text))
       }
       frame(g, R - BW, BY, BW, BH, go)
       text(g, side ? 'Continue' : 'Return', R - BW / 2, BY + 14, go ? UI.gold : UI.text, 'c')
