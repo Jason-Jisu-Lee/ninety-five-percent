@@ -7,27 +7,33 @@
 <style>
 body{margin:0;padding:14px 18px;background:#0a1312;color:#e9e2d4;font:15px/1.35 ui-monospace,Consolas,monospace}
 main{display:flex;gap:18px;align-items:flex-start}
-canvas{display:block;width:min(1280px,calc(100vw - 570px));aspect-ratio:16/9;image-rendering:pixelated;border:2px solid #33403c}
-aside{flex:none;width:510px}
-p{margin:0 0 8px;color:#8f877b}
-#rows{display:grid;grid-template-columns:auto 96px 34px 1fr;gap:3px 10px;align-items:center}
-#rows i{font-style:normal;color:#8f877b;font-size:13px}
-#rows b{font-weight:normal;color:#c9a45c;text-align:right}
+canvas{display:block;width:min(1280px,calc(100vw - 590px));aspect-ratio:16/9;image-rendering:pixelated;border:2px solid #33403c}
+aside{flex:none;width:530px}
+p{margin:0 0 8px;color:#8f877b;font-size:13px}
+#blood div,#stats div,#head{display:grid;gap:0 10px;align-items:center;position:relative;min-height:23px}
+#blood div{grid-template-columns:158px 96px 30px 1fr}
+#stats div,#head{grid-template-columns:108px 96px 140px 1fr;font-size:14px}
+#head{border-top:2px solid #33403c;padding-top:6px}
+i{font-style:normal;color:#8f877b;font-size:13px}
+b{font-weight:normal;color:#c9a45c}
+#blood b{text-align:right}
+em{font-style:normal;color:#7fb062}
 input{width:96px;margin:0;accent-color:#c9a45c}
+[data-tip]:not([data-tip=""]):hover{background:#16211f}
+[data-tip]:not([data-tip=""]):hover::after{content:attr(data-tip);position:absolute;left:0;top:100%;z-index:2;width:max-content;max-width:510px;padding:4px 8px;background:#100d0b;border:2px solid #c9a45c;color:#e9e2d4;pointer-events:none}
 nav{display:flex;gap:8px;margin:10px 0}
 button{border:2px solid #33403c;background:#100d0b;color:#e9e2d4;font:inherit;padding:4px 10px;cursor:pointer}
 button:hover{border-color:#c9a45c}
-#now{display:grid;grid-template-columns:auto 1fr;gap:1px 14px;border-top:2px solid #33403c;padding-top:8px}
-#now span:nth-child(even){color:#7fb062}
 #state{margin-top:8px;color:#8fc4c2}
 </style>
 <main>
   <canvas width="640" height="360"></canvas>
   <aside>
-    <p>Drag a slider to set that upgrade's level. Click an enemy to send the dragonfly at it. Click empty ground to call it off.</p>
-    <div id="rows"></div>
+    <p>Top sliders: Blood shop levels. Lower sliders: base values, raised by the Evolution shop. Hover a row for the exact numbers. Click an enemy to attack it.</p>
+    <div id="blood"></div>
     <nav></nav>
-    <div id="now"></div>
+    <div id="head"></div>
+    <div id="stats"></div>
     <div id="state"></div>
   </aside>
 </main>

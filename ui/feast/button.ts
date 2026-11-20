@@ -19,7 +19,7 @@ export function feastButton(run: () => void) {
     draw(g: Ctx) {
       box(g, X, Y, BW, 15, hot ? UI.text : UI.gold, UI.panel)
       text(g, 'Feast', X + 5, Y + 11, UI.text)
-      if (hot) note(g, ['Spend blood on upgrades', 'Ends this run'], X + BW, Y - 4, true, true)
+      if (hot) note(g, ['End this run'], X + BW, Y - 4, true, true)
     },
   }
 }

@@ -34,7 +34,7 @@ export function hunt() {
       if (s.mark && !prey.list.includes(s.mark)) s.mark = null
       if (s.away) {
         fly.ang = turn(fly.ang, Math.PI, FLY.swing * dt)
-        fly.seek(-99, fly.y, Math.max(top, FLY.flee), dt)
+        fly.seek(-99, fly.y, Math.min(top * FLY.dash, FLY.flee), dt)
       }
       else if (s.held) eat(s, s.held, dt, t)
       else if (s.rest) perch(s, s.rest, dt)
