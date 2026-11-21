@@ -12,14 +12,14 @@ const X = 432, R = 608, MID = 548, num = (v: number) => String(+v.toFixed(2))
 const ROWS: [label: string, stat: Stat, base: (v: number) => string, now: (v: number) => string][] = [
   ['Power', 'power', num, num],
   ['Health', 'health', num, num],
-  ['Damage blocked', 'armour', num, v => num(v) + ' a strike'],
+  ['Damage blocked', 'armour', num, num],
   ['Top speed', 'speed', v => num(FLY.top * v / 3.8), v => num(FLY.top * v / 3.8) + ' cm/s'],
   ['Turning', 'turn', v => num(75 * v), v => num(75 * v) + ' deg/s'],
   ['Acceleration', 'accel', v => num(Math.log(10) / (FLY.accel * v)), v => num(Math.log(10) / (FLY.accel * v)) + ' s'],
   ['Stamina', 'stamina', v => num(100 / STAMINA.drain * v), v => num(100 / STAMINA.drain * v) + ' s'],
   ['Catch reach', 'reach', v => num(FLY.catch * v), v => num(FLY.catch * v)],
-  ['Rest', 'rest', v => num(STAMINA.regen * v) + '%', v => num(STAMINA.regen * v) + '% a second'],
-  ['Mend in flight', 'mend', v => num(v) + '%', v => num(v) + '% a second'],
+  ['Rest', 'rest', v => num(STAMINA.regen * v) + '%', v => num(STAMINA.regen * v) + '%/s'],
+  ['Mend in flight', 'mend', v => num(v) + '%', v => num(v) + '%/s'],
 ]
 const ITEMS = SHOP.find(t => t.shop === 'Blood shop' && t.name === 'Anatomy')!.items
 const OPTIONS: [title: string, show: (hot: string) => boolean, lit: boolean][] = [
