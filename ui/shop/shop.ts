@@ -2,7 +2,7 @@ import { buy, level, price, save } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { FOREST as C, UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
-import { ANATOMY } from '../../data/shop/anatomy'
+import { UPGRADES } from '../../data/shop/upgrades'
 import { SHOP } from '../../data/shop/shop'
 import { drop, gem } from '../parts/icons'
 import { text, width } from '../text/text'
@@ -72,13 +72,13 @@ export function shop() {
         const [x, y] = cell(i)
         const cost = price(it.name), p = String(cost), ok = save.blood >= (cost ?? Infinity)
         frame(g, x, y, CW, CH, i === hot)
-        text(g, it.name, x + 7, y + 12, ANATOMY[it.name] && !cost ? UI.dim : i === hot ? UI.gold : UI.text)
+        text(g, it.name, x + 7, y + 12, UPGRADES[it.name] && !cost ? UI.dim : i === hot ? UI.gold : UI.text)
         if (!cost) return
         text(g, p, x + CW - 7, y + 12, ok ? UI.text : UI.dim, 'r')
         drop(g, x + CW - 12 - width(p), y + 8, ok ? C.red : UI.dim)
       })
       if (pick) {
-        const at = ANATOMY[pick.name], lines = pick.text.split('. ').concat(at ? [`Level ${level(pick.name)} of ${at[2].length}`] : [])
+        const at = UPGRADES[pick.name], lines = pick.text.split('. ').concat(at ? [`Level ${level(pick.name)} of ${at[2].length}`] : [])
         text(g, pick.name, SIDE, 238, UI.gold)
         lines.flatMap(s => wrap(s.charAt(0).toUpperCase() + s.slice(1), R - SIDE)).forEach((line, i) => text(g, line, SIDE, 254 + i * 11, UI.text))
       }

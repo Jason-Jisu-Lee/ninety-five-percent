@@ -1,27 +1,25 @@
 import { buy, save } from '../core/save/save'
-import { FIGHT } from '../data/dragonfly/fight'
 import { FLY, STAMINA } from '../data/dragonfly/flight'
 import { BASE, STAT, type Stat } from '../data/dragonfly/stats'
 import { UI } from '../data/look/palette'
 import { H, W } from '../data/look/screen'
-import { ANATOMY } from '../data/shop/anatomy'
+import { UPGRADES } from '../data/shop/upgrades'
 import { SHOP } from '../data/shop/shop'
 import { shop } from '../ui/shop/shop'
 import { text } from '../ui/text/text'
 
-const X = 432, R = 608, MID = 548, num = (v: number) => String(Math.round(v * 10) / 10), pct = (v: number) => Math.round(v * 100) + '%'
+const X = 432, R = 608, MID = 548, num = (v: number) => String(+v.toFixed(2))
 const ROWS: [label: string, stat: Stat, base: (v: number) => string, now: (v: number) => string][] = [
   ['Power', 'power', num, num],
   ['Health', 'health', num, num],
-  ['Damage taken', 'armour', v => pct(1 - v), v => pct(1 - v)],
-  ['Top speed', 'speed', v => String(Math.round(FLY.top * v / 3.8)), v => Math.round(FLY.top * v / 3.8) + ' cm/s'],
-  ['Turning', 'turn', v => String(Math.round(75 * v)), v => Math.round(75 * v) + ' deg/s'],
+  ['Damage blocked', 'armour', num, v => num(v) + ' a strike'],
+  ['Top speed', 'speed', v => num(FLY.top * v / 3.8), v => num(FLY.top * v / 3.8) + ' cm/s'],
+  ['Turning', 'turn', v => num(75 * v), v => num(75 * v) + ' deg/s'],
   ['Acceleration', 'accel', v => num(Math.log(10) / (FLY.accel * v)), v => num(Math.log(10) / (FLY.accel * v)) + ' s'],
-  ['Stamina', 'stamina', v => String(Math.round(100 / STAMINA.sprint * v)), v => Math.round(100 / STAMINA.sprint * v) + ' s'],
+  ['Stamina', 'stamina', v => num(100 / STAMINA.drain * v), v => num(100 / STAMINA.drain * v) + ' s'],
   ['Catch reach', 'reach', v => num(FLY.catch * v), v => num(FLY.catch * v)],
-  ['Rest, stamina', 'rest', v => num(STAMINA.regen * v) + '%', v => num(STAMINA.regen * v) + '%'],
-  ['Rest, health', 'rest', v => num(FIGHT.heal * 100 * v) + '%', v => num(FIGHT.heal * 100 * v) + '%'],
-  ['Mend in flight', 'mend', v => v ? '1%' : 'none', v => v ? '1%' : 'none'],
+  ['Rest', 'rest', v => num(STAMINA.regen * v) + '%', v => num(STAMINA.regen * v) + '% a second'],
+  ['Mend in flight', 'mend', v => num(v) + '%', v => num(v) + '% a second'],
 ]
 const ITEMS = SHOP.find(t => t.shop === 'Blood shop' && t.name === 'Anatomy')!.items
 const OPTIONS: [title: string, show: (hot: string) => boolean, lit: boolean][] = [
@@ -31,7 +29,7 @@ const OPTIONS: [title: string, show: (hot: string) => boolean, lit: boolean][] =
 ]
 
 function table(g: CanvasRenderingContext2D, hot: string, lit: boolean) {
-  const [stat, each, cost] = ANATOMY[hot] ?? [], next = lit && level(hot) < (cost?.length ?? 0)
+  const [stat, each, cost] = UPGRADES[hot] ?? [], next = lit && level(hot) < (cost?.length ?? 0)
   g.fillStyle = UI.night
   g.fillRect(X, 50, R - X, 182)
   text(g, 'Base', MID, 110, UI.dim, 'r')

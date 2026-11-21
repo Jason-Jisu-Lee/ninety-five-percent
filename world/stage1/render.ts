@@ -36,5 +36,5 @@ export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live
   if (live && hot) tag(g, hot, span(hot), hot === held && fly.y < hot.y)
   if (!live) return
   if (sim.health < sim.cap) bar(g, x, y - 26, Math.max(0, sim.health / sim.cap), 18, UI.ally)
-  bar(g, x, y - 23, sim.stamina / 100, 18, sim.stamina < STAMINA.tired ? C.pink : UI.accent, fly.perched && sim.stamina < STAMINA.wake ? STAMINA.wake / 100 : 0)
+  bar(g, x, y - 23, sim.stamina / 100, 18, sim.stamina < STAMINA.tired ? C.pink : UI.accent)
 }

@@ -1,6 +1,6 @@
 import { FIGHT } from '../../data/dragonfly/fight'
 import { BASE, STAT, type Stat } from '../../data/dragonfly/stats'
-import { ANATOMY } from '../../data/shop/anatomy'
+import { UPGRADES } from '../../data/shop/upgrades'
 import { QUESTS } from '../../data/stage1/quests'
 
 const KEY = 'ninety-five-percent'
@@ -20,11 +20,11 @@ function read() {
 export const save = { ...fresh(), ...read() } as ReturnType<typeof fresh>
 export const own = (s: Stat) => STAT[s]
 export const level = (name: string) => save.levels[name] ?? 0
-export const price = (name = '') => ANATOMY[name]?.[2][level(name)]
+export const price = (name = '') => UPGRADES[name]?.[2][level(name)]
 
 function grow() {
   Object.assign(STAT, BASE)
-  for (const [name, [stat, each]] of Object.entries(ANATOMY)) STAT[stat] += each * level(name)
+  for (const [name, [stat, each]] of Object.entries(UPGRADES)) STAT[stat] += each * level(name)
 }
 grow()
 

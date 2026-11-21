@@ -29,16 +29,22 @@ function enemies(file) {
 }
 
 function shop(file) {
-  return blocks(file, '#').flatMap(([shop, ...body]) => body.join('\n').split('\n## ').slice(1).map(b => b.split('\n')).map(([name, ...rest]) => ({
-    shop: shop.trim(),
-    name: name.trim(),
-    note: rest.find(l => l.trim() && !l.startsWith('- '))?.trim() ?? '',
-    items: items(rest).map(line => {
-      const [, title, text] = line.match(/^([^:]+):\s*(.*)$/) ?? []
-      if (!title) throw Error(`docs/shop.md, ${name}: "${line}" should read "Name: what it does"`)
-      return { name: title.trim(), text }
-    }),
-  })))
+  const tabs = []
+  let shop = '', tab = null, fresh = false
+  for (const raw of readFileSync(file, 'utf8').split(/\r?\n/)) {
+    const line = raw.replace(/^[#-]+ +/, '').trim(), at = line.indexOf(':')
+    if (!line) continue
+    if (/^(Blood|Evolution) shop$/.test(line)) [shop, tab] = [line, null]
+    else if (!shop) continue
+    else if (at > 0 && tab) {
+      tab.items.push({ name: line.slice(0, at).trim(), text: line.slice(at + 1).trim() })
+      fresh = false
+    }
+    else if (fresh) [tab.note, fresh] = [line, false]
+    else tabs.push(tab = { shop, name: line, note: '', items: [] }), fresh = true
+  }
+  if (!tabs.length) throw Error('docs/shop.md: no shop found. A shop starts with a line reading "Blood shop" or "Evolution shop"')
+  return tabs
 }
 
 const rows = v => Array.isArray(v) ? '[\n' + v.map(x => '  ' + JSON.stringify(x)).join(',\n') + '\n]\n'

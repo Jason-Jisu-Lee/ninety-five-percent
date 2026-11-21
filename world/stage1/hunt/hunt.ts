@@ -16,7 +16,8 @@ export function hunt() {
   function grab() {
     const [hx, hy] = s.ahead(DF.headAt), p = s.mark
     if (!p || p.free > 0 || Math.hypot(p.x - hx, p.y - hy) >= FLY.catch * own('reach')) return
-    ;[s.held, s.bite, s.hold, s.strike] = [p, FIGHT.bite / own('bite'), 0, PREY[p.kind].strike * between(FIGHT.jitter)]
+    const fast = fly.speed >= fly.top() * FIGHT.dive, behind = Math.cos(p.ang - Math.atan2(p.y - fly.y, p.x - fly.x)) > 0
+    ;[s.held, s.bite, s.hold, s.strike, s.extra] = [p, FIGHT.bite / own('bite'), 0, PREY[p.kind].strike * between(FIGHT.jitter), +fast * own('dive') + +behind * own('ambush')]
   }
   return Object.assign(s, {
     idle(dt: number, t: number) {
@@ -26,7 +27,7 @@ export function hunt() {
       fx.step(dt)
     },
     step(dt: number, t: number) {
-      const top = fly.top(), cap = own('health'), mend = own('mend') * dt
+      const top = fly.top(), cap = own('health')
       prey.step(dt, t, fly.x, fly.y, s.held)
       s.bite -= dt
       s.hurt -= dt
@@ -43,8 +44,8 @@ export function hunt() {
       fly.step(dt, t)
       fx.step(dt)
       if (fly.perched || s.held || s.away) return
-      s.stamina = clamp(s.stamina + mend - (STAMINA.hover + (STAMINA.sprint - STAMINA.hover) * Math.min(1, fly.speed / top)) / own('stamina') * dt, 0, 100)
-      s.health = Math.min(cap, s.health + cap * mend / 100)
+      s.stamina = clamp(s.stamina - STAMINA.drain / own('stamina') * dt, 0, 100)
+      s.health = Math.min(cap, s.health + cap * own('mend') / 100 * dt)
       if (s.rest) return
       if (s.stamina <= 0) [s.mark, s.rest] = [null, s.near()]
       else grab()
