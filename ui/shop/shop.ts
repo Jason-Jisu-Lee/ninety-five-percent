@@ -8,6 +8,7 @@ import { drop, gem } from '../parts/icons'
 import { text, width } from '../text/text'
 import { wrap } from '../text/wrap'
 import { emblem } from './emblem'
+import { stats } from './stats'
 
 const L = 32, R = W - L, CW = 184, CH = 17, PX = CW + 12, PY = 20, TOP = 98, ROWS = 10, SIDE = L + PX * 2 + 8, GAP = 26, BW = 96, BH = 20, BY = H - 40
 const NAMES = ['Blood shop', 'Evolution shop'], SHOPS = NAMES.map(n => SHOP.filter(t => t.shop === n))
@@ -54,7 +55,8 @@ export function shop() {
       const pick = items()[hot], mark = emblem(), n = String(Math.floor(side ? save.points : save.blood))
       g.fillStyle = UI.night
       g.fillRect(0, 0, W, H)
-      g.drawImage(mark, SIDE + (R - SIDE - mark.width >> 1), 40)
+      if (side) g.drawImage(mark, SIDE + (R - SIDE - mark.width >> 1), 40)
+      else stats(g, pick?.name)
       text(g, NAMES[side], L, 38, UI.text, undefined, undefined, 2)
       text(g, n, R, 38, side ? UI.gold : UI.text, 'r', undefined, 2)
       if (side) gem(g, R - width(n) * 2 - 9, 31, UI.gold)
@@ -72,7 +74,7 @@ export function shop() {
         const [x, y] = cell(i)
         const cost = price(it.name), p = String(cost), ok = save.blood >= (cost ?? Infinity)
         frame(g, x, y, CW, CH, i === hot)
-        text(g, it.name, x + 7, y + 12, UPGRADES[it.name] && !cost ? UI.dim : i === hot ? UI.gold : UI.text)
+        text(g, it.name, x + 7, y + 12, it.off || UPGRADES[it.name] && !cost ? UI.dim : i === hot ? UI.gold : UI.text)
         if (!cost) return
         text(g, p, x + CW - 7, y + 12, ok ? UI.text : UI.dim, 'r')
         drop(g, x + CW - 12 - width(p), y + 8, ok ? C.red : UI.dim)

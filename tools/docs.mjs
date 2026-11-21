@@ -37,7 +37,8 @@ function shop(file) {
     if (/^(Blood|Evolution) shop$/.test(line)) [shop, tab] = [line, null]
     else if (!shop) continue
     else if (at > 0 && tab) {
-      tab.items.push({ name: line.slice(0, at).trim(), text: line.slice(at + 1).trim() })
+      const text = line.slice(at + 1).trim(), off = text.endsWith('(placeholder)')
+      tab.items.push({ name: line.slice(0, at).trim(), text: text.replace(/ *\(placeholder\)$/, ''), off })
       fresh = false
     }
     else if (fresh) [tab.note, fresh] = [line, false]

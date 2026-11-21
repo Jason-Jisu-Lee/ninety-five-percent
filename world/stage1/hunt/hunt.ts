@@ -43,8 +43,13 @@ export function hunt() {
       else s.roam(dt)
       fly.step(dt, t)
       fx.step(dt)
-      if (fly.perched || s.held || s.away) return
+      if (fly.perched || s.away) return
       s.stamina = clamp(s.stamina - STAMINA.drain / own('stamina') * dt, 0, 100)
+      if (s.held) {
+        if (s.stamina > 0) return
+        s.held.free = FIGHT.free
+        s.held = null
+      }
       s.health = Math.min(cap, s.health + cap * own('mend') / 100 * dt)
       if (s.rest) return
       if (s.stamina <= 0) [s.mark, s.rest] = [null, s.near()]
