@@ -14,14 +14,15 @@ import type { Prey } from '../../world/creatures/prey'
 import { wear } from '../../world/dragonfly/sprite/sheet'
 import { place, where } from '../../world/place/place'
 import { key } from '../parts/key'
-import { ring } from '../parts/ring'
 import { text } from '../text/text'
 
-type Act = { hit: number; bonus: number; slide: number; rush?: boolean; cue?: number; jolt?: boolean; foe(t: number): number[]; mark?(g: Ctx, x: number, y: number, ang: number, since: number): void }
+type Sign = (g: Ctx, x: number, y: number, fly: number, far: number, state: number) => void
+export type Act = { hit: number; bonus: number; slide: number; rush?: boolean; cue?: number; jolt?: boolean; sign?: Sign; foe(t: number): number[]; mark?(g: Ctx, x: number, y: number, ang: number, since: number): void }
 
-const BW = 176, BH = 112, X = 432, Y = 100, MID = 60, RUN = 2.2, FADE = .4, WAIT = 1, EDGE = .25, GLIDE = .6, stage = ctx(mk(BW, BH))
-const ACTS: Record<string, Act> = {
-  'Lunge': { hit: 1.5, bonus: 1.5, slide: 12, cue: .66, jolt: true, foe: () => [126, -1.2] },
+export const BW = 176, BH = 112, MID = 60
+const X = 432, Y = 100, RUN = 2.2, FADE = .4, WAIT = 1, EDGE = .25, GLIDE = .6, stage = ctx(mk(BW, BH))
+export const ACTS: Record<string, Act> = {
+  'Lunge': { hit: 1.5, bonus: 1.5, slide: 12, cue: .75, jolt: true, foe: () => [126, -1.2], sign: (g, _x, _y, fly, _far, state) => state > 1 && key(g, fly - 5, MID - 30, 'S') },
   'Ambush': {
     hit: 1.4, bonus: 2, slide: 10, foe: t => [84 + 30 * Math.min(1, t / 1.4), 0],
     mark(g, x, y, ang, since) {
@@ -33,22 +34,21 @@ const ACTS: Record<string, Act> = {
 }
 let playing = '', from = 0, heard = -1
 
-function frame(act: Act, t: number) {
+export function frame(act: Act, t: number) {
   const kind = cast(where.stage).find(k => PREY[k].zone !== 'swarm')!, k = PREY[kind], bit = t >= act.hit, n = DF.flapFrames, mouth = DF.mouth * DF.scale + k.len / 2, u = Math.min(1, t / act.hit), cue = act.cue ?? 2
-  const pace = u < cue ? u * .58 / Math.min(1, cue) : .58 + (u - cue) / (1 - cue) * .42, glide = act.slide * (1 - (1 - Math.min(1, Math.max(0, t - act.hit) / GLIDE)) ** 2)
+  const pre = cue / (cue + LUNGE.speed * (1 - cue)), pace = u < cue ? u * pre / cue : pre + (u - cue) / (1 - cue) * (1 - pre), glide = act.slide * (1 - (1 - Math.min(1, Math.max(0, t - act.hit) / GLIDE)) ** 2)
   const fx = -14 + (act.foe(act.hit)[0] - mouth + 14) * (act.cue ? pace : u) + glide, [ex, ang] = bit ? [fx + mouth, act.foe(act.hit)[1]] : act.foe(t), ey = bit ? MID : MID + Math.sin(t * 3) * 2
   const foe = { kind, x: ex, y: ey + (bit ? FLY.height : k.h) * .7, h: bit ? FLY.height : k.h, ang, hp: k.hp, wings: true, flash: bit && t < act.hit + .1 ? 1 : 0, seed: .3 } as Prey
   const [fly, shade] = wear(COLOR)(8, Math.floor(t * FLY.beat * n * (bit ? 1.3 : 1)) % n, bit ? 1 + +(t * 3 % 1 > .5) : 0), half = fly.width >> 1, far = ex - fx - mouth
   stage.drawImage(place().art, W / 2 - BW / 2, H / 2 - BH / 2, BW, BH, 0, 0, BW, BH)
   drawPrey(stage, foe, t, true)
   stage.drawImage(shade, Math.round(fx + FLY.height * .45) - half, Math.round(MID + FLY.height * .7) - half)
-  if (act.rush && !bit) for (const [dx, dy, len] of [[-22, -5, 9], [-28, 1, 13], [-21, 6, 8]]) {
+  if ((act.rush || u >= cue) && !bit) for (const [dx, dy, len] of [[-22, -5, 9], [-28, 1, 13], [-21, 6, 8]]) {
     stage.fillStyle = place().look.water[4]
     stage.fillRect(Math.round(fx + dx - len), MID + dy, len, 1)
   }
   drawPrey(stage, foe, t)
-  if (act.cue && !bit && far > 8) ring(stage, Math.round(ex), Math.round(ey), 6 + far * .5, u >= act.cue - .06 ? UI.gold : UI.dim)
-  if (act.cue && u >= act.cue && t < act.hit + .2) key(stage, Math.round(fx) - 5, MID - 30)
+  if (!bit) act.sign?.(stage, Math.round(ex), Math.round(ey), Math.round(fx), far, u >= cue ? 2 : +(far >= LUNGE.near && far <= LUNGE.far))
   act.mark?.(stage, ex, ey, ang, t - act.hit)
   stage.drawImage(fly, Math.round(fx) - half, MID - half)
   if (bit && t < act.hit + .7) text(stage, String(+(own('power') * act.bonus).toFixed(2)), Math.round(ex), Math.round(MID - 12 - (t - act.hit) * 22), UI.gold, 'c', UI.panel)

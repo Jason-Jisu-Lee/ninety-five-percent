@@ -1,4 +1,4 @@
-import { mood, toggle } from '../../audio/player/music'
+import { hush, mood, toggle } from '../../audio/player/music'
 import { sound } from '../../audio/player/sound'
 import { shade, veil } from '../../core/draw/dissolve'
 import type { Scene } from '../../core/loop/scene'
@@ -18,7 +18,7 @@ import { ask, attack, card, evos, fate, inspect, mourn, self } from './notices'
 import { render } from './render'
 import { restart, run } from './run'
 
-let fade = 1, dusk = 0, going = false, frozen = false, clock = 0, kept = 0, halt = 0, hot: Prey | null = null
+let fade = 1, dusk = 0, going = false, frozen = false, calm = false, clock = 0, kept = 0, halt = 0, hot: Prey | null = null
 
 const begin = () => {
   going = true
@@ -52,7 +52,8 @@ export const stage1: Scene = {
     tick(dt)
     story.update(dt)
     fate.update(dt)
-    const { sim } = run
+    const { sim } = run, still = sim.away || evos.shown()
+    if (still !== calm) hush(calm = still, false)
     if (going && fade > 0 && (fade -= dt / FADE) <= 0) [frozen, save.started] = [false, true]
     if (fade > 0) return void (frozen || sim.idle(dt, clock += dt))
     if (fate.on()) return sim.idle(dt, clock += dt)
@@ -110,7 +111,8 @@ export const stage1: Scene = {
     if (top()) return top()!.key(k)
     if (k === 'm') return toggle(), true
     if (fade > 0) return !going && title.key(k)
-    if (k === 'a') return hot && hot !== run.sim.mark ? attack(hot) : run.sim.dart(), false
+    if (k === 'a') return attack(hot), false
+    if (k === 's') return run.sim.dart(), false
     if (k === 'Escape') opts.open(true)
     else if (k === 'p' || k === ' ') run.paused = !run.paused
     else return false

@@ -3,11 +3,13 @@ import type { Ctx } from '../../core/screen/canvas'
 import { UI } from '../../data/look/palette'
 import { W } from '../../data/look/screen'
 import { icon } from '../parts/icons'
+import { mix } from '../../audio/player/music'
+import { save } from '../../core/save/save'
 import { menu } from '../parts/menu'
+import { mixer } from '../parts/mixer'
 import { box, panel } from '../parts/panel'
 import { text } from '../text/text'
 import { ROWS, statistics } from './statistics'
-import { volume } from './volume'
 
 const PW = 200, X = W - PW >> 1, B = 232, MX = W - 96 >> 1, CX = X + PW - 19
 
@@ -38,9 +40,9 @@ export function settings(toMenu: () => void, reset: () => void) {
   const back = menu([item('Back', () => {
     stats = false
   })], MX, B - 14)
-  const now = () => sure ? confirm : stats ? back : play ? game : home, top = () => now().top - (sure ? 46 : stats ? ROWS * 11 + 29 : 50)
+  const now = () => sure ? confirm : stats ? back : play ? game : home, top = () => now().top - (sure ? 46 : stats ? ROWS * 11 + 29 : 76)
   const onX = (x: number, y: number) => !sure && x >= CX && x < CX + 11 && y >= top() + 6 && y < top() + 17
-  const slide = (x: number, y: number) => sure || stats ? -1 : volume.at(x, y, MX, top() + 26)
+  const levels = (x: number, y: number, press = false) => !sure && !stats && mixer[press ? 'click' : 'on'](x, y, W - mixer.w >> 1, top() + 26)
   return {
     shown: () => shown,
     open(inGame: boolean) {
@@ -49,12 +51,11 @@ export function settings(toMenu: () => void, reset: () => void) {
     },
     hover(x: number, y: number) {
       hot = onX(x, y)
-      return now().hover(x, y) || hot || slide(x, y) >= 0
+      return now().hover(x, y) || hot || levels(x, y)
     },
     click(x: number, y: number) {
       if (onX(x, y)) shut()
-      else if (slide(x, y) >= 0) volume.set(slide(x, y))
-      else now().click(x, y)
+      else if (!levels(x, y, true)) now().click(x, y)
     },
     key(k: string) {
       const d = k === 'ArrowRight' || k === 'd' ? 1 : k === 'ArrowLeft' || k === 'a' ? -1 : 0
@@ -62,7 +63,7 @@ export function settings(toMenu: () => void, reset: () => void) {
         if (sure) sure = false
         else if (stats) stats = false
         else shut()
-      } else if (d && !sure && !stats) volume.nudge(d)
+      } else if (d && !sure && !stats) mix('vol', save.vol + d)
       else return now().key(k)
       return true
     },
@@ -80,7 +81,7 @@ export function settings(toMenu: () => void, reset: () => void) {
       box(g, CX, y + 6, 11, 11, hot ? UI.accent : UI.border, UI.panel)
       icon(g, 'x', CX + 3, y + 9, UI.text)
       if (stats) statistics(g, X + 16, X + PW - 16, y + 24)
-      else volume.draw(g, MX, y + 26)
+      else mixer.draw(g, W - mixer.w >> 1, y + 26)
     },
   }
 }
