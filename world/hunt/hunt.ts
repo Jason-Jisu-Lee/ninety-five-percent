@@ -34,6 +34,7 @@ export function hunt() {
       s.hurt -= dt
       s.boost -= dt
       s.cue += dt
+      s.since += dt
       if (s.mark !== s.aim) [s.aim, s.used, s.primed] = [s.mark, false, false]
       ;[s.health, s.cap] = [s.health + cap - s.cap, cap]
       if (s.mark && !prey.list.includes(s.mark)) s.mark = null

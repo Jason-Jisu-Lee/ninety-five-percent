@@ -35,8 +35,8 @@ export function eat(s: Sim, h: Prey, dt: number, t: number) {
     h.wings = false
   }
   if (h.hp > 0) return
-  s.chain = own('streak') && t - s.last < STREAK.time ? Math.min(STREAK.step * (own('streak') + 1), s.chain + STREAK.step) : 0
-  s.last = t
+  s.chain = own('streak') && s.since < STREAK.time ? Math.min(STREAK.step * (own('streak') + 1), s.chain + STREAK.step) : 0
+  s.since = 0
   const pay = +(k.blood * (h.gold ? own('rich') : 1) * (1 + s.chain)).toFixed(2)
   save.blood += pay
   save.earned += pay

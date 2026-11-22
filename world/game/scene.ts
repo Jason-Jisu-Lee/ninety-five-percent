@@ -2,6 +2,7 @@ import { mood, toggle } from '../../audio/player/music'
 import { shade, veil } from '../../core/draw/dissolve'
 import type { Scene } from '../../core/loop/scene'
 import { save, store, wipe } from '../../core/save/save'
+import { STREAK } from '../../data/dragonfly/fight'
 import { FLY } from '../../data/dragonfly/flight'
 import { DUSK, FADE } from '../../data/game/map'
 import { front } from '../../ui/front/front'
@@ -69,7 +70,7 @@ export const stage1: Scene = {
     render(g, run.sim, clock, fade <= 0, top() ? null : hot)
     if (fade > 0) title.draw(g, fade)
     else {
-      ui.draw(g, run.paused)
+      ui.draw(g, run.paused, run.sim.chain, 1 - run.sim.since / STREAK.time)
       if (dusk > 0) veil(g, Math.min(1, dusk))
     }
     story.draw(g)

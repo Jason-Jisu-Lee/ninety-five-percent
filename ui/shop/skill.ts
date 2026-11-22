@@ -15,13 +15,19 @@ import { key } from '../parts/key'
 import { ring } from '../parts/ring'
 import { text } from '../text/text'
 
-export type Act = { hit: number; bonus: number; slide: number; rush?: boolean; cue?: number; foe(t: number): number[]; mark?(g: Ctx, x: number, y: number, ang: number, since: number): void }
+type Act = { hit: number; bonus: number; slide: number; rush?: boolean; cue?: number; foe(t: number): number[]; mark?(g: Ctx, x: number, y: number, ang: number, since: number): void }
 
 export const BW = 176, BH = 112
 const X = 432, Y = 100, MID = 60, RUN = 2.2, FADE = .4, WAIT = 1, EDGE = .25, GLIDE = .6, stage = ctx(mk(BW, BH))
 export const ACTS: Record<string, Act> = {
   'Lunge': { hit: 1.5, bonus: 1.5, slide: 12, cue: .66, foe: () => [126, -1.2] },
-  'Ambush': { hit: 1.4, bonus: 2, slide: 10, foe: t => [84 + 30 * Math.min(1, t / 1.4), 0] },
+  'Ambush': {
+    hit: 1.4, bonus: 2, slide: 10, foe: t => [84 + 30 * Math.min(1, t / 1.4), 0],
+    mark(g, x, y, ang, since) {
+      g.fillStyle = since < 0 ? UI.foe : UI.text
+      if (since > -.6 && since < .15) for (const d of [7, 11]) for (let j = -2; j < 3; j++) g.fillRect(Math.round(x - Math.cos(ang) * (d + Math.abs(j)) - Math.sin(ang) * j), Math.round(y - Math.sin(ang) * (d + Math.abs(j)) + Math.cos(ang) * j), 1, 1)
+    },
+  },
   'Dive Strike': { hit: .8, bonus: 2, slide: 26, rush: true, foe: () => [112, Math.PI] },
 }
 let playing = '', from = 0

@@ -21,8 +21,8 @@ export function hud(pause: () => void, options: () => void, feast: () => void, t
       return parts.map(p => p.hover(x, y)).some(Boolean)
     },
     click: (x: number, y: number) => parts.some(p => p.click(x, y)),
-    draw(g: Ctx, paused: boolean) {
-      blood(g, save.blood, exact)
+    draw(g: Ctx, paused: boolean, bonus = 0, left = 0) {
+      blood(g, save.blood, exact, bonus, left)
       quest(g)
       bar.draw(g, paused, !save.music)
       now(g, W - 73)
