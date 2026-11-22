@@ -12,7 +12,7 @@ const add = (to: string, label: string, run: (b: HTMLButtonElement) => void) => 
 }
 const play = (src: string) => () => void Object.assign(new Audio(src), { volume: LOUD }).play().catch(() => {})
 
-;[['One soft low note', one], ['One soft puff', two], ['Two soft puffs', three]].forEach(([name, src], n) => add('options', `<b>${n + 1}</b>${name}`, play(src)))
+;[['Dull tap, 0.04 s', one], ['Soft tick, 0.09 s', two], ['Low knock, 0.11 s', three]].forEach(([name, src], n) => add('options', `<b>${n + 1}</b>${name}`, play(src)))
 add('context', 'The Lunge thump that is in the game now', play(thump))
 add('context', 'Game music under it: off', b => {
   if (music.paused) music.play().catch(() => {})

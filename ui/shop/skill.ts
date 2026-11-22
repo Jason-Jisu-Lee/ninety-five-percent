@@ -11,18 +11,19 @@ import { UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
 import { drawPrey } from '../../world/creatures/draw'
 import type { Prey } from '../../world/creatures/prey'
+import { span } from '../../world/creatures/span'
 import { wear } from '../../world/dragonfly/sprite/sheet'
 import { place, where } from '../../world/place/place'
 import { key } from '../parts/key'
+import { marks } from '../parts/marks'
+import { squeeze } from '../parts/squeeze'
 import { text } from '../text/text'
 
-type Sign = (g: Ctx, x: number, y: number, fly: number, far: number, state: number) => void
-export type Act = { hit: number; bonus: number; slide: number; rush?: boolean; cue?: number; jolt?: boolean; sign?: Sign; foe(t: number): number[]; mark?(g: Ctx, x: number, y: number, ang: number, since: number): void }
+type Act = { hit: number; bonus: number; slide: number; rush?: boolean; cue?: number; jolt?: boolean; foe(t: number): number[]; mark?(g: Ctx, x: number, y: number, ang: number, since: number): void }
 
-export const BW = 176, BH = 112, MID = 60
-const X = 432, Y = 100, RUN = 2.2, FADE = .4, WAIT = 1, EDGE = .25, GLIDE = .6, stage = ctx(mk(BW, BH))
-export const ACTS: Record<string, Act> = {
-  'Lunge': { hit: 1.5, bonus: 1.5, slide: 12, cue: .75, jolt: true, foe: () => [126, -1.2], sign: (g, _x, _y, fly, _far, state) => state > 1 && key(g, fly - 5, MID - 30, 'S') },
+const BW = 176, BH = 112, MID = 60, X = 432, Y = 100, RUN = 2.2, FADE = .4, WAIT = 1, EDGE = .25, GLIDE = .6, stage = ctx(mk(BW, BH))
+const ACTS: Record<string, Act> = {
+  'Lunge': { hit: 1.5, bonus: 1.5, slide: 12, cue: .86, jolt: true, foe: () => [126, -1.2] },
   'Ambush': {
     hit: 1.4, bonus: 2, slide: 10, foe: t => [84 + 30 * Math.min(1, t / 1.4), 0],
     mark(g, x, y, ang, since) {
@@ -34,7 +35,7 @@ export const ACTS: Record<string, Act> = {
 }
 let playing = '', from = 0, heard = -1
 
-export function frame(act: Act, t: number) {
+function frame(act: Act, t: number) {
   const kind = cast(where.stage).find(k => PREY[k].zone !== 'swarm')!, k = PREY[kind], bit = t >= act.hit, n = DF.flapFrames, mouth = DF.mouth * DF.scale + k.len / 2, u = Math.min(1, t / act.hit), cue = act.cue ?? 2
   const pre = cue / (cue + LUNGE.speed * (1 - cue)), pace = u < cue ? u * pre / cue : pre + (u - cue) / (1 - cue) * (1 - pre), glide = act.slide * (1 - (1 - Math.min(1, Math.max(0, t - act.hit) / GLIDE)) ** 2)
   const fx = -14 + (act.foe(act.hit)[0] - mouth + 14) * (act.cue ? pace : u) + glide, [ex, ang] = bit ? [fx + mouth, act.foe(act.hit)[1]] : act.foe(t), ey = bit ? MID : MID + Math.sin(t * 3) * 2
@@ -48,7 +49,8 @@ export function frame(act: Act, t: number) {
     stage.fillRect(Math.round(fx + dx - len), MID + dy, len, 1)
   }
   drawPrey(stage, foe, t)
-  if (!bit) act.sign?.(stage, Math.round(ex), Math.round(ey), Math.round(fx), far, u >= cue ? 2 : +(far >= LUNGE.near && far <= LUNGE.far))
+  if (act.cue && !bit) marks(stage, Math.round(ex), Math.round(ey), u < cue ? squeeze(span(foe), far) : span(foe), UI.foe)
+  if (!bit && u >= cue) key(stage, Math.round(fx) - 5, MID - 30, 'S')
   act.mark?.(stage, ex, ey, ang, t - act.hit)
   stage.drawImage(fly, Math.round(fx) - half, MID - half)
   if (bit && t < act.hit + .7) text(stage, String(+(own('power') * act.bonus).toFixed(2)), Math.round(ex), Math.round(MID - 12 - (t - act.hit) * 22), UI.gold, 'c', UI.panel)
