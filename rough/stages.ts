@@ -57,7 +57,7 @@ function fit() {
   Object.assign(big.style, { width: W * s + 'px', height: H * s + 'px', imageRendering: Math.abs(s * d - k) < .001 ? 'pixelated' : 'auto' })
   out.imageSmoothingEnabled = false
   out.drawImage(frame.canvas, 0, 0, big.width, big.height)
-  if (buttons) glow(out, k, 1)
+  if (buttons) glow(out, k, 1, 0)
 }
 
 function show(_?: unknown) {

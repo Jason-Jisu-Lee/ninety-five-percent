@@ -5,7 +5,7 @@ import { text } from '../text/text'
 
 type Item = { label: string; run(): void }
 
-export function menu(items: Item[], x: number, bottom: number, w = 96, h = 22, pitch = 28, k = 1) {
+export function menu(items: Item[], x: number, bottom: number, w = 96, h = 22, pitch = 28) {
   let sel = 0
   const top = bottom - h - (items.length - 1) * pitch
   const hover = (px: number, py: number) => {
@@ -32,7 +32,7 @@ export function menu(items: Item[], x: number, bottom: number, w = 96, h = 22, p
       items.forEach((it, i) => {
         const y = top + i * pitch
         panel(g, x, y, w, h, i === sel ? UI.accent : UI.border, UI.panel)
-        text(g, it.label, x + w / 2, y + Math.ceil((h + 7 * k) / 2) - k + 1, i === sel ? UI.accent : UI.text, 'c', undefined, k)
+        text(g, it.label, x + w / 2, y + 15, i === sel ? UI.accent : UI.text, 'c')
       })
     },
   }

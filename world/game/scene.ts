@@ -1,5 +1,5 @@
 import { mood, toggle } from '../../audio/player/music'
-import { veil } from '../../core/draw/dissolve'
+import { shade, veil } from '../../core/draw/dissolve'
 import type { Scene } from '../../core/loop/scene'
 import { save, store, wipe } from '../../core/save/save'
 import { FLY } from '../../data/dragonfly/flight'
@@ -75,7 +75,12 @@ export const stage1: Scene = {
     for (let i = layers.length; i--;) layers[i].draw(g)
     fate.draw(g)
   },
-  over: (g, k) => glow(g, k, evos.shown() ? 0 : fade > 0 ? fade : 1),
+  over(g, k) {
+    const dark = shade.n
+    shade.n = 0
+    if (fade > 0) title.over(g, k, fade, dark)
+    glow(g, k, evos.shown() ? 0 : fade > 0 ? fade : 1, dark)
+  },
   hover(x, y) {
     const was = hot
     if (story.on() || fate.on()) return false
