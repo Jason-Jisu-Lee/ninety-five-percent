@@ -89,9 +89,6 @@ export function kit(seed: number, L: Look, scale = 1) {
       ROCKS.slice(0, n).forEach(([dx, dy, s]) => {
         const art = STONE[s], sx = x + dx - (art[0].length >> 1), sy = y + dy - art.length
         sprite(art, sx, sy, R() < .5, k, s < 2 ? 3 : 1)
-        queue(sy + art.length, () => {
-          for (let i = 1; i < art[0].length - 1; i++) if (b.is(sx + i, sy + art.length, L.water.slice(0, 4))) b.set(sx + i, sy + art.length, L.water[i % 7 < 5 ? 4 : 3])
-        })
         if (s > 1) return
         sites.push([x + dx, sy + 4])
         perches.push({ x: x + dx, y: sy + 5, h: 2 })

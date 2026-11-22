@@ -23,7 +23,7 @@ export function mourn() {
 }
 
 export function attack(p: Prey | null) {
-  if (!p || run.paused || run.sim.rest || run.sim.away) return
+  if (!p || run.paused || run.sim.away) return
   if (!PREY[p.kind].power || save.warned) return void (run.sim.mark = p)
   ask.open(['There is less than 95% chance you will catch this enemy successfully.'], [['Attack', () => {
     save.warned = true
