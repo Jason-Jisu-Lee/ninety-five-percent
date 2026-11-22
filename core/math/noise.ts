@@ -1,4 +1,4 @@
-function hash(x: number, y: number, s: number) {
+export function hash(x: number, y: number, s: number) {
   let h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263) ^ Math.imul(s | 0, 982451653)
   h = Math.imul(h ^ (h >>> 13), 1274126177)
   h ^= h >>> 16
