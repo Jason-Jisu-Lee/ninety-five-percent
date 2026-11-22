@@ -2,6 +2,7 @@ import { hush } from '../../audio/player/music'
 import { progress, save } from '../../core/save/save'
 import { PREY } from '../../data/enemies/enemies'
 import { enemyCard } from '../../ui/enemy/card'
+import { flyCard } from '../../ui/fly/card'
 import { dialog } from '../../ui/parts/dialog'
 import { story } from '../../ui/parts/story'
 import { shop } from '../../ui/shop/shop'
@@ -10,7 +11,7 @@ import { restart, run } from './run'
 
 const none = () => {}
 
-export const ask = dialog(), card = enemyCard(), evos = shop()
+export const ask = dialog(), card = enemyCard(), self = flyCard(), evos = shop()
 
 export const fate = story([["You've lost 95% of blood points"]], () => {
   hush(false)

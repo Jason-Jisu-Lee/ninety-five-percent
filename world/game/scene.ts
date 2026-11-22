@@ -11,7 +11,8 @@ import { settings } from '../../ui/settings/settings'
 import { glow, tick } from '../../ui/track/track'
 import type { Prey } from '../creatures/prey'
 import { tools } from './dev'
-import { ask, attack, card, evos, fate, inspect, mourn } from './notices'
+import { renew } from '../place/place'
+import { ask, attack, card, evos, fate, inspect, mourn, self } from './notices'
 import { render } from './render'
 import { restart, run } from './run'
 
@@ -38,7 +39,7 @@ const opts = settings(() => {
   fade = 1
   going = frozen = run.paused = false
 })
-const layers = [ask, evos, card, opts], top = () => layers.find(l => l.shown())
+const layers = [ask, evos, card, self, opts], onFly = (x: number, y: number) => Math.hypot(x - run.sim.fly.x, y - run.sim.fly.y + run.sim.fly.h * .7) < 13, top = () => layers.find(l => l.shown())
 const ui = hud(() => {
   run.paused = !run.paused
 }, () => opts.open(true), () => run.sim.feast(), tools)
@@ -58,7 +59,7 @@ export const stage1: Scene = {
     if (sim.fell) mourn()
     sim.fell = false
     if (!sim.away || sim.fly.x > -FLY.gone) dusk = Math.max(0, dusk - dt / DUSK)
-    else if ((dusk += dt / DUSK) >= 1) evos.open(0, () => restart(true))
+    else if ((dusk += dt / DUSK) >= 1) renew(), evos.open(0, () => restart(true))
     save.time += dt * run.rate
     if ((kept += dt) < 5) return
     kept = 0
@@ -89,14 +90,16 @@ export const stage1: Scene = {
     hot = null
     if (ui.hover(x, y)) return true
     hot = run.sim.prey.at(x, y, was)
-    return !!hot
+    return !!hot || onFly(x, y)
   },
   click(x, y) {
     if (story.on()) return story.next()
     if (fate.on()) return
     if (top()) return top()!.click(x, y)
     if (fade > 0) return void (going || title.click(x, y))
-    if (!ui.click(x, y) && !inspect(run.sim.prey.at(x, y, hot)) && !run.paused) run.sim.mark = null
+    if (ui.click(x, y) || inspect(run.sim.prey.at(x, y, hot))) return
+    if (onFly(x, y)) self.open()
+    else if (!run.paused) run.sim.mark = null
   },
   key(k) {
     if (story.on()) return k === 'Escape' ? story.skip() : story.next(), true

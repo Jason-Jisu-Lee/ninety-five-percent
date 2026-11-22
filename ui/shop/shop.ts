@@ -8,6 +8,7 @@ import { drop, gem } from '../parts/icons'
 import { text, width } from '../text/text'
 import { wrap } from '../text/wrap'
 import { emblem } from './emblem'
+import { skill } from './skill'
 import { stats } from './stats'
 
 const L = 32, R = W - L, CW = 184, CH = 17, PX = CW + 12, PY = 20, TOP = 98, ROWS = 10, SIDE = L + PX * 2 + 8, GAP = 26, BW = 96, BH = 20, BY = H - 40
@@ -15,6 +16,7 @@ const NAMES = ['Blood shop', 'Evolution shop'], SHOPS = NAMES.map(n => SHOP.filt
 
 export function shop() {
   let shown = false, side = 0, tab = 0, hot = -1, over = -1, go = false, then: (() => void) | undefined
+  const table = stats(432, 110), born = () => tabs()[tab].name === 'Instinct'
   const tabs = () => SHOPS[side], spots = () => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L)), items = () => tabs()[tab].items.slice(0, ROWS * 2)
   const cell = (i: number) => [L + (i / ROWS | 0) * PX, TOP + i % ROWS * PY]
   const inside = (x: number, y: number, bx: number, by: number, w: number, h: number) => x >= bx && x < bx + w && y >= by && y < by + h
@@ -37,6 +39,7 @@ export function shop() {
       hot = items().findIndex((_, i) => inside(x, y, cell(i)[0], cell(i)[1], CW, CH))
       over = tabs().findIndex((c, i) => inside(x, y, spots()[i] - 6, 54, width(c.name) + 12, 22))
       go = inside(x, y, R - BW, BY, BW, BH)
+      table.hover(side || born() ? -1 : x, y)
       return go || over >= 0 || save.blood >= (price(items()[hot]?.name) ?? Infinity)
     },
     click() {
@@ -56,7 +59,8 @@ export function shop() {
       g.fillStyle = UI.night
       g.fillRect(0, 0, W, H)
       if (side) g.drawImage(mark, SIDE + (R - SIDE - mark.width >> 1), 40)
-      else stats(g, pick?.name)
+      else if (born()) skill(g, pick?.name)
+      else table.draw(g, pick?.name)
       text(g, NAMES[side], L, 38, UI.text, undefined, undefined, 2)
       text(g, n, R, 38, side ? UI.gold : UI.text, 'r', undefined, 2)
       if (side) gem(g, R - width(n) * 2 - 9, 31, UI.gold)

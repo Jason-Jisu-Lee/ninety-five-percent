@@ -8,7 +8,7 @@ import { kit } from './kit'
 import { tidy } from './land'
 import { STONE } from './rocks'
 
-export function marsh(seed = 5) {
+export function marsh(seed: number) {
   const K = kit(seed, MARSH, .55), { R } = K, Q = rng(seed + 77), s = seed % 997, low = R() < .5 ? 1 : -1
   const banks = [{ x: -20, y: 180 + low * 70, rx: 150 + R() * 40, ry: 96 + R() * 30 }, { x: W + 20, y: 180 - low * 60, rx: 140 + R() * 40, ry: 100 + R() * 30 }]
   const isles = [...banks, ...[[230, 60], [420, 316], [250, 300], [440, 70]].filter(() => R() < .7).map(([x, y]) => ({ x: x + (R() - .5) * 50, y: y + (R() - .5) * 24, rx: 30 + R() * 24, ry: 18 + R() * 12 }))]

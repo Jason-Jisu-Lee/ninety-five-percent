@@ -7,7 +7,7 @@ import { STONE } from './rocks'
 
 const CW = 40, CH = 23, WIDE = 18.8, TALL = 10.4, CX = W / 2, CY = 182
 
-export function pond(seed = 12) {
+export function pond(seed: number) {
   const K = kit(seed, POND), { R } = K, s = seed % 997
   const pool = (i: number, j: number, k: number, c = 1) => i >= c && j >= c && i < (CW - 1) * c && j < (CH - 2) * c && (i / c / 17.5) ** 2 + (j / c / 6.4) ** 2 > 1 &&
     (((i + .5) / c - CW / 2) / (WIDE * k)) ** 2 + (((j + .5) / c - 11.4) / (TALL * k)) ** 2 < .72 + vnoise(i / c / 3.2, j / c / 2.6, s) * .5

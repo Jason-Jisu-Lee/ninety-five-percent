@@ -10,11 +10,14 @@ import { tone } from './tone'
 
 export function tag(g: Ctx, p: Prey, reach: number, under: boolean) {
   const k = PREY[p.kind], w = Math.max(width(k.name), 22) + 10, x = clamp(Math.round(p.x - w / 2), 2, W - w - 2), py = Math.round(p.y - p.h * .7)
-  const y = Math.min(H - 21, under || py - reach - 23 < 28 ? py + reach + 5 : py - reach - 23)
+  const y = Math.min(H - 21, under || py - reach - 23 < 28 ? py + reach + 5 : py - reach - 23), key = x + w + 13 < W ? x + w + 2 : x - 13
   box(g, x, y, w, 19, UI.border, UI.panel)
   text(g, k.name, x + w / 2, y + 11, tone(p.kind), 'c')
   g.fillStyle = UI.line
   g.fillRect(x + 4, y + 14, w - 8, 2)
   g.fillStyle = UI.foe
   g.fillRect(x + 4, y + 14, Math.ceil((w - 8) * clamp(p.hp / k.hp)), 2)
+  box(g, key, y + 3, 11, 13, UI.dim, UI.dim)
+  box(g, key, y + 3, 11, 11, UI.border, UI.border)
+  text(g, 'A', key + 3, y + 12, UI.panel)
 }
