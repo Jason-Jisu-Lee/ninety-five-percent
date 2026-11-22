@@ -60,6 +60,7 @@ export const stage1: Scene = {
     if (run.paused || top() || (halt -= dt) > 0) return
     for (let i = 0; i < run.rate; i++) sim.step(dt, clock += dt)
     if (sim.jolt) [sim.jolt, halt] = [false, LUNGE.freeze], sound('thump')
+    if (sim.spent) sim.spent = false, sound('tired')
     if (sim.fell) mourn()
     sim.fell = false
     if (!sim.away || sim.fly.x > -FLY.gone) dusk = Math.max(0, dusk - dt / DUSK)

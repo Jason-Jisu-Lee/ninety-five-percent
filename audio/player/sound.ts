@@ -1,7 +1,8 @@
 import thump from '../../assets/audio/effects/thump.wav'
+import tired from '../../assets/audio/effects/tired.wav'
 import { save } from '../../core/save/save'
 
-const LOUD = .6, FILES = { thump: new Audio(thump) }
+const LOUD = .6, FILES = { thump: new Audio(thump), tired: new Audio(tired) }
 
 export function sound(name: keyof typeof FILES) {
   const el = FILES[name]

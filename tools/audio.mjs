@@ -38,11 +38,11 @@ for (const file of readdirSync(songs)) {
 rmSync(tmp, { force: true })
 
 if (!only || only === 'fx') {
-  const made = Object.entries(effects).map(([name, { ring, send, ...fx }]) => {
-    const mix = render({ bpm: 150, ring, send }, fx)
-    return { name, mono: mix.l.map((v, i) => (v + mix.r[i]) / 2), peak: mix.peak }
+  const made = Object.entries(effects).map(([name, { ring, send, tone, peak, ...fx }]) => {
+    const mix = render({ bpm: 150, ring, send, ...(tone ? { tone } : {}) }, fx)
+    return { name, mono: mix.l.map((v, i) => (v + mix.r[i]) / 2), peak: mix.peak, want: peak }
   })
-  const gain = .35 / Math.max(...made.map(m => m.peak))
-  for (const m of made) writeFileSync(join(out, 'effects', m.name + '.wav'), wav([m.mono], gain))
+  const gain = .35 / Math.max(...made.filter(m => !m.want).map(m => m.peak))
+  for (const m of made) writeFileSync(join(out, 'effects', m.name + '.wav'), wav([m.mono], m.want ? m.want / m.peak : gain))
   console.log(made.length, 'effects')
 }

@@ -56,7 +56,7 @@ export function hunt() {
       }
       s.health = Math.min(cap, s.health + cap * own('mend') / 100 * dt)
       if (s.rest) return
-      if (s.stamina <= 0) [s.mark, s.rest] = [null, s.near()]
+      if (s.stamina <= 0) [s.mark, s.rest, s.spent] = [null, s.near(), true]
       else grab()
     },
   })
