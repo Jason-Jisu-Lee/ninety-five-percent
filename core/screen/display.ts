@@ -3,10 +3,10 @@ import { ctx, mk, type Ctx } from './canvas'
 
 export const canvas = document.querySelector('canvas')!
 export const world = ctx(mk(W, H))
-const out = ctx(canvas), VIEWS: [string, number][] = [['24 inch', 24], ['27 inch', 27], ['Fit', 0]]
+const out = ctx(canvas), VIEWS: [string, number][] = [['Fit', 0], ['24 inch', 24], ['27 inch', 27]]
 
 export const view = {
-  n: import.meta.env.DEV ? 0 : VIEWS.length - 1,
+  n: 0,
   name: () => VIEWS[view.n][0],
   next() {
     view.n = (view.n + 1) % VIEWS.length

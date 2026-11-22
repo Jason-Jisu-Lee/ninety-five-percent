@@ -1,12 +1,14 @@
 import type { Ctx } from '../../core/screen/canvas'
 import { COLOR } from '../../data/dragonfly/colors'
-import { FIGHT } from '../../data/dragonfly/fight'
+import { own } from '../../core/save/save'
+import { FIGHT, LUNGE } from '../../data/dragonfly/fight'
 import { STAMINA } from '../../data/dragonfly/flight'
 import { PREY } from '../../data/enemies/enemies'
 import { FOREST as C, UI } from '../../data/look/palette'
 import { tag } from '../../ui/enemy/tag'
 import { bar } from '../../ui/parts/bar'
 import { marks } from '../../ui/parts/marks'
+import { ring } from '../../ui/parts/ring'
 import { drawPrey } from '../creatures/draw'
 import type { Prey } from '../creatures/prey'
 import { wear } from '../dragonfly/sprite/sheet'
@@ -32,6 +34,9 @@ export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live
     if (held !== hot) bar(g, Math.round(held.x), Math.round(held.y - held.h * .7) + (Math.sin(fly.ang) > .35 ? 7 : -9), Math.max(0, held.hp) / PREY[held.kind].hp, Math.min(40, 10 + 2 * PREY[held.kind].hp), UI.foe)
   }
   if (live) for (const p of hot === sim.mark ? [hot] : [sim.mark, hot]) if (p) marks(g, Math.round(p.x), Math.round(p.y - p.h * .7), span(p), UI.foe)
+  if (live && sim.mark && sim.cue < .25) ring(g, Math.round(sim.mark.x), Math.round(sim.mark.y - sim.mark.h * .7), span(sim.mark) + (sim.hit ? sim.cue * 60 : 6), sim.hit ? UI.gold : UI.foe)
+  else if (live && own('lunge') && sim.mark && !held && !sim.rest && !sim.used && sim.span() >= LUNGE.near && sim.span() < 130)
+    ring(g, Math.round(sim.mark.x), Math.round(sim.mark.y - sim.mark.h * .7), span(sim.mark) + (sim.span() - LUNGE.near) * .5, sim.span() <= LUNGE.far ? UI.gold : UI.dim)
   fx.numbers(g)
   if (live && hot) tag(g, hot, span(hot), hot === held && fly.y < hot.y)
   if (!live) return

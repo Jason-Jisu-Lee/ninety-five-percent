@@ -1,6 +1,6 @@
 import { fall, own } from '../../core/save/save'
 import { DF } from '../../data/dragonfly/body'
-import { FIGHT } from '../../data/dragonfly/fight'
+import { FIGHT, LUNGE } from '../../data/dragonfly/fight'
 import { cast } from '../../data/enemies/enemies'
 import { HOME } from '../../data/game/map'
 import type { Prey } from '../creatures/prey'
@@ -16,15 +16,24 @@ export function sim() {
   const s = {
     fly, roam: brain(fly), prey: swarm(cast(where.stage)), fx: effects(), held: null as Prey | null, mark: null as Prey | null, stamina: 100,
     health: own('health'), cap: own('health'), rest: null as Perch | null, bite: 0, extra: 0, hold: 0, strike: 0, hurt: 0, fell: false, away: false,
+    aim: null as Prey | null, used: false, primed: false, boost: 0, cue: 9, hit: false, chain: 0, last: -99,
   }
-  const gap = (o: Perch) => Math.hypot(o.x - fly.x, o.y - fly.y)
+  const gap = (o: Perch) => Math.hypot(o.x - fly.x, o.y - fly.y), ahead = (d: number) => [fly.x + Math.cos(fly.ang) * d * DF.scale, fly.y + Math.sin(fly.ang) * d * DF.scale]
+  const span = () => s.mark ? Math.hypot(s.mark.x - ahead(DF.headAt)[0], s.mark.y - ahead(DF.headAt)[1]) : 0
   return Object.assign(s, {
-    gap,
+    gap, ahead, span,
     near: () => place().perches.reduce((a, b) => gap(b) < gap(a) ? b : a),
-    ahead: (d: number) => [fly.x + Math.cos(fly.ang) * d * DF.scale, fly.y + Math.sin(fly.ang) * d * DF.scale],
     leave() {
       s.rest = null
       fly.perched = false
+    },
+    dart() {
+      if (!own('lunge') || !s.mark || s.held || s.rest || s.used) return
+      const d = span()
+      ;[s.used, s.cue, s.hit] = [true, 0, d >= LUNGE.near && d <= LUNGE.far]
+      if (!s.hit) return
+      ;[s.primed, s.boost] = [true, LUNGE.time]
+      fly.speed = fly.top() * LUNGE.speed
     },
     feast() {
       if (s.held) s.held.free = FIGHT.free

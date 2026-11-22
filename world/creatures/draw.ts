@@ -1,4 +1,4 @@
-import type { Ctx } from '../../core/screen/canvas'
+import { rgb, type Ctx } from '../../core/screen/canvas'
 import { FOREST as C } from '../../data/look/palette'
 import { PREY } from '../../data/enemies/enemies'
 import { frog } from './frog'
@@ -6,7 +6,10 @@ import type { Prey } from './prey'
 import { SHAPES } from './shapes'
 
 export type Bug = { shape: string; len: number; wide: number; wing: number; chord: number; beat: number; body: string; band: string; eye: string; tint: string; rim: string }
-type Pose = { x: number; y: number; h: number; ang: number; flash: number; seed: number; wings: boolean }
+type Pose = { x: number; y: number; h: number; ang: number; flash: number; seed: number; wings: boolean; gold?: boolean }
+
+const gilded: Record<string, string> = {}
+const gilt = (col: string) => gilded[col] ??= rgb(col).reduce((a, b) => a + b) < 300 ? C.husk : C.yellow
 
 export const cells = (p: Prey) => Math.max(1, Math.ceil(PREY[p.kind].len * p.hp / PREY[p.kind].hp))
 
@@ -15,7 +18,7 @@ function plot(g: Ctx, p: Pose, shadow: boolean) {
   return (along: number, across: number, col: string, thin = false) => {
     const x = Math.round(x0 + c * along - s * across), y = Math.round(y0 + s * along + c * across)
     if (shadow && thin && x + y & 1) return
-    g.fillStyle = shadow ? C.deep : p.flash > 0 ? C.white : col
+    g.fillStyle = shadow ? C.deep : p.flash > 0 ? C.white : p.gold && !thin ? gilt(col) : col
     g.fillRect(x, y, 1, 1)
   }
 }
@@ -32,4 +35,10 @@ function drawBug(g: Ctx, k: Bug, p: Pose, n: number, t: number, shadow = false) 
     if (k.wide < 3 || i >= 1 && i < n - 1 || Math.abs(w) < edge) dot(i - n / 2, w, i >= n - 1 ? k.eye : k.band && i & 1 ? k.band : k.body)
 }
 
-export const drawPrey = (g: Ctx, p: Prey, t: number, shadow = false) => drawBug(g, PREY[p.kind], p, cells(p), t, shadow)
+export function drawPrey(g: Ctx, p: Prey, t: number, shadow = false) {
+  drawBug(g, PREY[p.kind], p, cells(p), t, shadow)
+  if (!p.gold || shadow) return
+  const k = (t * 2 + p.seed * 9) % 2 | 0, r = PREY[p.kind].len / 2 + 3
+  g.fillStyle = C.white
+  for (const [dx, dy] of k ? [[-r, -2], [r - 1, 3]] : [[r, -3], [-r + 1, 2]]) g.fillRect(Math.round(p.x + dx), Math.round(p.y - p.h * .7 + dy), 1, 1)
+}

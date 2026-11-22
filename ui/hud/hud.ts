@@ -14,11 +14,15 @@ import { now } from '../track/track'
 
 export function hud(pause: () => void, options: () => void, feast: () => void, tools: Tool[]) {
   const bar = nav([toggle, pause, options]), songs = picker(W - 73), meal = feastButton(feast), dev = devConsole(tools), parts = [songs, bar, meal, dev]
+  let exact = false
   return {
-    hover: (x: number, y: number) => parts.map(p => p.hover(x, y)).some(Boolean),
+    hover(x: number, y: number) {
+      exact = x < 72 && y < 28
+      return parts.map(p => p.hover(x, y)).some(Boolean)
+    },
     click: (x: number, y: number) => parts.some(p => p.click(x, y)),
     draw(g: Ctx, paused: boolean) {
-      blood(g, save.blood)
+      blood(g, save.blood, exact)
       quest(g)
       bar.draw(g, paused, !save.music)
       now(g, W - 73)

@@ -2,7 +2,7 @@ import { PREY, type Kind } from '../../data/enemies/enemies'
 import { H, W } from '../../data/look/screen'
 import { place } from '../place/place'
 
-export type Prey = { kind: Kind; x: number; y: number; h: number; ang: number; hp: number; wings: boolean; flash: number; seed: number; age: number; gx: number; gy: number; wait: number; fear: number; tired: number; free: number; vx: number; vy: number }
+export type Prey = { kind: Kind; x: number; y: number; h: number; ang: number; hp: number; wings: boolean; gold: boolean; flash: number; seed: number; age: number; gx: number; gy: number; wait: number; fear: number; tired: number; free: number; vx: number; vy: number }
 
 const R = Math.random
 

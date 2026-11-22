@@ -1,7 +1,7 @@
 import { between } from '../../core/math/between'
 import { own, progress, save } from '../../core/save/save'
 import { DF } from '../../data/dragonfly/body'
-import { FIGHT } from '../../data/dragonfly/fight'
+import { FIGHT, STREAK } from '../../data/dragonfly/fight'
 import { PREY } from '../../data/enemies/enemies'
 import { FOREST as C } from '../../data/look/palette'
 import { cells } from '../creatures/draw'
@@ -35,10 +35,13 @@ export function eat(s: Sim, h: Prey, dt: number, t: number) {
     h.wings = false
   }
   if (h.hp > 0) return
-  save.blood += k.blood
-  save.earned += k.blood
+  s.chain = own('streak') && t - s.last < STREAK.time ? Math.min(STREAK.step * (own('streak') + 1), s.chain + STREAK.step) : 0
+  s.last = t
+  const pay = +(k.blood * (h.gold ? own('rich') : 1) * (1 + s.chain)).toFixed(2)
+  save.blood += pay
+  save.earned += pay
   save.caught[h.kind] = (save.caught[h.kind] ?? 0) + 1
-  fx.hit(mx, my - fly.h * .7 - 20, '+' + k.blood, C.red)
+  fx.hit(mx, my - fly.h * .7 - 20, '+' + pay, C.red)
   progress(h.kind)
   s.prey.kill(h, t)
   s.held = null

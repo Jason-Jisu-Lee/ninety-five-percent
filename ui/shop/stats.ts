@@ -1,6 +1,6 @@
 import { level } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
-import { FLY, STAMINA } from '../../data/dragonfly/flight'
+import { CM, FLY, STAMINA } from '../../data/dragonfly/flight'
 import { BASE, STAT, type Stat } from '../../data/dragonfly/stats'
 import { UI } from '../../data/look/palette'
 import { UPGRADES } from '../../data/shop/upgrades'
@@ -12,9 +12,8 @@ const ROWS: [label: string, stat: Stat, base: (v: number) => string, now: (v: nu
   ['Power', 'power', num, num, ''],
   ['Health', 'health', num, num, ''],
   ['Damage blocked', 'armour', num, num, 'Damage blocked per attack'],
-  ['Top speed', 'speed', v => num(FLY.top * v / 3.8), v => num(FLY.top * v / 3.8) + ' cm/s', 'Speed after full acceleration'],
+  ['Speed', 'speed', v => num(FLY.top * v / CM), v => num(FLY.top * v / CM) + ' cm/s', ''],
   ['Turning', 'turn', v => num(75 * v), v => num(75 * v) + ' deg/s', 'How fast it turns'],
-  ['Acceleration', 'accel', v => num(Math.log(10) / (FLY.accel * v)), v => num(Math.log(10) / (FLY.accel * v)) + ' s', 'Time it takes to reach full speed'],
   ['Stamina', 'stamina', v => num(100 / STAMINA.drain * v), v => num(100 / STAMINA.drain * v) + ' s', 'Flying time before it must rest'],
   ['Rest', 'rest', v => num(STAMINA.regen * v) + '%', v => num(STAMINA.regen * v) + '%/s', 'Stamina regained per second of rest'],
   ['Mend in flight', 'mend', v => num(v) + '%', v => num(v) + '%/s', 'Health regained per second of flight'],

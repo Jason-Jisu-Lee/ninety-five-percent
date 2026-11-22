@@ -3,8 +3,8 @@ import { between } from '../../core/math/between'
 import { clamp } from '../../core/math/clamp'
 import { own } from '../../core/save/save'
 import { DF } from '../../data/dragonfly/body'
-import { FIGHT } from '../../data/dragonfly/fight'
-import { FLY, STAMINA } from '../../data/dragonfly/flight'
+import { FIGHT, LUNGE } from '../../data/dragonfly/fight'
+import { CM, FLY, STAMINA } from '../../data/dragonfly/flight'
 import { PREY } from '../../data/enemies/enemies'
 import { HOME } from '../../data/game/map'
 import { eat } from './eat'
@@ -16,8 +16,9 @@ export function hunt() {
   function grab() {
     const [hx, hy] = s.ahead(DF.headAt), p = s.mark
     if (!p || p.free > 0 || Math.hypot(p.x - hx, p.y - hy) >= FLY.catch * own('reach')) return
-    const fast = fly.speed >= fly.top() * FIGHT.dive, behind = Math.cos(p.ang - Math.atan2(p.y - fly.y, p.x - fly.x)) > 0
-    ;[s.held, s.bite, s.hold, s.strike, s.extra] = [p, FIGHT.bite / own('bite'), 0, PREY[p.kind].strike * between(FIGHT.jitter), +fast * own('dive') + +behind * own('ambush')]
+    const fast = fly.top() / CM >= FIGHT.dive, behind = Math.cos(p.ang - Math.atan2(p.y - fly.y, p.x - fly.x)) > 0
+    ;[s.held, s.bite, s.hold, s.strike, s.extra] = [p, FIGHT.bite / own('bite'), 0, PREY[p.kind].strike * between(FIGHT.jitter), +fast * own('dive') + +behind * own('ambush') + +s.primed * LUNGE.bonus]
+    ;[s.used, s.primed, s.boost] = [false, false, 0]
   }
   return Object.assign(s, {
     idle(dt: number, t: number) {
@@ -31,6 +32,9 @@ export function hunt() {
       prey.step(dt, t, fly.x, fly.y, s.held)
       s.bite -= dt
       s.hurt -= dt
+      s.boost -= dt
+      s.cue += dt
+      if (s.mark !== s.aim) [s.aim, s.used, s.primed] = [s.mark, false, false]
       ;[s.health, s.cap] = [s.health + cap - s.cap, cap]
       if (s.mark && !prey.list.includes(s.mark)) s.mark = null
       if (s.away) {
@@ -39,7 +43,7 @@ export function hunt() {
       }
       else if (s.held) eat(s, s.held, dt, t)
       else if (s.rest) perch(s, s.rest, dt)
-      else if (s.mark) fly.chase(s.mark, top, dt)
+      else if (s.mark) fly.chase(s.mark, top * (s.boost > 0 ? LUNGE.speed : 1), dt)
       else s.roam(dt)
       fly.step(dt, t)
       fx.step(dt)

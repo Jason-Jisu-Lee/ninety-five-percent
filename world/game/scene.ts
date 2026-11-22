@@ -107,7 +107,7 @@ export const stage1: Scene = {
     if (top()) return top()!.key(k)
     if (k === 'm') return toggle(), true
     if (fade > 0) return !going && title.key(k)
-    if (k === 'a') return attack(hot), false
+    if (k === 'a') return hot && hot !== run.sim.mark ? attack(hot) : run.sim.dart(), false
     if (k === 'Escape') opts.open(true)
     else if (k === 'p' || k === ' ') run.paused = !run.paused
     else return false

@@ -1,3 +1,4 @@
+import { own } from '../../core/save/save'
 import { PREY, type Kind } from '../../data/enemies/enemies'
 import { H, W } from '../../data/look/screen'
 import { move } from './move'
@@ -7,7 +8,7 @@ export function swarm(kinds: Kind[]) {
   const R = Math.random, list: Prey[] = [], due: { kind: Kind; at: number }[] = []
   const add = (kind: Kind, edge: boolean) => {
     const k = PREY[kind], side = R() * 4 | 0, u = R()
-    const p: Prey = { kind, x: 0, y: 0, h: k.h, ang: R() * 6.283, hp: k.hp, wings: true, flash: 0, seed: R(), age: edge ? 0 : 9, gx: 0, gy: 0, wait: 0, fear: 0, tired: 0, free: 0, vx: 0, vy: 0 }
+    const p: Prey = { kind, x: 0, y: 0, h: k.h, ang: R() * 6.283, hp: k.hp, wings: true, gold: R() < own('gold'), flash: 0, seed: R(), age: edge ? 0 : 9, gx: 0, gy: 0, wait: 0, fear: 0, tired: 0, free: 0, vx: 0, vy: 0 }
     errand(p)
     if (edge) [p.x, p.y] = [side < 2 ? u * W : side < 3 ? -16 : W + 16, side < 1 ? -16 : side < 2 ? H + 16 : u * H]
     else [p.x, p.y, p.wait] = [p.gx, p.gy, k.sit * R()]

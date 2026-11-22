@@ -84,9 +84,10 @@ export function shop() {
         drop(g, x + CW - 12 - width(p), y + 8, ok ? C.red : UI.dim)
       })
       if (pick) {
-        const at = UPGRADES[pick.name], lines = pick.text.split('. ').concat(at ? [`Level ${level(pick.name)} of ${at[2].length}`] : [])
+        const at = UPGRADES[pick.name], inborn = /^passive\. /.test(pick.text), lines = pick.text.replace(/^passive\. /, '').split('. ').concat(at ? [`Level ${level(pick.name)} of ${at[2].length}`] : [])
         text(g, pick.name, SIDE, 238, UI.gold)
-        lines.flatMap(s => wrap(s.charAt(0).toUpperCase() + s.slice(1), R - SIDE)).forEach((line, i) => text(g, line, SIDE, 254 + i * 11, UI.text))
+        if (inborn) text(g, 'Passive', SIDE, 250, UI.ally)
+        lines.flatMap(s => wrap(s.charAt(0).toUpperCase() + s.slice(1), R - SIDE)).forEach((line, i) => text(g, line, SIDE, 254 + +inborn * 12 + i * 11, UI.text))
       }
       frame(g, R - BW, BY, BW, BH, go)
       text(g, side ? 'Continue' : 'Return', R - BW / 2, BY + 14, go ? UI.gold : UI.text, 'c')
