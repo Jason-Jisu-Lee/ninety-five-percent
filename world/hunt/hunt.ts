@@ -33,6 +33,7 @@ export function hunt() {
       s.bite -= dt
       s.hurt -= dt
       s.boost -= dt
+      s.miss += dt
       s.since += dt
       if (s.mark !== s.aim) [s.aim, s.used, s.primed] = [s.mark, false, false]
       ;[s.health, s.cap] = [s.health + cap - s.cap, cap]
