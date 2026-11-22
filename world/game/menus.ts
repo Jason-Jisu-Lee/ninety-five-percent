@@ -1,5 +1,5 @@
 import { mood } from '../../audio/player/music'
-import { save, store, wipe } from '../../core/save/save'
+import { fall, save, wipe } from '../../core/save/save'
 import { front } from '../../ui/front/front'
 import { intro } from '../../ui/front/intro'
 import { hud } from '../../ui/hud/hud'
@@ -19,13 +19,15 @@ export const title = front(() => {
   if (save.started) begin()
   else story.begin()
 }, () => opts.open(false))
-export const opts = settings(() => {
+const leave = () => {
+  fall(false)
+  restart()
   G.fade = 1
   G.going = run.paused = false
   G.frozen = true
   mood(false)
-  store()
-}, () => {
+}
+export const opts = settings(() => ask.open(['This will forfeit your current run and you will lose 95% of current blood points. Continue?'], [['Continue', leave], ['Cancel', () => {}]]), () => {
   wipe()
   settle()
   restart()

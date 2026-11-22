@@ -1,6 +1,5 @@
 import type { Ctx } from '../../core/screen/canvas'
-import { own } from '../../core/save/save'
-import { COLOR } from '../../data/dragonfly/colors'
+import { own, save } from '../../core/save/save'
 import { FIGHT, LUNGE } from '../../data/dragonfly/fight'
 import { STAMINA } from '../../data/dragonfly/flight'
 import { PREY } from '../../data/enemies/enemies'
@@ -19,7 +18,7 @@ import { place } from '../place/place'
 
 export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live: boolean, hot: Prey | null) {
   const { fly, prey, fx, held } = sim, ready = own('lunge') && !held && !sim.rest && !sim.used, jig = sim.miss < LUNGE.shake ? Math.round(Math.sin(sim.miss / LUNGE.shake * Math.PI * 6) * 2) : 0, chew = held ? 1 + +(sim.bite > FIGHT.bite * .55) : 0
-  const [spr, sh] = wear(COLOR)(fly.heading, fly.frame, chew, fly.lean), half = spr.width >> 1
+  const [spr, sh] = wear(save.color)(fly.heading, fly.frame, chew, fly.lean), half = spr.width >> 1
   const x = Math.round(fly.x) + (sim.hurt > 0 ? sim.hurt * 40 & 1 || -1 : 0), y = Math.round(fly.y - fly.h * .7)
   g.drawImage(place().art, 0, 0)
   glints(g, clock)

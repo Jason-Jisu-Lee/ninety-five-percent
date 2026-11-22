@@ -1,9 +1,8 @@
 import { sound } from '../../audio/player/sound'
 import { ctx, mk, type Ctx } from '../../core/screen/canvas'
 import { dissolve } from '../../core/draw/dissolve'
-import { own } from '../../core/save/save'
+import { own, save } from '../../core/save/save'
 import { DF } from '../../data/dragonfly/body'
-import { COLOR } from '../../data/dragonfly/colors'
 import { LUNGE } from '../../data/dragonfly/fight'
 import { FLY } from '../../data/dragonfly/flight'
 import { cast, PREY } from '../../data/enemies/enemies'
@@ -40,7 +39,7 @@ function frame(act: Act, t: number) {
   const pre = cue / (cue + LUNGE.speed * (1 - cue)), pace = u < cue ? u * pre / cue : pre + (u - cue) / (1 - cue) * (1 - pre), glide = act.slide * (1 - (1 - Math.min(1, Math.max(0, t - act.hit) / GLIDE)) ** 2)
   const fx = -14 + (act.foe(act.hit)[0] - mouth + 14) * (act.cue ? pace : u) + glide, [ex, ang] = bit ? [fx + mouth, act.foe(act.hit)[1]] : act.foe(t), ey = bit ? MID : MID + Math.sin(t * 3) * 2
   const foe = { kind, x: ex, y: ey + (bit ? FLY.height : k.h) * .7, h: bit ? FLY.height : k.h, ang, hp: k.hp, wings: true, flash: bit && t < act.hit + .1 ? 1 : 0, seed: .3 } as Prey
-  const [fly, shade] = wear(COLOR)(8, Math.floor(t * FLY.beat * n * (bit ? 1.3 : 1)) % n, bit ? 1 + +(t * 3 % 1 > .5) : 0), half = fly.width >> 1, far = ex - fx - mouth
+  const [fly, shade] = wear(save.color)(8, Math.floor(t * FLY.beat * n * (bit ? 1.3 : 1)) % n, bit ? 1 + +(t * 3 % 1 > .5) : 0), half = fly.width >> 1, far = ex - fx - mouth
   stage.drawImage(place().art, W / 2 - BW / 2, H / 2 - BH / 2, BW, BH, 0, 0, BW, BH)
   drawPrey(stage, foe, t, true)
   stage.drawImage(shade, Math.round(fx + FLY.height * .45) - half, Math.round(MID + FLY.height * .7) - half)

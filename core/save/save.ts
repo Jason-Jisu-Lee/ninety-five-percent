@@ -1,11 +1,12 @@
 import { FIGHT } from '../../data/dragonfly/fight'
+import { COLOR, type Color } from '../../data/dragonfly/colors'
 import { BASE, STAT, type Stat } from '../../data/dragonfly/stats'
 import { UPGRADES } from '../../data/shop/upgrades'
 import { QUESTS } from '../../data/game/quests'
 
 const KEY = 'ninety-five-percent'
 const fresh = () => ({
-  blood: 0, quest: 0, count: 0, started: false, warned: false, points: 0, wild: 0, vol: 5, fx: 5, mute: false,
+  blood: 0, quest: 0, count: 0, started: false, warned: false, points: 0, wild: 0, color: COLOR as Color, vol: 5, fx: 5, mute: false,
   time: 0, earned: 0, bought: 0, deaths: 0, caught: {} as Record<string, number>, levels: {} as Record<string, number>,
 })
 
@@ -55,8 +56,8 @@ export function progress(kind: string) {
   Object.assign(save, { quest: save.quest + 1, count: 0, blood: save.blood + q.blood, earned: save.earned + q.blood })
 }
 
-export function fall() {
-  save.deaths++
+export function fall(death = true) {
+  save.deaths += +death
   save.blood = Math.floor(save.blood * (100 - FIGHT.loss) / 100)
   store()
 }
