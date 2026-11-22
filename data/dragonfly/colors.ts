@@ -1,16 +1,5 @@
 export const COLORS = {
-  reed: ['#b9a57a'],
-  bark: ['#8a6a4a', '', '#ead9ab', '#c9a45c'],
-  moss: ['#8b9a57'],
-  slate: ['#7f95a3'],
-  ash: ['#a9aba3'],
-  smoke: ['#5d6263', '#c9c0b2'],
-  clay: ['#b0714f'],
-  dusk: ['#8c7a99'],
   azure: ['#7fd4f2'],
-  scarlet: ['#d8442c'],
-  emerald: ['#5fc06a'],
-  amber: ['#e2a634'],
 }
 
 export type Color = keyof typeof COLORS

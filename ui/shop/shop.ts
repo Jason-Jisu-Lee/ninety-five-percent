@@ -1,4 +1,4 @@
-import { buy, level, price, save } from '../../core/save/save'
+import { buy, price, save } from '../../core/save/save'
 import { unlock } from '../../core/save/wild'
 import type { Ctx } from '../../core/screen/canvas'
 import { FOREST as C, UI } from '../../data/look/palette'
@@ -8,10 +8,12 @@ import { UPGRADES } from '../../data/shop/upgrades'
 import { SHOP } from '../../data/shop/shop'
 import { WILD } from '../../data/shop/wild'
 import { scene, settle } from '../../world/place/place'
-import { drop, gem } from '../parts/icons'
+import { frame } from '../parts/frame'
+import { drop } from '../parts/icons'
 import { text, width } from '../text/text'
-import { wrap } from '../text/wrap'
+import { about } from './about'
 import { emblem } from './emblem'
+import { head } from './head'
 import { skill } from './skill'
 import { stats } from './stats'
 import { wild } from './wild'
@@ -26,12 +28,6 @@ export function shop() {
   const cell = (i: number) => feral() ? [L + (WILD[i].stage - 1) * PX, TOP + WILD[i].row * PY] : [L + (i / ROWS | 0) * PX, TOP + i % ROWS * PY]
   const cost = (i: number) => feral() ? i < save.wild ? undefined : WILD[i]?.cost : price(items()[i]?.name), can = (i: number) => save.blood >= (cost(i) ?? Infinity) && (!feral() || i === save.wild)
   const inside = (x: number, y: number, bx: number, by: number, w: number, h: number) => x >= bx && x < bx + w && y >= by && y < by + h
-  const frame = (g: Ctx, x: number, y: number, w: number, h: number, lit: boolean) => {
-    g.fillStyle = lit ? UI.gold : UI.line
-    g.fillRect(x, y, w, h)
-    g.fillStyle = UI.night
-    g.fillRect(x + 1, y + 1, w - 2, h - 2)
-  }
   const shut = () => {
     shown = false
     then?.()
@@ -63,20 +59,14 @@ export function shop() {
     },
     draw(g: Ctx) {
       if (!shown) return
-      const pick = feral() ? undefined : items()[hot], mark = emblem(), n = String(Math.floor(side ? save.points : save.blood))
+      const pick = feral() ? undefined : items()[hot], mark = emblem()
       g.fillStyle = UI.night
       g.fillRect(0, 0, W, H)
       if (side) g.drawImage(mark, SIDE + (R - SIDE - mark.width >> 1), 40)
       else if (born()) skill(g, pick?.name)
       else if (feral()) wild(g, WILD[hot] ?? WILD[save.wild])
       else table.draw(g, pick?.name)
-      text(g, NAMES[side], L, 38, UI.text, undefined, undefined, 2)
-      text(g, n, R, 38, side ? UI.gold : UI.text, 'r', undefined, 2)
-      if (side) gem(g, R - width(n) * 2 - 9, 31, UI.gold)
-      else drop(g, R - width(n) * 2 - 8, 31, C.red)
-      g.fillStyle = UI.line
-      g.fillRect(L, 48, R - L, 1)
-      g.fillRect(L, H - 52, R - L, 1)
+      head(g, NAMES[side], side, L, R)
       tabs().forEach((c, i) => {
         text(g, c.name, spots()[i], 68, i === tab ? UI.text : i === over ? UI.border : UI.dim)
         g.fillStyle = UI.gold
@@ -92,12 +82,7 @@ export function shop() {
         text(g, p, x + CW - 7, y + 12, ok ? UI.text : UI.dim, 'r')
         drop(g, x + CW - 12 - width(p), y + 8, ok ? C.red : UI.dim)
       })
-      if (pick) {
-        const at = UPGRADES[pick.name], inborn = /^passive\. /.test(pick.text), lines = pick.text.replace(/^passive\. /, '').split('. ').concat(at ? [`Level ${level(pick.name)} of ${at[2].length}`] : [])
-        text(g, pick.name, SIDE, 238, UI.gold)
-        if (inborn) text(g, 'Passive', SIDE, 250, UI.ally)
-        lines.flatMap(s => wrap(s.charAt(0).toUpperCase() + s.slice(1), R - SIDE)).forEach((line, i) => text(g, line, SIDE, 254 + +inborn * 12 + i * 11, UI.text))
-      }
+      if (pick) about(g, pick, SIDE, R - SIDE)
       frame(g, R - BW, BY, BW, BH, go)
       text(g, side ? 'Continue' : 'Return', R - BW / 2, BY + 14, go ? UI.gold : UI.text, 'c')
     },
