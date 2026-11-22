@@ -1,4 +1,4 @@
-import { buy, price, save } from '../../core/save/save'
+import { buy, level, price, save } from '../../core/save/save'
 import { unlock } from '../../core/save/wild'
 import type { Ctx } from '../../core/screen/canvas'
 import { FOREST as C, UI } from '../../data/look/palette'
@@ -78,6 +78,8 @@ export function shop() {
         const c = cost(i), p = String(c), ok = can(i)
         frame(g, x, y, CW, CH, i === hot)
         text(g, it.name, x + 7, y + 12, it.off || (feral() ? i !== save.wild : UPGRADES[it.name] && !c) ? UI.dim : i === hot ? UI.gold : UI.text)
+        const n = level(it.name), of = UPGRADES[it.name]?.[2].length ?? 0
+        if (!feral() && n && of > 1) text(g, `${n}/${of}`, x + 12 + width(it.name), y + 12, UI.dim)
         if (!c) return
         text(g, p, x + CW - 7, y + 12, ok ? UI.text : UI.dim, 'r')
         drop(g, x + CW - 12 - width(p), y + 8, ok ? C.red : UI.dim)
