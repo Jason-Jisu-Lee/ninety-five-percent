@@ -3,7 +3,7 @@ import { ctx, mk, type Ctx } from './canvas'
 
 export const canvas = document.querySelector('canvas')!
 export const world = ctx(mk(W, H))
-const out = ctx(canvas), VIEWS: [string, number][] = [['1080p', 3], ['720p', 2], ['1440p', 4], ['Fit', 0]]
+const out = ctx(canvas), VIEWS: [string, number][] = [['Standard', 3], ['Fit', 0]]
 
 export const view = {
   n: import.meta.env.DEV ? 0 : VIEWS.length - 1,
@@ -16,7 +16,7 @@ export const view = {
 
 export function fit() {
   const d = devicePixelRatio || 1, room = Math.min(innerWidth / W, innerHeight / H), whole = VIEWS[view.n][1]
-  const k = Math.max(1, whole ? Math.min(whole, Math.floor(room * d + .001)) : Math.ceil(room * d - .001)), s = whole ? k / d : room
+  const k = whole || Math.max(1, Math.ceil(room * d - .001)), s = whole ? k / d : room
   Object.assign(canvas.style, {
     width: W * s + 'px',
     height: H * s + 'px',

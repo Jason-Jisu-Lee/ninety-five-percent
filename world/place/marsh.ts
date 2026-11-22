@@ -1,20 +1,27 @@
 import { vnoise } from '../../core/math/noise'
+import { rng } from '../../core/math/rng'
 import { H, W } from '../../data/look/screen'
 import { MARSH } from '../../data/place/looks'
-import { mud } from './cover'
+import { mud, puddle } from './cover'
 import { afloat, CH, CW, edge, fine, mats, ovals, tufts } from './isles'
 import { kit } from './kit'
 import { tidy } from './land'
+import { STONE } from './rocks'
 
 export function marsh(seed = 5) {
-  const K = kit(seed, MARSH, .55), { R } = K, s = seed % 997, low = R() < .5 ? 1 : -1
+  const K = kit(seed, MARSH, .55), { R } = K, Q = rng(seed + 77), s = seed % 997, low = R() < .5 ? 1 : -1
   const banks = [{ x: -20, y: 180 + low * 70, rx: 150 + R() * 40, ry: 96 + R() * 30 }, { x: W + 20, y: 180 - low * 60, rx: 140 + R() * 40, ry: 100 + R() * 30 }]
   const isles = [...banks, ...[[230, 60], [420, 316], [250, 300], [440, 70]].filter(() => R() < .7).map(([x, y]) => ({ x: x + (R() - .5) * 50, y: y + (R() - .5) * 24, rx: 30 + R() * 24, ry: 18 + R() * 12 }))]
   const cell = ovals(isles, s), land = fine(cell)
-  K.lay(land, fine(tidy((i, j) => ((i - 40) / 22) ** 2 + ((j - 22) / 11) ** 2 < .6 + vnoise(i / 6, j / 6, s + 9) * .6 && !cell(i, j), CW, CH)), fine(tidy((i, j) => vnoise(i / 5, j / 4, s + 4) > .56, CW, CH)), 1, 4)
+  K.lay(land, fine(tidy((i, j) => ((i - 40) / 22) ** 2 + ((j - 22) / 11) ** 2 < .6 + vnoise(i / 6, j / 6, s + 9) * .6 && !cell(i, j), CW, CH)), fine(tidy((i, j) => vnoise(i / 9, j / 7, s + 4) > .56, CW, CH)), 1, 4)
   const flats = banks.map(o => ({ x: o.x + (o.x < 0 ? 1 : -1) * o.rx * .55, y: o.y + 10, rx: 44 + R() * 16, ry: 34 + R() * 8 }))
   K.queue(-2, () => mud(K.b, fine(ovals(flats, s + 6, 3)), K.L))
-  flats.forEach(m => K.zone('mud', m.x, m.y, m.rx * .7, m.ry * .7))
+  for (const m of flats) {
+    const px = Math.round(m.x + (Q() - .5) * m.rx * .6), py = Math.round(m.y + (Q() - .5) * m.ry * .5)
+    K.queue(-1.5, () => [[0, 0, 12, 5], [16, 7, 6, 3], [-12, 8, 4, 2]].forEach(([dx, dy, rx, ry]) => puddle(K.b, px + dx, py + dy, rx, ry, K.L)))
+    for (let i = 0; i < 4; i++) K.sprite(STONE[2], Math.round(m.x + (Q() - .5) * m.rx), Math.round(m.y + (Q() - .5) * m.ry * .9), Q() < .5, K.k, 1)
+    K.zone('mud', m.x, m.y, m.rx * .7, m.ry * .7)
+  }
   mats(K, [[200 + R() * 60, 150 + low * 50], [400 + R() * 60, 190 - low * 50]].map(([x, y]) => ({ x, y, rx: 50 + R() * 20, ry: 30 + R() * 8 })), land, s)
   isles.forEach((o, i) => {
     const side = o.x < W / 2 ? 1 : -1, x = Math.round(i < 2 ? o.x + side * o.rx * .5 : o.x), y = Math.round(o.y), wade = edge(K, x, y)

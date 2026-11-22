@@ -19,9 +19,10 @@ export function listen() {
     current().click(...toWorld(e))
   })
   addEventListener('keydown', e => {
-    at = undefined
     wake()
-    if (current().key(e.key.length > 1 ? e.key : e.key.toLowerCase())) e.preventDefault()
+    if (!current().key(e.key.length > 1 ? e.key : e.key.toLowerCase())) return
+    at = undefined
+    e.preventDefault()
   })
   setInterval(point, 100)
 }

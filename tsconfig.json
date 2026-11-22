@@ -12,5 +12,5 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["core", "world", "ui", "data", "audio", "demo"]
+  "include": ["core", "world", "ui", "data", "audio", "demo", "rough"]
 }

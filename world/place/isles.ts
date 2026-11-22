@@ -12,8 +12,11 @@ export const ovals = (list: Oval[], s: number, grain = 4, base = .75, wild = .6)
 export const fine = (cell: (i: number, j: number) => boolean) => shape(cell, 8, 3)
 
 export function mats(K: Kit, list: Oval[], land: Mask, s: number) {
-  K.queue(-1, () => weed(K.b, fine(ovals(list, s + 2, 2.2, .5, .9)), land, K.L))
-  list.forEach(m => K.zone('weed', m.x, m.y, m.rx * .8, m.ry * .8))
+  K.queue(-1, () => weed(K.b, fine(ovals(list, s + 2, 2.2, .5, .9)), land, K.L, s))
+  for (const m of list) {
+    K.rafts.push([m.x, m.y], [m.x, m.y], [m.x, m.y])
+    K.zone('weed', m.x, m.y, m.rx * .8, m.ry * .8)
+  }
 }
 
 export function tufts(K: Kit, o: Oval, n: number, ok = (_x: number, _y: number) => true) {

@@ -5,11 +5,11 @@ import { text } from '../text/text'
 
 type Item = { label: string; run(): void }
 
-export function menu(items: Item[], x: number, bottom: number, k = 1, w = 96, h = 22, pitch = 28) {
+export function menu(items: Item[], x: number, bottom: number, w = 96, h = 22, pitch = 28, k = 1) {
   let sel = 0
-  const top = bottom - (h + (items.length - 1) * pitch) * k
+  const top = bottom - h - (items.length - 1) * pitch
   const hover = (px: number, py: number) => {
-    const i = px < x || px >= x + w * k ? -1 : items.findIndex((_, i) => py >= top + i * pitch * k && py < top + (i * pitch + h) * k)
+    const i = px < x || px >= x + w ? -1 : items.findIndex((_, i) => py >= top + i * pitch && py < top + i * pitch + h)
     if (i >= 0) sel = i
     return i >= 0
   }
@@ -29,15 +29,11 @@ export function menu(items: Item[], x: number, bottom: number, k = 1, w = 96, h 
       return !!d || k === 'Enter' || k === ' '
     },
     draw(g: Ctx) {
-      g.save()
-      g.imageSmoothingEnabled = false
-      g.translate(x, top)
-      g.scale(k, k)
       items.forEach((it, i) => {
-        panel(g, 0, i * pitch, w, h, i === sel ? UI.accent : UI.border, UI.panel)
-        text(g, it.label, w / 2, i * pitch + 15, i === sel ? UI.accent : UI.text, 'c')
+        const y = top + i * pitch
+        panel(g, x, y, w, h, i === sel ? UI.accent : UI.border, UI.panel)
+        text(g, it.label, x + w / 2, y + Math.ceil((h + 7 * k) / 2) - k + 1, i === sel ? UI.accent : UI.text, 'c', undefined, k)
       })
-      g.restore()
     },
   }
 }

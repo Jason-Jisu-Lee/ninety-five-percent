@@ -12,7 +12,7 @@ import { log, SNAG, STONE } from './rocks'
 type Zone = { kind: 'pads' | 'reeds' | 'flowers' | 'stones' | 'log' | 'open' | 'mud' | 'weed' | 'shade'; x: number; y: number; rx: number; ry: number }
 export type Perch = { x: number; y: number; h: number }
 export type Place = {
-  art: HTMLCanvasElement; look: Look; zones: Zone[]; perches: Perch[]; flowers: number[][]; sites: number[][]; swarms: number[][]; cover: number[][]; sparks: number[][]
+  art: HTMLCanvasElement; look: Look; zones: Zone[]; perches: Perch[]; flowers: number[][]; sites: number[][]; swarms: number[][]; cover: number[][]; rafts: number[][]; sparks: number[][]
   wet(x: number, y: number, far?: number): boolean
 }
 
@@ -22,7 +22,7 @@ const ROCKS = [[0, 0, 0], [22, 8, 1], [-18, 10, 1], [10, 16, 2], [-8, -9, 2], [3
 
 export function kit(seed: number, L: Look, scale = 1) {
   const R = rng(seed), b = board(ramps(L)), k = key(L), later: [number, () => void][] = [], S = (v: number) => Math.round(v * scale)
-  const zones: Zone[] = [], perches: Perch[] = [], flowers: number[][] = [], sites: number[][] = [], swarms: number[][] = [], cover: number[][] = []
+  const zones: Zone[] = [], perches: Perch[] = [], flowers: number[][] = [], sites: number[][] = [], swarms: number[][] = [], cover: number[][] = [], rafts: number[][] = []
   let land: Mask = new Uint8Array(W * H)
   const pick = <T>(list: T[]) => list[R() * list.length | 0]
   const zone = (kind: Zone['kind'], x: number, y: number, rx: number, ry = rx) => zones.push({ kind, x, y, rx, ry })
@@ -34,7 +34,7 @@ export function kit(seed: number, L: Look, scale = 1) {
   const all = (v: number) => (x: number, y: number, far = 0) => [[0, 0], [far, 0], [-far, 0], [0, far], [0, -far]].every(([dx, dy]) => land[Math.min(H - 1, Math.max(0, Math.round(y + dy))) * W + Math.min(W - 1, Math.max(0, Math.round(x + dx)))] === v)
   const wet = all(0), dry = all(1)
   return {
-    R, b, k, L, zones, swarms, pick, zone, queue, sprite, wet, dry,
+    R, b, k, L, zones, swarms, rafts, pick, zone, queue, sprite, wet, dry,
     lay(soil: Mask, deep: Mask | null, sun: Mask | null, calm = 1, rim = 7) {
       ground(b, land = soil, L, deep, sun, seed % 991, calm, rim)
     },
@@ -45,7 +45,7 @@ export function kit(seed: number, L: Look, scale = 1) {
         const bloom = lily && rx > 12 && (i === 0 || R() < .5)
         if (!wet(cx, cy, rx)) return
         sprite(rows, px, py, false, k, rx > 10 ? 3 : 2)
-        if (rx > 7) sites.push([cx, cy])
+        if (rx > 7) sites.push([cx, cy]), rafts.push([cx, cy])
         if (bloom) queue(py + rows.length + 1, () => {
           const [lx, ly] = [cx - 7 + (i ? 0 : 5 * flip), cy - 9]
           b.cast(LILY, lx, ly, 2, 3)
@@ -123,7 +123,7 @@ export function kit(seed: number, L: Look, scale = 1) {
         const x = 8 + R() * (W - 30) | 0, y = 24 + R() * (H - 40) | 0, len = 3 + (R() * 4 | 0)
         if ([-4, 0, len, len + 6].every(dx => [-3, 0, 3].every(dy => b.is(x + dx, y + dy, calm))) && sparks.every(s => Math.hypot(s[0] - x, s[1] - y) > 40)) sparks.push([x, y, len, R() * 6])
       }
-      return { art: b.done(), look: L, zones, perches, flowers, sites, swarms, cover, sparks, wet }
+      return { art: b.done(), look: L, zones, perches, flowers, sites, swarms, cover, rafts, sparks, wet }
     },
   }
 }

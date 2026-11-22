@@ -11,7 +11,7 @@ import { settings } from '../../ui/settings/settings'
 import { glow, tick } from '../../ui/track/track'
 import type { Prey } from '../creatures/prey'
 import { tools } from './dev'
-import { ask, card, evos, fate, mourn, tapEnemy } from './notices'
+import { ask, attack, card, evos, fate, inspect, mourn } from './notices'
 import { render } from './render'
 import { restart, run } from './run'
 
@@ -91,7 +91,7 @@ export const stage1: Scene = {
     if (fate.on()) return
     if (top()) return top()!.click(x, y)
     if (fade > 0) return void (going || title.click(x, y))
-    if (!ui.click(x, y) && !tapEnemy(run.sim.prey.at(x, y, hot)) && !run.paused) run.sim.mark = null
+    if (!ui.click(x, y) && !inspect(run.sim.prey.at(x, y, hot)) && !run.paused) run.sim.mark = null
   },
   key(k) {
     if (story.on()) return k === 'Escape' ? story.skip() : story.next(), true
@@ -99,6 +99,7 @@ export const stage1: Scene = {
     if (top()) return top()!.key(k)
     if (k === 'm') return toggle(), true
     if (fade > 0) return !going && title.key(k)
+    if (k === 'a') return attack(hot), false
     if (k === 'Escape') opts.open(true)
     else if (k === 'p' || k === ' ') run.paused = !run.paused
     else return false

@@ -8,8 +8,7 @@ import { shop } from '../../ui/shop/shop'
 import type { Prey } from '../creatures/prey'
 import { restart, run } from './run'
 
-const TWICE = 350, none = () => {}
-let tapped: Prey | null = null, tap = 0, prior: Prey | null = null
+const none = () => {}
 
 export const ask = dialog(), card = enemyCard(), evos = shop()
 
@@ -23,7 +22,8 @@ export function mourn() {
   fate.begin()
 }
 
-function attack(p: Prey) {
+export function attack(p: Prey | null) {
+  if (!p || run.paused || run.sim.rest || run.sim.away) return
   if (!PREY[p.kind].power || save.warned) return void (run.sim.mark = p)
   ask.open(['There is less than 95% chance you will catch this enemy successfully.'], [['Attack', () => {
     save.warned = true
@@ -31,16 +31,9 @@ function attack(p: Prey) {
   }], ['Cancel', none]])
 }
 
-export function tapEnemy(p: Prey | null) {
-  const { sim } = run, now = performance.now()
-  if (p && p === tapped && now - tap < TWICE) {
-    sim.mark = prior
-    if (sim.fly.perched) progress('look')
-    card.open(p)
-  } else if (p) {
-    prior = sim.mark
-    if (!run.paused && !sim.rest && !sim.away) attack(p)
-  }
-  ;[tapped, tap] = [p, now]
-  return !!p
+export function inspect(p: Prey | null) {
+  if (!p) return false
+  if (run.sim.fly.perched) progress('look')
+  card.open(p)
+  return true
 }
