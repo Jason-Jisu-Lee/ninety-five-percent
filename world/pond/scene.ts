@@ -62,7 +62,7 @@ function build(seed: number, look: number) {
       if (at) stones.push([...at, r])
     }
     for (let i = 0, n = 2 + (R() * 3 | 0); i < n; i++) {
-      const r = 1.5 + R() * 1.2, at = near(rock, 40, (x, y, d) => d < -2 && -d < beach(x, y) - 2 && apart(stones, x, y, 3) && apart(pebbles, x, y, r + 2), around(4))
+      const r = 1.9 + R() * .7, at = near(rock, 40, (x, y, d) => d < -2 && -d < beach(x, y) - 2 && apart(stones, x, y, 3) && apart(pebbles, x, y, r + 2), around(4))
       if (at) pebbles.push([...at, r]), pebble(p, at[0], at[1], r)
     }
     for (const [x, y, r] of stones.sort((a, b) => a[1] - b[1])) stone(p, x, y, r, r * (.62 + R() * .12), R)
@@ -71,20 +71,24 @@ function build(seed: number, look: number) {
   }
   for (let g = 0, n = 1 + (R() * 2 | 0); g < n; g++) {
     group()
-    const home = spot((x, y, d) => d > 34 && depth(x, y, d) < 90 && x > 60 && x < W - 60 && y > 50 && y < H - 50, around(34)), lean = R() * 6.283
+    const home = spot((x, y, d) => d > 34 && depth(x, y, d) < 90 && x > 60 && x < W - 60 && y > 50 && y < H - 50, around(30)), lean = R() * 6.283
     if (!home) continue
-    const leaves = [[...home, 20 + R() * 7]]
-    for (let i = 1, m = 5 + (R() * 6 | 0); i < m; i++) for (let tries = 0; tries < 30; tries++) {
-      const [bx, by, br] = leaves[R() * leaves.length | 0], r = 8 + R() * R() * 16, a = lean + (R() + R() - 1) * 1.6, far = br + r + 3 - R() * (3 + .3 * Math.min(br, r))
-      const x = Math.round(bx + Math.cos(a) * far), y = Math.round(by + Math.sin(a) * far * .9)
-      if (x < 12 || y < 16 || x > W - 12 || y > H - 10 || sd(x, y) < r + 3 || !leaves.every(([lx, ly, lr]) => Math.hypot(lx - x, ly - y) > lr + r - .3 * Math.min(lr, r)) || !p.clear(around(r + 6)(x, y), id)) continue
-      leaves.push([x, y, r])
-      break
+    const sizes = Array.from({ length: 6 + (R() * 5 | 0) }, (_, i) => i ? i < 2 ? 12 + R() * 9 : i < 5 ? 10 + R() * 6 : 6 + R() * 4 : 18 + R() * 4).sort((a, b) => b - a)
+    const mx = home[0] + Math.cos(lean) * 12, my = home[1] + Math.sin(lean) * 10, leaves = [[...home, sizes[0]]], off = (q: number[]) => Math.hypot(q[0] - mx, q[1] - my)
+    for (const r of sizes.slice(1)) {
+      let best: number[] | undefined
+      for (let k = 0; k < 24; k++) {
+        const [bx, by, br] = leaves[R() * leaves.length | 0], a = R() * 6.283, far = br + r - (R() < .55 ? (.1 + R() * .2) * Math.min(br, r) : -R() * 2)
+        const q = [Math.round(bx + Math.cos(a) * far), Math.round(by + Math.sin(a) * far * .88), r], [x, y] = q
+        if (x > 12 && y > 16 && x < W - 12 && y < H - 10 && sd(x, y) > r + 3 && (!best || off(q) < off(best)) && leaves.every(([lx, ly, lr]) => Math.hypot(lx - x, (ly - y) / .88) > lr + r - .31 * Math.min(lr, r)) && p.clear(around(r + 6)(x, y), id)) best = q
+      }
+      if (best) leaves.push(best)
     }
-    for (const [x, y, r] of leaves.sort((a, b) => a[1] - b[1])) pad(p, x, y, r, R() * 6.283, R)
-    for (const [x, y, r] of leaves.filter(l => l[2] > 13).slice(0, 1 + (R() * 2 | 0))) lily(p, x + (R() - .5) * r * .5, y + (R() - .5) * r * .4, 9 + R() * 3, R)
+    const wide = Math.max(...leaves.map(l => l[0] + l[2])) - Math.min(...leaves.map(l => l[0] - l[2])), tall = Math.max(...leaves.map(l => l[1] + l[2] * .82)) - Math.min(...leaves.map(l => l[1] - l[2] * .82))
+    for (const [x, y, r] of [...leaves].sort((a, b) => a[1] - b[1])) pad(p, x, y, r, R() * 6.283, R)
+    for (const [x, y, r] of leaves.slice(0, 1 + (R() * 2 | 0)).filter(l => l[2] > 13)) lily(p, x + (R() - .5) * r * .5, y + (R() - .5) * r * .4, 9 + R() * 3, R)
     wakes.push(home)
-    made.push('pads')
+    made.push('pads ' + Math.max(wide / tall, tall / wide).toFixed(2))
   }
   group()
   for (let tries = 0; tries < 12; tries++) {

@@ -21,7 +21,7 @@ export function stone(p: Pen, x: number, y: number, rx: number, ry: number, R: R
 export function pebble(p: Pen, x: number, y: number, r: number) {
   const c = p.L.stone
   p.shade(x - 1, y - 2, r, r * .7)
-  p.blob(x, y, r, r * .72, (nx, ny) => nx * nx + ny * ny <= 1 && c[nx + ny > .5 ? 0 : nx + ny < -.55 ? 2 : 1])
+  p.blob(x, y, r, Math.max(1.45, r * .72), (nx, ny) => nx * nx + ny * ny <= 1 && c[nx + ny > .5 ? 0 : nx + ny < -.55 ? 2 : 1])
 }
 
 export function branch(p: Pen, x: number, y: number, len: number, ang: number, R: Rand, wet: Wet) {
