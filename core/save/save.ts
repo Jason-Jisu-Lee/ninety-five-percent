@@ -1,7 +1,7 @@
 import { FIGHT } from '../../data/dragonfly/fight'
 import { BASE, STAT, type Stat } from '../../data/dragonfly/stats'
 import { UPGRADES } from '../../data/shop/upgrades'
-import { QUESTS } from '../../data/stage1/quests'
+import { QUESTS } from '../../data/game/quests'
 
 const KEY = 'ninety-five-percent'
 const fresh = () => ({

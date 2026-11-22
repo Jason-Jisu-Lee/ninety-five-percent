@@ -1,7 +1,7 @@
 import type { Ctx } from '../../core/screen/canvas'
 import { save } from '../../core/save/save'
 import { UI } from '../../data/look/palette'
-import { QUESTS } from '../../data/stage1/quests'
+import { QUESTS } from '../../data/game/quests'
 import { W } from '../../data/look/screen'
 import { text } from '../text/text'
 

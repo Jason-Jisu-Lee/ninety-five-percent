@@ -10,7 +10,7 @@ import { logo } from './logo'
 
 export function front(start: () => void, options: () => void) {
   const layer = ctx(mk(W, H)), go = { run: start, get label() { return save.started ? 'Continue' : 'Start' } }
-  const buttons = menu([go, { label: 'Settings', run: options }, { label: 'Exit', run: () => close() }], W - 118, H - 16), sound = nav([toggle])
+  const buttons = menu([go, { label: 'Settings', run: options }, { label: 'Exit', run: () => close() }], W - 214, H - 16, 2), sound = nav([toggle])
   return {
     key: buttons.key,
     hover: (x: number, y: number) => [buttons.hover(x, y), sound.hover(x, y)].some(Boolean),

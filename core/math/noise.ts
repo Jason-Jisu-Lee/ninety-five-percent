@@ -13,15 +13,3 @@ export function vnoise(x: number, y: number, s: number) {
   const a = hash(ix, iy, s), b = hash(ix + 1, iy, s), c = hash(ix, iy + 1, s), d = hash(ix + 1, iy + 1, s)
   return a + (b - a) * fx + (c - a) * fy + (a - b - c + d) * fx * fy
 }
-
-export function fbm(x: number, y: number, s: number, o = 2) {
-  let v = 0, a = .5, t = 0
-  for (let i = 0; i < o; i++) {
-    v += vnoise(x, y, s + i * 17) * a
-    t += a
-    x *= 2.03
-    y *= 2.03
-    a *= .5
-  }
-  return v / t
-}

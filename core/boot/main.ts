@@ -1,6 +1,6 @@
 import '../../ui/page/page.css'
 import { wake } from '../../audio/player/music'
-import { stage1 } from '../../world/stage1/scene'
+import { stage1 } from '../../world/game/scene'
 import { fit } from '../screen/display'
 import { listen } from '../input/input'
 import { start } from '../loop/loop'

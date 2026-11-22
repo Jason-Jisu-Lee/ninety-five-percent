@@ -3,7 +3,8 @@ import { clamp } from '../../core/math/clamp'
 import { vnoise } from '../../core/math/noise'
 import { H, W } from '../../data/look/screen'
 import { PREY } from '../../data/enemies/enemies'
-import { COVER, SWARM } from '../../data/stage1/map'
+import { SWARM } from '../../data/game/map'
+import { place } from '../place/place'
 import { errand, type Prey } from './prey'
 
 const R = Math.random
@@ -34,7 +35,7 @@ export function move(p: Prey, dt: number, t: number, tx: number, ty: number) {
     let reach = k.cover
     want = Math.atan2(dy, dx)
     sp = p.fear > 0 ? k.fast : k.speed
-    for (const [cx, cy] of COVER) {
+    for (const [cx, cy] of place().cover) {
       const d = Math.hypot(cx - p.x, cy - p.y)
       if (d < reach && (cx - p.x) * dx + (cy - p.y) * dy > 0) [reach, want] = [d, Math.atan2(cy - p.y, cx - p.x)]
     }

@@ -12,10 +12,7 @@ export const UI = {
 }
 
 export const FOREST = {
-  g0: '#1c4730', g1: '#285e3c', g2: '#3a7848', g3: '#5a9452',
-  deep: '#14301f', cDark: '#1d4a2d', cMid: '#2a6539', cLight: '#3f8445',
-  t0: '#6a4a31', t1: '#4b3324', t2: '#33231a',
-  wSh: '#3b7175', w1: '#2d5c63', w2: '#24495a', w3: '#1c3a4c', glint: '#8fc4c2',
-  r0: '#33403c', r1: '#5c6660', r2: '#8a938a',
-  white: '#ece5d5', yellow: '#f2cf47', pink: '#e58aa0', red: '#d8442c', seed: '#8a5a1a', husk: '#c9a45c',
+  g3: '#5a9452', deep: '#14301f', cDark: '#1d4a2d', cLight: '#3f8445',
+  t0: '#6a4a31', t1: '#4b3324', t2: '#33231a', r0: '#33403c', r1: '#5c6660',
+  white: '#ece5d5', yellow: '#f2cf47', pink: '#e58aa0', red: '#d8442c', husk: '#c9a45c',
 }
