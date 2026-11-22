@@ -27,11 +27,11 @@ function sheet(col: Look, K: number) {
 
 const made = new Map<string, ReturnType<typeof sheet>>()
 
-export function wear(color: Color, st: number[], K = DF.scale) {
-  const key = color + st + K
+export function wear(color: Color, K = DF.scale) {
+  const key = color + K
   if (!made.has(key)) {
     if (made.size > 4) made.clear()
-    made.set(key, sheet(look(color, st), K))
+    made.set(key, sheet(look(color), K))
   }
   return made.get(key)!
 }

@@ -20,7 +20,7 @@ function plot(g: Ctx, p: Pose, shadow: boolean) {
   }
 }
 
-export function drawBug(g: Ctx, k: Bug, p: Pose, n: number, t: number, shadow = false) {
+function drawBug(g: Ctx, k: Bug, p: Pose, n: number, t: number, shadow = false) {
   const dot = plot(g, p, shadow), edge = (k.wide - 1) / 2, fold = p.h < 6 || (t * k.beat + p.seed * 7) % 1 >= .5 ? .45 : 1, make = SHAPES[k.shape]
   if (k.shape === 'frog') return frog(dot, k, t + p.seed * 9)
   if (make) return make(n < k.len ? (a, c, col, thin) => a >= k.len / 2 - n && dot(a - (k.len - n) / 2, c, col, thin) : dot, !p.wings ? 0 : p.h < 6 ? .3 : fold, t + p.seed * 9)

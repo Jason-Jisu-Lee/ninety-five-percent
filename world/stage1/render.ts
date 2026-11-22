@@ -18,7 +18,7 @@ const span = (p: Prey) => Math.ceil(Math.max(PREY[p.kind].len, PREY[p.kind].wing
 
 export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live: boolean, hot: Prey | null) {
   const { fly, prey, fx, held } = sim, chew = held ? 1 + +(sim.bite > FIGHT.bite * .55) : 0
-  const [spr, sh] = wear(COLOR, [0, 0])(fly.heading, fly.frame, chew, fly.lean), half = spr.width >> 1
+  const [spr, sh] = wear(COLOR)(fly.heading, fly.frame, chew, fly.lean), half = spr.width >> 1
   const x = Math.round(fly.x) + (sim.hurt > 0 ? sim.hurt * 40 & 1 || -1 : 0), y = Math.round(fly.y - fly.h * .7)
   g.drawImage(ground(), 0, 0)
   glints(g, clock)

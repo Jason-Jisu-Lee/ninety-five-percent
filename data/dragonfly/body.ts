@@ -16,5 +16,4 @@ export const DF = {
   mouth: 3.9,
 }
 
-export const GROW = { tail: .4, fork: .3, head: .09 }
 export const LEAN = { bank: .16, sway: .5 }
