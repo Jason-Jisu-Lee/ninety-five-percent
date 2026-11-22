@@ -21,7 +21,7 @@ function events(key, mml, at, [late, loud], rand) {
   return lanes.filter(l => l.length).map(list => ({ kind, list }))
 }
 
-export function render({ bpm, swing = .5, echo = [.75, .35], send = {}, tone = 4200, ring = 0, feel = [0, 0] }, src, seconds, fade = .005) {
+export function render({ bpm, swing = .5, echo = [.75, .35], send = {}, level = {}, tone = 4200, ring = 0, feel = [0, 0] }, src, seconds, fade = .005) {
   const at = t => {
     const b = t / 48, w = b % 1
     return (b - w + (w < .5 ? w * 2 * swing : swing + (w - .5) * 2 * (1 - swing))) * 60 / bpm
@@ -29,7 +29,7 @@ export function render({ bpm, swing = .5, echo = [.75, .35], send = {}, tone = 4
   let seed = bpm * 7919 | 0
   const rand = () => (seed = seed * 1664525 + 1013904223 >>> 0) / 4294967296
   const voices = Object.entries(src).flatMap(([key, mml]) => events(key, mml, at, feel, rand).map(({ kind, list }) =>
-    ({ last: list[list.length - 1].s1, gain: [MIX[key[0]][0], MIX[key[0]][1], send[key] ?? MIX[key[0]][2]], fill: voice(kind, list) })))
+    ({ last: list[list.length - 1].s1, gain: [MIX[key[0]][0] * (level[key] ?? 1), MIX[key[0]][1] * (level[key] ?? 1), send[key] ?? MIX[key[0]][2]], fill: voice(kind, list) })))
   const n = Math.ceil((seconds ?? Math.max(...voices.map(v => v.last)) / FS + .03 + ring) * SR), outs = [0, 1, 2, 3].map(() => new Float32Array(n)), [l, r, el, er] = outs
   const one = new Float64Array(CHUNK), bus = outs.map(() => new Float64Array(CHUNK)), h = taps(), down = outs.map(o => shrink(h, o)), D = Math.round(echo[0] * 60 / bpm * SR)
   for (let s = 0; s < n * OS + TAPS; s += CHUNK) {

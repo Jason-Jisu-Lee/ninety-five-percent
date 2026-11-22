@@ -9,10 +9,11 @@ import { feastButton } from '../feast/button'
 import { nav } from '../nav/nav'
 import { quest } from '../quest/quest'
 import { text } from '../text/text'
+import { picker } from '../track/picker'
 import { now } from '../track/track'
 
 export function hud(pause: () => void, options: () => void, feast: () => void, tools: Tool[]) {
-  const bar = nav([toggle, pause, options]), meal = feastButton(feast), dev = devConsole(tools), parts = [bar, meal, dev]
+  const bar = nav([toggle, pause, options]), songs = picker(W - 73), meal = feastButton(feast), dev = devConsole(tools), parts = [songs, bar, meal, dev]
   return {
     hover: (x: number, y: number) => parts.map(p => p.hover(x, y)).some(Boolean),
     click: (x: number, y: number) => parts.some(p => p.click(x, y)),
@@ -23,6 +24,7 @@ export function hud(pause: () => void, options: () => void, feast: () => void, t
       now(g, W - 73)
       dev.draw(g)
       meal.draw(g)
+      songs.draw(g)
       if (paused) text(g, 'Paused', W / 2, H / 2 + 7, UI.text, 'c', UI.panel, 2)
     },
   }

@@ -2,7 +2,7 @@ import { dither } from '../../../core/draw/dither'
 import { fbm, vnoise } from '../../../core/math/noise'
 import type { Pixels } from '../../../core/draw/pixels'
 import { FOREST as C } from '../../../data/look/palette'
-import { H, W } from '../../../data/look/screen'
+import { W } from '../../../data/look/screen'
 import { onLog, stub, type Log } from '../../../data/stage1/map'
 import { stroke } from './stroke'
 
@@ -10,8 +10,8 @@ const girth = (L: Log, u: number) => L.r * (1 - L.taper * u / L.len)
 const bark = (s: number, v: number) => s > .4 ? C.t2 : s < -.4 ? C.t0 : v % .34 < .05 ? C.t2 : C.t1
 
 function each(p: Pixels, L: Log, pad: number, ink: (x: number, y: number, u: number, v: number, r: number) => string | false) {
-  const ca = Math.cos(L.ang), sa = Math.sin(L.ang), ex = L.x + ca * L.len, ey = L.y + sa * L.len
-  for (let y = Math.max(0, Math.floor(Math.min(L.y, ey) - L.r)); y < Math.min(H, Math.max(L.y, ey) + L.r + pad); y++) for (let x = Math.max(0, Math.floor(Math.min(L.x, ex) - L.r)); x < Math.min(W, Math.max(L.x, ex) + L.r); x++) {
+  const ca = Math.cos(L.ang), sa = Math.sin(L.ang)
+  for (let y = Math.floor(L.y - L.r); y < L.y + sa * L.len + L.r + pad; y++) for (let x = Math.floor(L.x - L.r); x < Math.min(W, L.x + ca * L.len + L.r); x++) {
     const u = (x - L.x) * ca + (y - L.y) * sa, v = -(x - L.x) * sa + (y - L.y) * ca, col = u <= L.len && ink(x, y, u, v, girth(L, u))
     if (col) p.set(x, y, col)
   }
