@@ -1,8 +1,9 @@
 import { mood, toggle } from '../../audio/player/music'
+import { sound } from '../../audio/player/sound'
 import { shade, veil } from '../../core/draw/dissolve'
 import type { Scene } from '../../core/loop/scene'
 import { save, store, wipe } from '../../core/save/save'
-import { STREAK } from '../../data/dragonfly/fight'
+import { LUNGE, STREAK } from '../../data/dragonfly/fight'
 import { FLY } from '../../data/dragonfly/flight'
 import { DUSK, FADE } from '../../data/game/map'
 import { front } from '../../ui/front/front'
@@ -17,7 +18,7 @@ import { ask, attack, card, evos, fate, inspect, mourn, self } from './notices'
 import { render } from './render'
 import { restart, run } from './run'
 
-let fade = 1, dusk = 0, going = false, frozen = false, clock = 0, kept = 0, hot: Prey | null = null
+let fade = 1, dusk = 0, going = false, frozen = false, clock = 0, kept = 0, halt = 0, hot: Prey | null = null
 
 const begin = () => {
   going = true
@@ -55,8 +56,9 @@ export const stage1: Scene = {
     if (going && fade > 0 && (fade -= dt / FADE) <= 0) [frozen, save.started] = [false, true]
     if (fade > 0) return void (frozen || sim.idle(dt, clock += dt))
     if (fate.on()) return sim.idle(dt, clock += dt)
-    if (run.paused || top()) return
+    if (run.paused || top() || (halt -= dt) > 0) return
     for (let i = 0; i < run.rate; i++) sim.step(dt, clock += dt)
+    if (sim.jolt) [sim.jolt, halt] = [false, LUNGE.freeze], sound('thump')
     if (sim.fell) mourn()
     sim.fell = false
     if (!sim.away || sim.fly.x > -FLY.gone) dusk = Math.max(0, dusk - dt / DUSK)
