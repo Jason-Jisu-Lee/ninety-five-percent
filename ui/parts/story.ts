@@ -8,11 +8,12 @@ const PAGE = 4.4, EDGE = .7
 
 export function story(pages: string[][], done: () => void, lead = .6, back = .6) {
   const layer = ctx(mk(W, H)), END = lead + pages.length * PAGE
-  let t = -1, shown = -1
+  let t = -1, shown = -1, due = false
   return {
     on: () => t >= 0,
     begin() {
       t = 0
+      due = true
     },
     next() {
       if (t > lead && t < END) t = lead + (Math.floor((t - lead) / PAGE) + 1) * PAGE
@@ -22,9 +23,11 @@ export function story(pages: string[][], done: () => void, lead = .6, back = .6)
     },
     update(dt: number) {
       if (t < 0) return
-      const was = t
       t += dt
-      if (was < END && t >= END) done()
+      if (due && t >= END) {
+        due = false
+        done()
+      }
       if (t >= END + back) t = -1
     },
     draw(g: Ctx) {
