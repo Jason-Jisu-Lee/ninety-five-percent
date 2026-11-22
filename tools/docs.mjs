@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 
 const LINES = {
-  'Stage': 'stage', 'Tier': 'tier', 'Plural': 'many', 'Description': 'text', 'Health': 'hp', 'Power': 'power', 'Strikes every': 'strike', 'Blood': 'blood',
+  'Stage': 'stage', 'Tier': 'tier', 'Plural': 'many', 'Description': 'text', 'Health': 'hp', 'Power': 'power', 'Strikes every': 'strike', 'Blood': 'blood', 'Unlock': 'unlock',
   'On screen': 'count', 'Returns after': 'back', 'Stays': 'stay', 'Lives': 'zone', 'Height': 'h', 'Speed': 'speed', 'Flee speed': 'fast', 'Flees within': 'flee',
   'Burst lasts': 'wind', 'Tires for': 'tire', 'Dodge distance': 'dodge', 'Turn rate': 'turn', 'Wobble': 'jink', 'Sits for': 'sit', 'Lands': 'land',
   'Cover range': 'cover', 'Breaks free after': 'grip', 'Shape': 'shape', 'Length': 'len', 'Width': 'wide', 'Wing length': 'wing', 'Wing width': 'chord',

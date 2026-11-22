@@ -5,7 +5,7 @@ import { QUESTS } from '../../data/game/quests'
 
 const KEY = 'ninety-five-percent'
 const fresh = () => ({
-  blood: 0, quest: 0, count: 0, started: false, warned: false, points: 0, vol: 5, fx: 5, mute: false,
+  blood: 0, quest: 0, count: 0, started: false, warned: false, points: 0, wild: 0, vol: 5, fx: 5, mute: false,
   time: 0, earned: 0, bought: 0, deaths: 0, caught: {} as Record<string, number>, levels: {} as Record<string, number>,
 })
 

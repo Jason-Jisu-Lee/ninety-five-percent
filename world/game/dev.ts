@@ -1,7 +1,8 @@
 import { own, save } from '../../core/save/save'
 import { view } from '../../core/screen/display'
 import type { Tool } from '../../ui/dev/console'
-import { PLACES, where } from '../place/place'
+import { PLACES } from '../../data/game/map'
+import { where } from '../place/place'
 import { evos } from './notices'
 import { restart, run } from './run'
 

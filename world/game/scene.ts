@@ -13,7 +13,7 @@ import { settings } from '../../ui/settings/settings'
 import { glow, tick } from '../../ui/track/track'
 import type { Prey } from '../creatures/prey'
 import { tools } from './dev'
-import { renew } from '../place/place'
+import { renew, settle } from '../place/place'
 import { ask, attack, card, evos, fate, inspect, mourn, self } from './notices'
 import { render } from './render'
 import { restart, run } from './run'
@@ -37,6 +37,7 @@ const opts = settings(() => {
   store()
 }, () => {
   wipe()
+  settle()
   restart()
   fade = 1
   going = frozen = run.paused = false
