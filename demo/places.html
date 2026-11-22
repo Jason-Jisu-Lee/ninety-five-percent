@@ -7,15 +7,16 @@
 <style>
 html,body{height:100%;margin:0;background:#0a1312;color:#e9e2d4;font:14px/1.4 ui-monospace,Consolas,monospace}
 body{display:flex;gap:16px;padding:12px 16px 0;box-sizing:border-box;overflow:hidden;justify-content:center}
-aside{display:flex;flex-direction:column;gap:8px;width:336px}
+aside{display:flex;flex-direction:column;gap:8px;width:336px;overflow-y:auto}
 button{border:2px solid #33403c;background:#100d0b;color:#8f877b;font:inherit;cursor:pointer}
 button:hover{color:#e9e2d4}
 button[aria-pressed=true]{border-color:#c9a45c;color:#c9a45c}
-.row{display:flex;gap:8px}
+.row{display:flex;gap:8px;flex-wrap:wrap;position:sticky;top:0;background:#0a1312;padding-bottom:4px}
 .row button{flex:1;padding:6px 0}
 .row .go{border-color:#c9a45c;color:#100d0b;background:#c9a45c;font-weight:600}
 .row .go:hover{background:#e2c27a}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid,.grid div{display:flex;gap:8px}
+.grid div{flex-direction:column}
 .grid h2{font:inherit;color:#8f877b;margin:4px 0 -4px}
 .grid button{padding:0 0 4px;text-align:left;font-size:12px;white-space:nowrap}
 .grid canvas{display:block;width:160px;height:90px;margin-bottom:4px}
@@ -25,6 +26,14 @@ li{margin:0 0 6px;padding-left:18px;position:relative;color:#8f877b}
 li b{color:#e9e2d4}
 li i{position:absolute;left:0;top:4px;width:10px;height:10px}
 main>canvas{display:block}
+.slim{width:136px;font-size:12px}
+.slim .go{flex-basis:100%}
+.slim .grid,.slim .grid div{gap:5px}
+.slim .grid{flex-direction:column}
+.slim .grid button{padding-bottom:2px}
+.slim .grid canvas{width:112px;height:63px;margin-bottom:2px}
+.slim .grid button{font-size:11px}
+.slim .grid b{font-size:15px;margin:0 4px 0 6px}
 </style>
 <main><canvas></canvas></main>
 <aside>

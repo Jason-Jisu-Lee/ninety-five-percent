@@ -44,10 +44,10 @@ const frame = ctx(mk(W, H)), ui = hud(() => {}, () => {}, () => {}, []), toggles
 let seed = +(q.get('seed') ?? 0) || 1 + Math.random() * 99998 | 0, pick = +(q.get('v') ?? 0), places: Place[] = []
 
 const thumbs = [0, 1].flatMap(stage => {
-  grid.insertAdjacentHTML('beforeend', `<h2 style="grid-row:1;grid-column:${stage + 1}">Stage ${stage + 1}: ${stage ? 'Marsh' : 'Pond'}</h2>`)
+  const col = grid.appendChild(document.createElement('div'))
+  col.innerHTML = `<h2>Stage ${stage + 1}: ${stage ? 'Marsh' : 'Pond'}</h2>`
   return [0, 1, 2].map(i => {
-    const b = grid.appendChild(document.createElement('button')), c = b.appendChild(mk(W / 4, H / 4)), n = stage * 3 + i
-    b.style.cssText = `grid-row:${i + 2};grid-column:${stage + 1}`
+    const b = col.appendChild(document.createElement('button')), c = b.appendChild(mk(W / 4, H / 4)), n = stage * 3 + i
     b.insertAdjacentHTML('beforeend', `<b>${i + 1}</b>${VERSIONS[n][0]}`)
     b.onclick = () => show(pick = n)
     return c
@@ -77,7 +77,9 @@ function areas(g: CanvasRenderingContext2D, zones: Zone[]) {
 }
 
 function fit() {
-  const d = devicePixelRatio || 1, room = Math.max(1, Math.min((innerWidth - 48 - side.offsetWidth) / W, (innerHeight - 24) / H)), s = room < 2 ? room : Math.floor(room), k = Math.ceil(s * d - .001), place = places[pick]
+  const d = devicePixelRatio || 1, space = (wide: number) => Math.max(1, Math.min((innerWidth - 48 - wide) / W, (innerHeight - 24) / H)), slim = Math.floor(space(136)) > Math.floor(space(336))
+  const room = space(slim ? 136 : 336), s = room < 2 ? room : Math.floor(room), k = Math.ceil(s * d - .001), place = places[pick]
+  side.classList.toggle('slim', slim)
   frame.drawImage(place.art, 0, 0)
   actors(frame, place, pick / 3 | 0)
   if (on.zones) areas(frame, place.zones)
@@ -98,6 +100,7 @@ function show(_?: unknown) {
   const zones = places[pick].zones, kinds = [...new Set(zones.map(z => z.kind))]
   list.innerHTML = on.zones ? kinds.map(kind => `<li><i style="background:${AREAS[kind][0]}"></i><b>${AREAS[kind][1]}</b> x ${zones.filter(z => z.kind === kind).length}<br>${AREAS[kind].slice(2).join('<br>')}</li>`).join('') : ''
   fit()
+  side.scrollTop = on.zones && side.classList.contains('slim') ? list.offsetTop - side.offsetTop - 70 : 0
 }
 
 function fresh(_?: unknown) {
