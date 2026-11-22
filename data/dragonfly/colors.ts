@@ -7,7 +7,7 @@ export const COLORS = {
   smoke: ['#5d6263', '#c9c0b2'],
   clay: ['#b0714f'],
   dusk: ['#8c7a99'],
-  azure: ['#3aa6c8'],
+  azure: ['#7fd4f2'],
   scarlet: ['#d8442c'],
   emerald: ['#5fc06a'],
   amber: ['#e2a634'],

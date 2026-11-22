@@ -1,12 +1,12 @@
 import { dither } from '../../../core/draw/dither'
 import type { Pixels } from '../../../core/draw/pixels'
 import { FOREST as C } from '../../../data/look/palette'
-import { Z } from '../../../data/stage1/map'
+import { Z as Z0 } from '../../../data/stage1/map'
 import { shade } from './shade'
 import { stroke } from './stroke'
 
-export function clover(p: Pixels, x: number, y: number, R: () => number, n: number) {
-  const spots = Array.from({ length: n }, () => [x + (R() - .5) * 34 * Z, y + (R() - .5) * 19 * Z, (2.7 + R() * 1.1) * Z, R() * 6.283]).sort((a, b) => a[1] - b[1])
+export function clover(p: Pixels, x: number, y: number, R: () => number, n: number, k = 1) {
+  const Z = Z0 * k, spots = Array.from({ length: n }, () => [x + (R() - .5) * 34 * Z, y + (R() - .5) * 19 * Z, (2.7 + R() * 1.1) * Z, R() * 6.283]).sort((a, b) => a[1] - b[1])
   for (const [cx, cy, r, rot] of spots) {
     for (let k = 0; k < 3; k++) {
       const a = rot + k * 2.094, ax = Math.cos(a), ay = Math.sin(a)
@@ -17,12 +17,12 @@ export function clover(p: Pixels, x: number, y: number, R: () => number, n: numb
   }
   for (let i = 0; i < n / 3; i++) {
     const bx = Math.round(x + (R() - .5) * 26 * Z), by = Math.round(y + (R() - .5) * 14 * Z)
-    p.oval(bx, by, 1.3, 1.3, (px, py) => px + py < bx + by ? C.white : C.pink)
+    p.oval(bx, by, 1.3 * k, 1.3 * k, (px, py) => px + py < bx + by ? C.white : C.pink)
   }
 }
 
-export function daisy(p: Pixels, x: number, y: number, rot: number) {
-  const r = 6.5 * Z, cy = y - 3.6 * Z
+export function daisy(p: Pixels, x: number, y: number, rot: number, k = 1) {
+  const Z = Z0 * k, r = 6.5 * Z, cy = y - 3.6 * Z
   shade(p, x + 4 * Z, y + 4 * Z, r, r * .55)
   p.oval(x, cy, r, r * .9, (px, py) => {
     const dx = px - x, dy = (py - cy) / .9, rr = Math.hypot(dx, dy) / r, m = Math.abs(Math.sin(Math.atan2(dy, dx) * 5.5 + rot))
@@ -30,7 +30,8 @@ export function daisy(p: Pixels, x: number, y: number, rot: number) {
   })
 }
 
-export function dandelion(p: Pixels, x: number, y: number, R: () => number, bloom = true) {
+export function dandelion(p: Pixels, x: number, y: number, R: () => number, bloom = true, k = 1) {
+  const Z = Z0 * k
   for (let i = 0; i < 7; i++) {
     const a = (i + R() * .6) / 7 * 6.283
     stroke(p, x, y, a, (18 + R() * 7) * Z * (.75 - .25 * Math.sin(a)), (R() - .5) * 5.4 * Z,
@@ -51,9 +52,9 @@ export function mushroom(p: Pixels, x: number, y: number, r: number) {
   p.oval(x, y - r, r, r * .78, (px, py, d) => d > .6 && px - x + (py - y + r) * 1.3 > r * .2 ? C.seed : d < .7 && (px * 3 + py * 5) % 7 < 1 ? C.white : C.husk)
 }
 
-export function lily(p: Pixels, x: number, y: number) {
-  const r = 4.6 * Z
-  p.oval(x + 2, y + 2, r, r * .8, () => C.w3)
+export function lily(p: Pixels, x: number, y: number, k = 1) {
+  const r = 4.6 * Z0 * k
+  p.oval(x + 2 * k, y + 2 * k, r, r * .8, () => C.w3)
   p.oval(x, y, r, r * .85, (px, py) => {
     const dx = px - x, dy = (py - y) / .85, rr = Math.hypot(dx, dy) / r
     return rr < .3 ? C.yellow : rr > .62 + .38 * Math.abs(Math.sin(Math.atan2(dy, dx) * 3.5)) ? false : rr > .7 ? C.pink : C.white
