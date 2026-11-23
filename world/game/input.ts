@@ -10,13 +10,15 @@ const onFly = (x: number, y: number) => Math.hypot(x - run.sim.fly.x, y - run.si
 export const input: Pick<Scene, 'hover' | 'click' | 'key'> = {
   hover(x, y) {
     const was = G.hot
+    G.me = false
     if (story.on() || fate.on()) return false
     if (top()) return top()!.hover(x, y)
     if (G.fade > 0) return !G.going && title.hover(x, y)
     G.hot = null
     if (ui.hover(x, y)) return true
     G.hot = run.sim.prey.at(x, y, was)
-    return !!G.hot || onFly(x, y)
+    G.me = !G.hot && onFly(x, y)
+    return !!G.hot || G.me
   },
   click(x, y) {
     if (story.on()) return story.next()

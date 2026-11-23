@@ -40,7 +40,7 @@ export const stage1: Scene = {
     store()
   },
   draw(g) {
-    render(g, run.sim, G.clock, G.fade <= 0, top() ? null : G.hot)
+    render(g, run.sim, G.clock, G.fade <= 0, top() ? null : G.hot, G.me && !top())
     if (G.fade > 0) title.draw(g, G.fade)
     else {
       ui.draw(g, run.paused, run.sim.chain, 1 - run.sim.since / STREAK.time)
