@@ -18,7 +18,7 @@ function read() {
   }
 }
 
-export const save = { ...fresh(), ...read() } as ReturnType<typeof fresh>
+export const save = { ...fresh(), ...read(), ...import.meta.env.DEV && { vol: 0 } } as ReturnType<typeof fresh>
 export const own = (s: Stat) => STAT[s]
 export const level = (name: string) => save.levels[name] ?? 0
 export const price = (name = '') => UPGRADES[name]?.[2][level(name)]

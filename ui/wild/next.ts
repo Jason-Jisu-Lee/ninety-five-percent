@@ -1,3 +1,4 @@
+import { sound } from '../../audio/player/sound'
 import { save } from '../../core/save/save'
 import { pack } from '../../core/save/wild'
 import type { Ctx } from '../../core/screen/canvas'
@@ -24,7 +25,12 @@ export function nextWild(buy: () => void) {
   const now = () => WILD[pack.got], can = () => save.blood >= now()?.cost
   const on = (x: number, y: number, rows: number) => x >= X && x < X + WIDE && y >= Y && y < Y + TALL + PITCH * (rows - 1)
   return {
-    hover: (x: number, y: number) => (hot = !!now() && on(x, y, 1)) && can(),
+    hover(x: number, y: number) {
+      const was = hot
+      hot = !!now() && on(x, y, 1)
+      if (hot && !was) sound('tap')
+      return hot && can()
+    },
     click(x: number, y: number) {
       if (!now()) return false
       if (on(x, y, 1)) buy()

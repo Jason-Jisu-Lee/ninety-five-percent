@@ -1,3 +1,4 @@
+import { sound } from '../../audio/player/sound'
 import { buy, level, price, save } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { UI } from '../../data/look/palette'
@@ -35,7 +36,9 @@ export function shop() {
       ;[shown, side, tab, hot, then] = [true, s, 0, -1, done]
     },
     hover(x: number, y: number) {
+      const was = hot
       hot = items().findIndex((_, i) => inside(x, y, cell(i)[0], cell(i)[1], CW, CH))
+      if (hot >= 0 && hot !== was) sound('tap')
       over = tabs().findIndex((c, i) => inside(x, y, spots()[i] - 6, 54, width(c.name) + 12, 22))
       go = inside(x, y, R - BW, BY, BW, BH)
       table.hover(body() ? x : -1, y)

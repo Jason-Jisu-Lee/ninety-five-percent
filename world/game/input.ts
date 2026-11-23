@@ -5,6 +5,7 @@ import { attack, fate, inspect, omen, self } from './notices'
 import { run } from './run'
 import { G } from './state'
 
+const DEV = import.meta.env.DEV
 const onFly = (x: number, y: number) => Math.hypot(x - run.sim.fly.x, y - run.sim.fly.y + run.sim.fly.h * .7) < 13
 
 export const input: Pick<Scene, 'hover' | 'click' | 'key'> = {
@@ -21,8 +22,8 @@ export const input: Pick<Scene, 'hover' | 'click' | 'key'> = {
     return !!G.hot || G.me
   },
   click(x, y) {
-    if (story.on()) return story.next()
-    if (omen.on()) return omen.next()
+    if (story.on()) return void (DEV && story.next())
+    if (omen.on()) return void (DEV && omen.next())
     if (fate.on()) return
     if (top()) return top()!.click(x, y)
     if (G.fade > 0) return void (G.going || title.click(x, y))
@@ -31,8 +32,8 @@ export const input: Pick<Scene, 'hover' | 'click' | 'key'> = {
     else if (!run.paused) run.sim.mark = null
   },
   key(k) {
-    if (story.on()) return k === 'Escape' ? story.skip() : story.next(), true
-    if (omen.on()) return omen.next(), true
+    if (story.on()) return DEV && (k === 'Escape' ? story.skip() : story.next()), true
+    if (omen.on()) return DEV && omen.next(), true
     if (fate.on()) return true
     if (top()) return top()!.key(k)
     if (k === 'm') return toggle(), true
