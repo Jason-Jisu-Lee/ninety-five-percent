@@ -7,7 +7,7 @@ import { text } from '../ui/text/text'
 
 const K = Math.max(2, Math.round(2 * devicePixelRatio)), CX = 16, CY = 54, CW = 360, CH = 40, L = 32, Y = 88
 const LINES: Record<string, string[]> = {
-  Anatomy: ['Every death leaves a stronger body', 'The body is the first weapon', 'What dies weak is born strong', 'Built to kill, and built again', 'Born from the fallen, stronger than the fallen', 'Every generation, a sharper weapon', 'Bone and wing, honed by every death'],
+  Anatomy: ['Refined by every generation', "Nature's oldest design, still unfinished", 'Grace, made lethal', 'Elegance is the sharpest edge', 'Shaped by time, perfected by loss', 'Every line drawn by the ages', 'The quiet perfection of a hunter'],
 }
 const blood = SHOP.filter(t => t.shop === 'Blood shop').map(t => t.name)
 for (const [tab, lines] of Object.entries(LINES)) {
