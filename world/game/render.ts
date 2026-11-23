@@ -5,7 +5,7 @@ import { STAMINA } from '../../data/dragonfly/flight'
 import { PREY } from '../../data/enemies/enemies'
 import { FOREST as C, UI } from '../../data/look/palette'
 import { tag } from '../../ui/enemy/tag'
-import { bar } from '../../ui/parts/bar'
+import { bar, LIFE } from '../../ui/parts/bar'
 import { marks } from '../../ui/parts/marks'
 import { squeeze } from '../../ui/parts/squeeze'
 import { drawPrey } from '../creatures/draw'
@@ -29,7 +29,7 @@ export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live
   g.drawImage(spr, x - half, y - half)
   if (held) {
     drawPrey(g, held, clock)
-    if (held !== hot) bar(g, Math.round(held.x), Math.round(held.y - held.h * .7) + (Math.sin(fly.ang) > .35 ? 7 : -9), Math.max(0, held.hp) / PREY[held.kind].hp, 40, UI.foe)
+    if (held !== hot) bar(g, Math.round(held.x), Math.round(held.y - held.h * .7) + (Math.sin(fly.ang) > .35 ? 7 : -9), Math.max(0, held.hp) / PREY[held.kind].hp, LIFE, UI.foe)
   }
   if (live) for (const p of hot === sim.mark ? [hot] : [sim.mark, hot]) if (p) marks(g, Math.round(p.x) + (p === sim.mark ? jig : 0), Math.round(p.y - p.h * .7), p === sim.mark && ready ? squeeze(span(p), sim.span()) : span(p), UI.foe)
   if (live && me) marks(g, x, y, 13, UI.accent)
