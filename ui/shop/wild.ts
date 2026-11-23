@@ -41,7 +41,7 @@ export function wild(g: Ctx, w?: Wild) {
   for (const line of wrap(k.text, BW)) text(g, line, X, (y += 11) - 11, UI.text)
   ;[['Health', k.hp], ['Blood', k.blood], ['Power', k.power], ['Speed', k.speed]].forEach(([name, n], i) => {
     text(g, String(name), X + (i & 1) * 92, y + 4 + (i >> 1) * 11, UI.dim)
-    text(g, String(Math.round(+n)), X + (i & 1) * 92 + 84, y + 4 + (i >> 1) * 11, UI.text, 'r')
+    text(g, String(name === 'Power' ? +(+n).toFixed(2) : Math.round(+n)), X + (i & 1) * 92 + 84, y + 4 + (i >> 1) * 11, UI.text, 'r')
   })
   for (const [name] of traits(k)) text(g, name, X, (y += 11) + 19, UI.gold)
 }
