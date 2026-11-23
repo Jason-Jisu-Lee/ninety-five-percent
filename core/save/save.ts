@@ -45,11 +45,13 @@ export function store() {
   } catch {}
 }
 
-export function wipe() {
-  Object.assign(save, fresh(), { vol: save.vol, fx: save.fx, mute: save.mute })
+export function adopt(kept: Partial<typeof save> = {}) {
+  Object.assign(save, fresh(), kept, { vol: save.vol, fx: save.fx, mute: save.mute })
   grow()
   store()
 }
+
+export const wipe = () => adopt()
 
 export function progress(kind: string) {
   const q = QUESTS[save.quest]
