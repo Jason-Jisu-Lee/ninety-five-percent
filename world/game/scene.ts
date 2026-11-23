@@ -9,7 +9,7 @@ import { DUSK, FADE } from '../../data/game/map'
 import { glow, tick } from '../../ui/track/track'
 import { input } from './input'
 import { layers, story, title, top, ui } from './menus'
-import { evos, fate, mourn } from './notices'
+import { evos, fate, herald, mourn, omen } from './notices'
 import { render } from './render'
 import { onward, restart, run } from './run'
 import { G } from './state'
@@ -20,11 +20,12 @@ export const stage1: Scene = {
     tick(dt)
     story.update(dt)
     fate.update(dt)
+    omen.update(dt)
     const { sim } = run, still = sim.away || evos.shown()
     if (still !== G.calm) hush(G.calm = still, false)
     if (G.going && G.fade > 0 && (G.fade -= dt / FADE) <= 0) [G.frozen, save.started] = [false, true]
     if (G.fade > 0) return void (G.frozen || sim.idle(dt, G.clock += dt))
-    if (fate.on()) return sim.idle(dt, G.clock += dt)
+    if (fate.on() || omen.on()) return sim.idle(dt, G.clock += dt)
     if (run.paused || top() || (G.halt -= dt) > 0) return
     for (let i = 0; i < run.rate; i++) sim.step(dt, G.clock += dt)
     if (sim.jolt) [sim.jolt, G.halt] = [false, LUNGE.freeze], sound('thump')
@@ -32,7 +33,7 @@ export const stage1: Scene = {
     if (sim.fell) mourn()
     sim.fell = false
     if (!sim.away || sim.fly.x > -FLY.gone) G.dusk = Math.max(0, G.dusk - dt / DUSK)
-    else if ((G.dusk += dt / DUSK) >= 1) sim.onward ? onward() : evos.open(0, () => restart(true))
+    else if ((G.dusk += dt / DUSK) >= 1) sim.onward ? onward() : evos.open(0, () => herald(() => restart(true)))
     save.time += dt * run.rate
     if ((G.kept += dt) < 5) return
     G.kept = 0
@@ -48,6 +49,7 @@ export const stage1: Scene = {
     story.draw(g)
     for (let i = layers.length; i--;) layers[i].draw(g)
     fate.draw(g)
+    omen.draw(g)
   },
   over(g, k) {
     const dark = shade.n

@@ -4,16 +4,15 @@ import { UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
 import { text } from '../text/text'
 
-const PAGE = 4.4, EDGE = .7
+const EDGE = .7
 
-export function story(pages: string[][], done: () => void, lead = .6, back = .6) {
+export function story(pages: string[][], done: () => void, lead = .6, back = .6, PAGE = 4.4) {
   const layer = ctx(mk(W, H)), END = lead + pages.length * PAGE
   let t = -1, shown = -1, due = false
   return {
     on: () => t >= 0,
     begin() {
-      t = 0
-      due = true
+      ;[t, shown, due] = [0, -1, true]
     },
     next() {
       if (t > lead && t < END) t = lead + (Math.floor((t - lead) / PAGE) + 1) * PAGE

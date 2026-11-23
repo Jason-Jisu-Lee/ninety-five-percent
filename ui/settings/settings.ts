@@ -16,14 +16,14 @@ const PW = 200, X = W - PW >> 1, B = 232, MX = W - 96 >> 1, CX = X + PW - 19
 const WIPE = ['Are you sure?', 'This will delete all progress.'], QUIT = wrap('This will forfeit your current run and you will lose 95% of current blood points. Continue?', PW - 24)
 
 export function settings(toMenu: () => void, reset: () => void) {
-  let shown = false, stats = false, play = false, hot = false, sure: [ReturnType<typeof menu>, string[]] | undefined
+  let shown = false, stats = false, play = false, hot = false, mx = 0, my = 0, sure: [ReturnType<typeof menu>, string[]] | undefined
   const shut = () => {
     shown = stats = false
     sure = undefined
   }
   const check = (m: ReturnType<typeof menu>, lines: string[]) => {
     sure = [m, lines]
-    m.focus(1)
+    m.focus(-1)
   }
   const item = (label: string, run: () => void) => ({ label, run })
   const ask = item('Hard Reset', () => check(wipe, WIPE))
@@ -49,19 +49,22 @@ export function settings(toMenu: () => void, reset: () => void) {
   const now = () => sure ? sure[0] : stats ? back : play ? game : home, top = () => now().top - (sure ? 18 + sure[1].length * 14 : stats ? ROWS * 11 + 29 : 76)
   const onX = (x: number, y: number) => !sure && x >= CX && x < CX + 11 && y >= top() + 6 && y < top() + 17
   const levels = (x: number, y: number, press = false) => !sure && !stats && mixer[press ? 'click' : 'on'](x, y, W - mixer.w >> 1, top() + 26)
+  const point = (x: number, y: number) => {
+    ;[mx, my, hot] = [x, y, onX(x, y)]
+    return now().hover(x, y) || hot || levels(x, y)
+  }
   return {
     shown: () => shown,
     open(inGame: boolean) {
       shown = true
       play = inGame
+      now().focus(-1)
     },
-    hover(x: number, y: number) {
-      hot = onX(x, y)
-      return now().hover(x, y) || hot || levels(x, y)
-    },
+    hover: point,
     click(x: number, y: number) {
       if (onX(x, y)) shut()
       else if (!levels(x, y, true)) now().click(x, y)
+      point(x, y)
     },
     key(k: string) {
       const d = k === 'ArrowRight' || k === 'd' ? 1 : k === 'ArrowLeft' || k === 'a' ? -1 : 0
@@ -71,6 +74,7 @@ export function settings(toMenu: () => void, reset: () => void) {
         else shut()
       } else if (d && !sure && !stats) mix('vol', save.vol + d)
       else return now().key(k)
+      point(mx, my)
       return true
     },
     draw(g: Ctx) {

@@ -6,26 +6,24 @@ import { text } from '../text/text'
 type Item = { label: string; run(): void }
 
 export function menu(items: Item[], x: number, bottom: number, w = 96, h = 22, pitch = 28) {
-  let sel = 0
+  let sel = -1
   const top = bottom - h - (items.length - 1) * pitch
-  const hover = (px: number, py: number) => {
-    const i = px < x || px >= x + w ? -1 : items.findIndex((_, i) => py >= top + i * pitch && py < top + i * pitch + h)
-    if (i >= 0) sel = i
-    return i >= 0
+  const at = (px: number, py: number) => px < x || px >= x + w ? -1 : items.findIndex((_, i) => py >= top + i * pitch && py < top + i * pitch + h)
+  const pick = (i: number) => {
+    sel = -1
+    items[i]?.run()
   }
   return {
     top,
-    hover,
+    hover: (px: number, py: number) => (sel = at(px, py)) >= 0,
     focus(i: number) {
       sel = i
     },
-    click(px: number, py: number) {
-      if (hover(px, py)) items[sel].run()
-    },
+    click: (px: number, py: number) => pick(at(px, py)),
     key(k: string) {
       const d = k === 'ArrowDown' || k === 's' ? 1 : k === 'ArrowUp' || k === 'w' ? -1 : 0
-      if (d) sel = (sel + d + items.length) % items.length
-      else if (k === 'Enter' || k === ' ') items[sel].run()
+      if (d) sel = sel < 0 ? d > 0 ? 0 : items.length - 1 : (sel + d + items.length) % items.length
+      else if (k === 'Enter' || k === ' ') pick(sel)
       return !!d || k === 'Enter' || k === ' '
     },
     draw(g: Ctx) {

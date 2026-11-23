@@ -20,13 +20,11 @@ export function dialog() {
     open(say: string[], list: [string, () => void][]) {
       lines = say.flatMap(l => wrap(l, WIDE))
       acts = list
-      sel = list.length - 1
+      sel = -1
       ;[shown, since] = [true, performance.now()]
     },
     hover(x: number, y: number) {
-      const i = at(x, y)
-      if (i >= 0) sel = i
-      return i >= 0
+      return (sel = at(x, y)) >= 0
     },
     click(x: number, y: number) {
       const i = at(x, y)
@@ -34,9 +32,9 @@ export function dialog() {
     },
     key(k: string) {
       const d = k === 'ArrowRight' || k === 'd' ? 1 : k === 'ArrowLeft' || k === 'a' ? -1 : 0
-      if (d) sel = (sel + d + acts.length) % acts.length
+      if (d) sel = sel < 0 ? d > 0 ? 0 : acts.length - 1 : (sel + d + acts.length) % acts.length
       else if (k === 'Escape') run(acts.length - 1)
-      else if (k === 'Enter' || k === ' ') run(sel)
+      else if ((k === 'Enter' || k === ' ') && sel >= 0) run(sel)
       return true
     },
     draw(g: Ctx) {
