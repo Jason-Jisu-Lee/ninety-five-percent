@@ -7,8 +7,7 @@ import { text } from '../ui/text/text'
 
 const K = Math.max(2, Math.round(2 * devicePixelRatio)), CX = 16, CY = 54, CW = 360, CH = 40, L = 32, Y = 88
 const LINES: Record<string, string[]> = {
-  Swarm: ['Many wings, one hunger', 'A thousand wings, and but one hunger', 'Of many wings, one hunger', 'Many are the wings, and one the hunger', 'Many wings, yet one hunger'],
-  Anatomy: ['Shaped by the ages, sharpened by the hunt', 'The body remembereth every age it hath flown', 'Older than the mountains, and still it changeth', 'Each wing a gift of the dead', 'From the elder ages, a body for the hunt', 'Flesh of the old world, wings of the new'],
+  Anatomy: ['Every death leaves a stronger body', 'The body is the first weapon', 'What dies weak is born strong', 'Built to kill, and built again', 'Born from the fallen, stronger than the fallen', 'Every generation, a sharper weapon', 'Bone and wing, honed by every death'],
 }
 const blood = SHOP.filter(t => t.shop === 'Blood shop').map(t => t.name)
 for (const [tab, lines] of Object.entries(LINES)) {
