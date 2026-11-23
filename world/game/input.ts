@@ -14,7 +14,7 @@ export const input: Pick<Scene, 'hover' | 'click' | 'key'> = {
     G.me = false
     if (story.on() || fate.on() || omen.on()) return false
     if (top()) return top()!.hover(x, y)
-    if (G.fade > 0) return !G.going && title.hover(x, y)
+    if (G.fade > 0) return title.hover(x, y)
     G.hot = null
     if (ui.hover(x, y)) return true
     G.hot = run.sim.prey.at(x, y, was)
@@ -26,7 +26,7 @@ export const input: Pick<Scene, 'hover' | 'click' | 'key'> = {
     if (omen.on()) return void (DEV && omen.next())
     if (fate.on()) return
     if (top()) return top()!.click(x, y)
-    if (G.fade > 0) return void (G.going || title.click(x, y))
+    if (G.fade > 0) return void title.click(x, y)
     if (ui.click(x, y) || inspect(run.sim.prey.at(x, y, G.hot))) return
     if (onFly(x, y)) self.open()
     else if (!run.paused) run.sim.mark = null
@@ -37,7 +37,7 @@ export const input: Pick<Scene, 'hover' | 'click' | 'key'> = {
     if (fate.on()) return true
     if (top()) return top()!.key(k)
     if (k === 'm') return toggle(), true
-    if (G.fade > 0) return !G.going && title.key(k)
+    if (G.fade > 0) return title.key(k)
     if (k === 'a') return attack(G.hot), false
     if (k === 's') return run.sim.dart(), false
     if (k === 'Escape') opts.open(true)

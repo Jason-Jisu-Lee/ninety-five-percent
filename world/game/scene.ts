@@ -5,7 +5,7 @@ import type { Scene } from '../../core/loop/scene'
 import { save, store } from '../../core/save/save'
 import { LUNGE, STREAK } from '../../data/dragonfly/fight'
 import { FLY } from '../../data/dragonfly/flight'
-import { DUSK, FADE } from '../../data/game/map'
+import { DUSK } from '../../data/game/map'
 import { glow, tick } from '../../ui/track/track'
 import { input } from './input'
 import { layers, story, title, top, ui } from './menus'
@@ -23,7 +23,6 @@ export const stage1: Scene = {
     omen.update(dt)
     const { sim } = run, still = sim.away || evos.shown()
     if (still !== G.calm) hush(G.calm = still, false)
-    if (G.going && G.fade > 0 && (G.fade -= dt / FADE) <= 0) [G.frozen, save.started] = [false, true]
     if (G.fade > 0) return void (G.frozen || sim.idle(dt, G.clock += dt))
     if (fate.on() || omen.on()) return sim.idle(dt, G.clock += dt)
     if (run.paused || top() || (G.halt -= dt) > 0) return

@@ -14,7 +14,9 @@ import { restart, run } from './run'
 import { G } from './state'
 
 const begin = () => {
-  G.going = true
+  G.fade = 0
+  G.frozen = false
+  save.started = true
   mood(true)
 }
 export const story = intro(begin)
@@ -26,7 +28,7 @@ const leave = () => {
   fall(false)
   restart()
   G.fade = 1
-  G.going = run.paused = false
+  run.paused = false
   G.frozen = true
   mood(false)
 }
@@ -34,7 +36,7 @@ export const opts = settings(leave, () => {
   wipe()
   restart()
   G.fade = 1
-  G.going = G.frozen = run.paused = false
+  G.frozen = run.paused = false
 })
 export const layers = [ask, evos, card, self, opts], top = () => layers.find(l => l.shown())
 const flee = () => run.sim.away || (sound('feast'), run.sim.feast())
