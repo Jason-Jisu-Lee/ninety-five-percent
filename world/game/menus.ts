@@ -1,4 +1,5 @@
 import { mood } from '../../audio/player/music'
+import { sound } from '../../audio/player/sound'
 import { fall, save, wipe } from '../../core/save/save'
 import { front } from '../../ui/front/front'
 import { intro } from '../../ui/front/intro'
@@ -37,4 +38,4 @@ export const opts = settings(leave, () => {
 export const layers = [ask, evos, card, self, opts], top = () => layers.find(l => l.shown())
 export const ui = hud(() => {
   run.paused = !run.paused
-}, () => opts.open(true), () => run.sim.feast(), tools)
+}, () => opts.open(true), () => run.sim.away || (sound('feast'), run.sim.feast()), tools)

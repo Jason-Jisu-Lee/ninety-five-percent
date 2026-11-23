@@ -7,7 +7,6 @@ import { LUNGE, STREAK } from '../../data/dragonfly/fight'
 import { FLY } from '../../data/dragonfly/flight'
 import { DUSK, FADE } from '../../data/game/map'
 import { glow, tick } from '../../ui/track/track'
-import { renew } from '../place/place'
 import { input } from './input'
 import { layers, story, title, top, ui } from './menus'
 import { evos, fate, mourn } from './notices'
@@ -33,7 +32,7 @@ export const stage1: Scene = {
     if (sim.fell) mourn()
     sim.fell = false
     if (!sim.away || sim.fly.x > -FLY.gone) G.dusk = Math.max(0, G.dusk - dt / DUSK)
-    else if ((G.dusk += dt / DUSK) >= 1) renew(), evos.open(0, () => restart(true))
+    else if ((G.dusk += dt / DUSK) >= 1) evos.open(0, () => restart(true))
     save.time += dt * run.rate
     if ((G.kept += dt) < 5) return
     G.kept = 0

@@ -6,6 +6,7 @@ import { UI } from '../../data/look/palette'
 import { H } from '../../data/look/screen'
 import { note } from '../parts/note'
 import { box } from '../parts/panel'
+import { width } from '../text/text'
 
 const S = 12, GAP = 6, X = 22, Y = H - 16 - S
 
@@ -32,8 +33,8 @@ export function hues() {
         box(g, x - 1, Y - 1, S + 2, S + 2, UI.panel, UI.panel)
         box(g, x, Y, S, S, COLORS[color][0], COLORS[color][0])
       })
-      const h = list()[hot]
-      if (h) note(g, h[3] ? [h[1], h[3]] : [h[1]], left(hot) - 3, Y - 6, false, true)
+      const h = list()[hot], lines = h?.[3] ? [h[1], h[3]] : [h?.[1] ?? '']
+      if (h) note(g, lines, Math.max(4, left(hot) + S / 2 - Math.max(...lines.map(width)) / 2 - 5), Y - 6, false, true)
     },
   }
 }

@@ -41,7 +41,7 @@ export function pond(seed: number) {
     last.push([x, y])
     K.tuft(x, y)
   }
-  K.swarms.push([252, 150], [392, 160], [392, 160], [300, 236], [424, 230], [42, 100], [66, 312], [522, 324])
+  K.swarms.splice(0, Infinity, [252, 150], [522, 324], [66, 312])
   K.zone('open', CX, CY, 96, 50)
   return K.done()
 }
