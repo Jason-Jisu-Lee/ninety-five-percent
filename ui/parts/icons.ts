@@ -6,6 +6,7 @@ const ART = {
   note: ['....###', '....####', '....#..##', '....#...#', '....#', '....#', '.####', '#####', '.###'],
   slash: ['#', '##', '.##', '..##', '...##', '....##', '.....##', '......##', '.......##'],
   x: ['#...#', '.#.#.', '..#..', '.#.#.', '#...#'],
+  tick: ['......#', '.....##', '#...##.', '##.##..', '.###...', '..#....'],
 }
 
 export function icon(g: Ctx, name: keyof typeof ART, x: number, y: number, col: string, edge = '') {
@@ -16,7 +17,8 @@ export function icon(g: Ctx, name: keyof typeof ART, x: number, y: number, col: 
   })
 }
 
-export function drop(g: Ctx, x: number, y: number, col: string) {
+export function drop(g: Ctx, x: number, y: number, col: string, edge = '') {
+  if (edge) for (let n = 0; n < 9; n++) drop(g, x + n % 3 - 1, y + (n / 3 | 0) - 1, edge)
   g.fillStyle = col
   ;[1, 1, 3, 3, 5, 5, 3].forEach((w, j) => g.fillRect(x - (w >> 1), y - 3 + j, w, 1))
 }
