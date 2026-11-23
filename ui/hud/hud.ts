@@ -8,7 +8,7 @@ import { devConsole, type Tool } from '../dev/console'
 import { feastButton } from '../feast/button'
 import { nav } from '../nav/nav'
 import { soundBox } from '../nav/sound'
-import { lit, owed, quest } from '../quest/quest'
+import { quest } from '../quest/quest'
 import { text } from '../text/text'
 import { picker } from '../track/picker'
 import { now } from '../track/track'
@@ -23,7 +23,7 @@ export function hud(pause: () => void, options: () => void, feast: () => void, t
     },
     click: (x: number, y: number) => parts.some(p => p.click(x, y)),
     draw(g: Ctx, paused: boolean, bonus = 0, left = 0) {
-      blood(g, save.blood - owed(), exact, bonus, left, lit())
+      blood(g, save.blood, exact, bonus, left)
       quest(g)
       bar.draw(g, paused, silent())
       now(g, W - 73)
