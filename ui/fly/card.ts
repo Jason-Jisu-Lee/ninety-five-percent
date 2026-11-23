@@ -6,11 +6,11 @@ import { box, panel } from '../parts/panel'
 import { stats, TALL } from '../shop/stats'
 import { text } from '../text/text'
 
-const PW = 200, PH = TALL + 38, X = W - PW >> 1, Y = H - PH >> 1, SEE = .84, sheet = ctx(mk(PW, PH))
+const PW = 200, PH = TALL + 32, X = W - PW >> 1, Y = H - PH >> 1, SEE = .84, sheet = ctx(mk(PW, PH))
 
 export function flyCard() {
   let shown = false, hot = false
-  const table = stats(X + 12, Y + 32), onX = (x: number, y: number) => x >= X + PW - 19 && x < X + PW - 8 && y >= Y + 6 && y < Y + 17
+  const table = stats(X + 12, Y + 26, true), onX = (x: number, y: number) => x >= X + PW - 19 && x < X + PW - 8 && y >= Y + 6 && y < Y + 17
   return {
     shown: () => shown,
     open() {
