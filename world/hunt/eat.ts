@@ -45,4 +45,5 @@ export function eat(s: Sim, h: Prey, dt: number, t: number) {
   progress(h.kind)
   s.prey.kill(h, t)
   s.held = null
+  if (s.mark === h) s.mark = null
 }
