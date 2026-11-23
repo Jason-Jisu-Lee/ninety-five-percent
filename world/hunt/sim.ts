@@ -15,7 +15,7 @@ export function sim() {
   const fly = flight(HOME.x, HOME.y)
   const s = {
     fly, roam: brain(fly), prey: swarm(roster(where.stage)), fx: effects(), held: null as Prey | null, mark: null as Prey | null, stamina: 100,
-    health: own('health'), cap: own('health'), rest: null as Perch | null, bite: 0, extra: 0, hold: 0, strike: 0, hurt: 0, fell: false, away: false,
+    health: own('health'), cap: own('health'), rest: null as Perch | null, bite: 0, extra: 0, hold: 0, strike: 0, hurt: 0, fell: false, away: false, onward: false,
     aim: null as Prey | null, used: false, primed: false, jolt: false, spent: false, miss: 9, boost: 0, chain: 0, since: 99,
   }
   const gap = (o: Perch) => Math.hypot(o.x - fly.x, o.y - fly.y), ahead = (d: number) => [fly.x + Math.cos(fly.ang) * d * DF.scale, fly.y + Math.sin(fly.ang) * d * DF.scale]

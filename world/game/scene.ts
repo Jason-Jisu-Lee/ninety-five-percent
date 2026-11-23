@@ -11,7 +11,7 @@ import { input } from './input'
 import { layers, story, title, top, ui } from './menus'
 import { evos, fate, mourn } from './notices'
 import { render } from './render'
-import { restart, run } from './run'
+import { onward, restart, run } from './run'
 import { G } from './state'
 
 export const stage1: Scene = {
@@ -32,7 +32,7 @@ export const stage1: Scene = {
     if (sim.fell) mourn()
     sim.fell = false
     if (!sim.away || sim.fly.x > -FLY.gone) G.dusk = Math.max(0, G.dusk - dt / DUSK)
-    else if ((G.dusk += dt / DUSK) >= 1) evos.open(0, () => restart(true))
+    else if ((G.dusk += dt / DUSK) >= 1) sim.onward ? onward() : evos.open(0, () => restart(true))
     save.time += dt * run.rate
     if ((G.kept += dt) < 5) return
     G.kept = 0

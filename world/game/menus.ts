@@ -1,11 +1,13 @@
 import { mood } from '../../audio/player/music'
 import { sound } from '../../audio/player/sound'
 import { fall, save, wipe } from '../../core/save/save'
+import { unlock } from '../../core/save/wild'
+import { PREY } from '../../data/enemies/enemies'
 import { front } from '../../ui/front/front'
 import { intro } from '../../ui/front/intro'
 import { hud } from '../../ui/hud/hud'
 import { settings } from '../../ui/settings/settings'
-import { settle } from '../place/place'
+import { where } from '../place/place'
 import { tools } from './dev'
 import { ask, card, evos, self } from './notices'
 import { restart, run } from './run'
@@ -30,12 +32,16 @@ const leave = () => {
 }
 export const opts = settings(leave, () => {
   wipe()
-  settle()
   restart()
   G.fade = 1
   G.going = G.frozen = run.paused = false
 })
 export const layers = [ask, evos, card, self, opts], top = () => layers.find(l => l.shown())
+const flee = () => run.sim.away || (sound('feast'), run.sim.feast())
 export const ui = hud(() => {
   run.paused = !run.paused
-}, () => opts.open(true), () => run.sim.away || (sound('feast'), run.sim.feast()), tools)
+}, () => opts.open(true), flee, () => {
+  const w = run.sim.away ? undefined : unlock()
+  if (w?.kind && PREY[w.kind].stage === where.stage) run.sim.prey.join(w.kind)
+  else if (w && !w.kind) flee(), run.sim.onward = true
+}, tools)

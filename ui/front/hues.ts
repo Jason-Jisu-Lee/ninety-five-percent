@@ -1,5 +1,4 @@
 import { save, store } from '../../core/save/save'
-import { reach } from '../../core/save/wild'
 import type { Ctx } from '../../core/screen/canvas'
 import { COLORS, HUES } from '../../data/dragonfly/colors'
 import { UI } from '../../data/look/palette'
@@ -12,7 +11,7 @@ const S = 12, GAP = 6, X = 22, Y = H - 16 - S
 
 export function hues() {
   let hot = -1
-  const list = () => HUES.filter(h => reach() >= h[2]), left = (i: number) => X + i * (S + GAP)
+  const list = () => HUES.filter(h => save.far >= h[2]), left = (i: number) => X + i * (S + GAP)
   const at = (x: number, y: number) => y >= Y - 2 && y < Y + S + 2 ? list().findIndex((_, i) => x >= left(i) - 2 && x < left(i) + S + 2) : -1
   return {
     hover: (x: number, y: number) => (hot = at(x, y)) >= 0,

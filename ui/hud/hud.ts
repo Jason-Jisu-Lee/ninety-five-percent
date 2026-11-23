@@ -11,10 +11,11 @@ import { soundBox } from '../nav/sound'
 import { lit, owed, quest } from '../quest/quest'
 import { text } from '../text/text'
 import { picker } from '../track/picker'
+import { nextWild } from '../wild/next'
 import { now } from '../track/track'
 
-export function hud(pause: () => void, options: () => void, feast: () => void, tools: Tool[]) {
-  const bar = nav([toggle, pause, options]), levels = soundBox((x, y) => !bar.at(x, y)), songs = picker(W - 73), meal = feastButton(feast), dev = devConsole(tools), parts = [levels, songs, bar, meal, dev]
+export function hud(pause: () => void, options: () => void, feast: () => void, buy: () => void, tools: Tool[]) {
+  const bar = nav([toggle, pause, options]), levels = soundBox((x, y) => !bar.at(x, y)), songs = picker(W - 73), meal = feastButton(feast), dev = devConsole(tools), wild = nextWild(buy), parts = [levels, songs, bar, meal, dev, wild]
   let exact = false
   return {
     hover(x: number, y: number) {
@@ -27,6 +28,7 @@ export function hud(pause: () => void, options: () => void, feast: () => void, t
     draw(g: Ctx, paused: boolean, bonus = 0, left = 0) {
       blood(g, save.blood - owed(), exact, bonus, left, lit())
       quest(g)
+      wild.draw(g)
       bar.draw(g, paused, silent())
       now(g, W - 73)
       dev.draw(g)

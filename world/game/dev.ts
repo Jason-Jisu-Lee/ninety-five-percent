@@ -25,7 +25,7 @@ export const tools: Tool[] = import.meta.env.DEV ? [
   [() => 'Die', () => run.sim.die()],
   [() => PLACES[where.stage - 1], () => {
     where.stage = where.stage % PLACES.length + 1
-    restart()
+    restart(false, true)
   }],
   [view.name, view.next],
 ] : []
