@@ -71,7 +71,7 @@ function apply() {
 }
 
 export function listen(dt: number) {
-  if (ac && !el.paused && level()) scope.getByteFrequencyData(bins)
+  if (ac && !el.paused) scope.getByteFrequencyData(bins)
   else bins.fill(0)
   hear(bins, dt)
 }
@@ -83,4 +83,4 @@ export function toggle() {
 export const silent = () => save.mute || !(save.vol || save.fx)
 export const tracks = () => GAME.map(t => t[0])
 export const pick = (i: number) => void (list === GAME && play(i))
-export const playing = () => ac && level() ? list[at][0] : ''
+export const playing = () => ac && save.vol ? list[at][0] : ''
