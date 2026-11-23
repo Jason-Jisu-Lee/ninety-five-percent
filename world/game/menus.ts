@@ -27,7 +27,7 @@ const leave = () => {
   G.frozen = true
   mood(false)
 }
-export const opts = settings(() => ask.open(['This will forfeit your current run and you will lose 95% of current blood points. Continue?'], [['Continue', leave], ['Cancel', () => {}]]), () => {
+export const opts = settings(leave, () => {
   wipe()
   settle()
   restart()

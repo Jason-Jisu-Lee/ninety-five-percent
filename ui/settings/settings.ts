@@ -9,38 +9,44 @@ import { menu } from '../parts/menu'
 import { mixer } from '../parts/mixer'
 import { box, panel } from '../parts/panel'
 import { text } from '../text/text'
+import { wrap } from '../text/wrap'
 import { ROWS, statistics } from './statistics'
 
 const PW = 200, X = W - PW >> 1, B = 232, MX = W - 96 >> 1, CX = X + PW - 19
+const WIPE = ['Are you sure?', 'This will delete all progress.'], QUIT = wrap('This will forfeit your current run and you will lose 95% of current blood points. Continue?', PW - 24)
 
 export function settings(toMenu: () => void, reset: () => void) {
-  let shown = false, sure = false, stats = false, play = false, hot = false
+  let shown = false, stats = false, play = false, hot = false, sure: [ReturnType<typeof menu>, string[]] | undefined
   const shut = () => {
-    shown = sure = stats = false
+    shown = stats = false
+    sure = undefined
+  }
+  const check = (m: ReturnType<typeof menu>, lines: string[]) => {
+    sure = [m, lines]
+    m.focus(1)
   }
   const item = (label: string, run: () => void) => ({ label, run })
-  const ask = item('Hard Reset', () => {
-    sure = true
-    confirm.focus(1)
-  })
+  const ask = item('Hard Reset', () => check(wipe, WIPE))
   const tally = item('Statistics', () => {
     stats = true
   })
-  const game = menu([tally, item('Main Menu', () => {
-    shut()
-    toMenu()
-  })], MX, B - 14)
+  const game = menu([tally, item('Main Menu', () => check(quit, QUIT))], MX, B - 14)
   const home = menu([tally, ask], MX, B - 14)
-  const confirm = menu([item('Hard Reset', () => {
+  const no = item('Cancel', () => {
+    sure = undefined
+  })
+  const wipe = menu([item('Hard Reset', () => {
     shut()
     reset()
-  }), item('Cancel', () => {
-    sure = false
-  })], MX, B - 14)
+  }), no], MX, B - 14)
+  const quit = menu([item('Continue', () => {
+    shut()
+    toMenu()
+  }), no], MX, B - 14)
   const back = menu([item('Back', () => {
     stats = false
   })], MX, B - 14)
-  const now = () => sure ? confirm : stats ? back : play ? game : home, top = () => now().top - (sure ? 46 : stats ? ROWS * 11 + 29 : 76)
+  const now = () => sure ? sure[0] : stats ? back : play ? game : home, top = () => now().top - (sure ? 18 + sure[1].length * 14 : stats ? ROWS * 11 + 29 : 76)
   const onX = (x: number, y: number) => !sure && x >= CX && x < CX + 11 && y >= top() + 6 && y < top() + 17
   const levels = (x: number, y: number, press = false) => !sure && !stats && mixer[press ? 'click' : 'on'](x, y, W - mixer.w >> 1, top() + 26)
   return {
@@ -60,7 +66,7 @@ export function settings(toMenu: () => void, reset: () => void) {
     key(k: string) {
       const d = k === 'ArrowRight' || k === 'd' ? 1 : k === 'ArrowLeft' || k === 'a' ? -1 : 0
       if (k === 'Escape') {
-        if (sure) sure = false
+        if (sure) sure = undefined
         else if (stats) stats = false
         else shut()
       } else if (d && !sure && !stats) mix('vol', save.vol + d)
@@ -74,8 +80,7 @@ export function settings(toMenu: () => void, reset: () => void) {
       panel(g, X, y, PW, B - y, UI.border, UI.panel)
       now().draw(g)
       if (sure) {
-        text(g, 'Are you sure?', W / 2, y + 20, UI.text, 'c')
-        text(g, 'This will delete all progress.', W / 2, y + 34, UI.text, 'c')
+        sure[1].forEach((line, i) => text(g, line, W / 2, y + 20 + i * 14, UI.text, 'c'))
         return
       }
       box(g, CX, y + 6, 11, 11, hot ? UI.accent : UI.border, UI.panel)
