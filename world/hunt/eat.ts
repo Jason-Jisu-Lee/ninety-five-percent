@@ -9,7 +9,7 @@ import type { Prey } from '../creatures/prey'
 import type { Sim } from './sim'
 
 export function eat(s: Sim, h: Prey, dt: number, t: number) {
-  const { fly, fx } = s, k = PREY[h.kind], [mx, my] = s.ahead(DF.mouth + cells(h) / 2 / DF.scale), bite = own('power') * (1 + s.extra), hit = Math.max(0, k.power - own('armour'))
+  const { fly, fx } = s, k = PREY[h.kind], [mx, my] = s.ahead(DF.mouth + cells(h) / 2 / DF.scale), bite = own('power') * (1 + s.extra), hit = Math.max(0, k.power - own('armor'))
   fly.seek(fly.x, fly.y, 0, dt)
   Object.assign(h, { x: mx, y: my, h: fly.h, ang: fly.ang })
   if (k.power && (s.strike -= dt) <= 0) {

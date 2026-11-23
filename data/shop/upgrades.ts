@@ -7,7 +7,7 @@ export const UPGRADES: Record<string, [stat: Stat, each: number, cost: number[]]
   'Sharper Mandibles': ['power', .5, BIG],
   'Hard Shell': ['health', .25, [20, 30, 45, 68, 100]],
   'Harder Shell': ['health', .5, BIG],
-  'Thick Hide': ['armour', 2, [300, 900, 2700]],
+  'Thick Hide': ['armor', 2, [300, 900, 2700]],
   'Long Wings': ['speed', .1, SMALL],
   'Longer Wings': ['speed', .2, BIG],
   'Split Wingbeat': ['turn', 1 / 3, [15, 35, 80]],

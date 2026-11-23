@@ -4,8 +4,8 @@ import { FIGHT } from '../../data/dragonfly/fight'
 
 const memo = new Map<string, number>()
 
-export function odds(kind: Kind, power: number, health: number, armour: number, pace: number) {
-  const k = PREY[kind], hit = k.power - armour, key = [kind, power, health, armour, pace].join('/'), [lo, hi] = FIGHT.jitter
+export function odds(kind: Kind, power: number, health: number, armor: number, pace: number) {
+  const k = PREY[kind], hit = k.power - armor, key = [kind, power, health, armor, pace].join('/'), [lo, hi] = FIGHT.jitter
   if (hit <= 0) return 1
   if (memo.has(key)) return memo.get(key)!
   const R = rng(95), kill = Math.ceil(k.hp / power) * FIGHT.bite / pace, blows = Math.ceil(health / hit)

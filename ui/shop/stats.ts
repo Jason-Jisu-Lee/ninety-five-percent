@@ -11,7 +11,7 @@ const WIDE = 176, MID = 116, num = (v: number) => String(+v.toFixed(2))
 const ROWS: [label: string, stat: Stat, base: (v: number) => string, now: (v: number) => string, hint: string][] = [
   ['Power', 'power', num, num, ''],
   ['Health', 'health', num, num, ''],
-  ['Damage blocked', 'armour', num, num, 'Damage blocked per attack'],
+  ['Armor', 'armor', num, num, 'Damage blocked per attack'],
   ['Speed', 'speed', v => num(FLY.top * v / CM), v => num(FLY.top * v / CM) + ' cm/s', ''],
   ['Turning', 'turn', v => num(75 * v), v => num(75 * v) + ' deg/s', 'How fast it turns'],
   ['Stamina', 'stamina', v => num(100 / STAMINA.drain * v), v => num(100 / STAMINA.drain * v) + ' s', 'Flying time before it must rest'],
