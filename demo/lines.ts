@@ -7,7 +7,10 @@ import { text } from '../ui/text/text'
 
 const K = Math.max(2, Math.round(2 * devicePixelRatio)), CX = 16, CY = 54, CW = 360, CH = 40, L = 32, Y = 88
 const LINES: Record<string, string[]> = {
-  Anatomy: ["The wings are new, the hunger is not", "Mind the water's edge", "No wing wasted", "Shed in the reeds, worn by no other", "Remind the pond what it fears", "Grant it eyes, grant it wings", "Lighter every time it returns", "The pond takes notice", "Molted skin, still warm", "Built for the next life"],
+  Appetite: ["Grant it hunger, grant it blood", "Drink, and be stronger for it", "Every drop, accounted for", "Feed it, and it grows", "Hunger remembers what the belly forgets", "Take, and take again"],
+  Instinct: ["Grant it memory, grant it speed", "It knew before it was born", "Strike first, think never", "The body moves, the mind follows", "Trust the older blood", "Taught by no one"],
+  Swarm: ["Grant it kin, grant it numbers", "Never alone over the water", "One hunger, many mouths", "The sky grows crowded", "Where one hunts, the rest follow", "Call them, and they come"],
+  Wildlife: ["Grant it shores, grant it prey", "The pond is only the beginning", "New water, old hunger", "Every shore hides something", "Seek the far water", "The map is wider than it looks"],
 }
 const blood = SHOP.filter(t => t.shop === 'Blood shop').map(t => t.name)
 for (const [tab, lines] of Object.entries(LINES)) {
