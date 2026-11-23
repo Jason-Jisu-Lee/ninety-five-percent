@@ -11,6 +11,8 @@ export const UI = {
   line: '#33403c',
 }
 
+export const ORB: Record<string, string> = { '#': '#c2442c', o: '#ddb09c', d: '#8c2a22' }
+
 export const FOREST = {
   g3: '#5a9452', deep: '#14301f', cDark: '#1d4a2d', cLight: '#3f8445',
   t0: '#6a4a31', t1: '#4b3324', t2: '#33231a', r0: '#33403c', r1: '#5c6660',

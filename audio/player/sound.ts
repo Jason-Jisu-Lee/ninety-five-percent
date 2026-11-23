@@ -1,8 +1,9 @@
+import quest from '../../assets/audio/effects/quest.wav'
 import thump from '../../assets/audio/effects/thump.wav'
 import tired from '../../assets/audio/effects/tired.wav'
 import { save } from '../../core/save/save'
 
-const LOUD = .6, FILES = { thump: new Audio(thump), tired: new Audio(tired) }
+const LOUD = .6, FILES = { thump: new Audio(thump), tired: new Audio(tired), quest: new Audio(quest) }
 
 export function sound(name: keyof typeof FILES) {
   const el = FILES[name]

@@ -1,4 +1,7 @@
 import type { Ctx } from '../../core/screen/canvas'
+import { ORB } from '../../data/look/palette'
+
+const BEAD = ['.###.', '#o###', '#####', '###d#', '.###.']
 
 const ART = {
   pause: ['', '.##...##.', '.##...##.', '.##...##.', '.##...##.', '.##...##.', '.##...##.', '.##...##.'],
@@ -6,6 +9,7 @@ const ART = {
   note: ['....###', '....####', '....#..##', '....#...#', '....#', '....#', '.####', '#####', '.###'],
   slash: ['#', '##', '.##', '..##', '...##', '....##', '.....##', '......##', '.......##'],
   x: ['#...#', '.#.#.', '..#..', '.#.#.', '#...#'],
+  tick: ['......#', '.....##', '#...##.', '##.##..', '.###...', '..#....'],
 }
 
 export function icon(g: Ctx, name: keyof typeof ART, x: number, y: number, col: string, edge = '') {
@@ -16,9 +20,14 @@ export function icon(g: Ctx, name: keyof typeof ART, x: number, y: number, col: 
   })
 }
 
-export function drop(g: Ctx, x: number, y: number, col: string) {
-  g.fillStyle = col
-  ;[1, 1, 3, 3, 5, 5, 3].forEach((w, j) => g.fillRect(x - (w >> 1), y - 3 + j, w, 1))
+export function orb(g: Ctx, x: number, y: number, flat = '', edge = '') {
+  if (edge) for (let n = 0; n < 9; n++) orb(g, x + n % 3 - 1, y + (n / 3 | 0) - 1, edge)
+  BEAD.forEach((row, j) => {
+    for (let i = 0; i < row.length; i++) if (row[i] !== '.') {
+      g.fillStyle = flat || ORB[row[i]]
+      g.fillRect(x - 2 + i, y - 2 + j, 1, 1)
+    }
+  })
 }
 
 export function gem(g: Ctx, x: number, y: number, col: string) {

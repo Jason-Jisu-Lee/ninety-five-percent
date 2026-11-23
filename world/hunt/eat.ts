@@ -3,7 +3,7 @@ import { own, progress, save } from '../../core/save/save'
 import { DF } from '../../data/dragonfly/body'
 import { FIGHT, STREAK } from '../../data/dragonfly/fight'
 import { PREY } from '../../data/enemies/enemies'
-import { FOREST as C } from '../../data/look/palette'
+import { FOREST as C, ORB } from '../../data/look/palette'
 import { cells } from '../creatures/draw'
 import type { Prey } from '../creatures/prey'
 import type { Sim } from './sim'
@@ -41,7 +41,7 @@ export function eat(s: Sim, h: Prey, dt: number, t: number) {
   save.blood += pay
   save.earned += pay
   save.caught[h.kind] = (save.caught[h.kind] ?? 0) + 1
-  fx.hit(mx, my - fly.h * .7 - 20, '+' + pay, C.red)
+  fx.hit(mx, my - fly.h * .7 - 20, '+' + pay, ORB['#'])
   progress(h.kind)
   s.prey.kill(h, t)
   s.held = null

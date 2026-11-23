@@ -1,7 +1,7 @@
 import { buy, level, price, save } from '../../core/save/save'
 import { unlock } from '../../core/save/wild'
 import type { Ctx } from '../../core/screen/canvas'
-import { FOREST as C, UI } from '../../data/look/palette'
+import { UI } from '../../data/look/palette'
 import { PLACES } from '../../data/game/map'
 import { H, W } from '../../data/look/screen'
 import { UPGRADES } from '../../data/shop/upgrades'
@@ -10,7 +10,7 @@ import { OPEN } from '../../data/shop/open'
 import { WILD } from '../../data/shop/wild'
 import { scene, settle } from '../../world/place/place'
 import { frame } from '../parts/frame'
-import { drop } from '../parts/icons'
+import { orb } from '../parts/icons'
 import { text, width } from '../text/text'
 import { about } from './about'
 import { emblem } from './emblem'
@@ -81,7 +81,7 @@ export function shop() {
         if (!feral() && n && of > 1) text(g, `${n}/${of}`, x + 12 + width(it.name), y + 12, UI.dim)
         if (!c) return
         text(g, p, x + CW - 7, y + 12, ok ? UI.text : UI.dim, 'r')
-        drop(g, x + CW - 12 - width(p), y + 8, ok ? C.red : UI.dim)
+        orb(g, x + CW - 12 - width(p), y + 8, ok ? '' : UI.dim)
       })
       if (pick) about(g, pick, SIDE, R - SIDE)
       frame(g, R - BW, BY, BW, BH, go)
