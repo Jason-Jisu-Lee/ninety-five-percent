@@ -9,12 +9,12 @@ import { text } from '../text/text'
 
 const WIDE = 176, MID = 116, num = (v: number) => String(+v.toFixed(2))
 const ROWS: [label: string, stat: Stat, base: (v: number) => string, now: (v: number) => string, hint: string][] = [
-  ['Power', 'power', num, num, ''],
-  ['Health', 'health', num, num, ''],
+  ['Power', 'power', num, num, 'Damage per bite'],
+  ['Health', 'health', num, num, 'Damage it can take'],
   ['Armor', 'armor', num, num, 'Damage blocked per attack'],
   ['Speed', 'speed', v => num(FLY.top * v / CM), v => num(FLY.top * v / CM) + ' cm/s', ''],
   ['Turning', 'turn', v => num(75 * v), v => num(75 * v) + ' deg/s', 'How fast it turns'],
-  ['Stamina', 'stamina', v => num(100 / STAMINA.drain * v), v => num(100 / STAMINA.drain * v) + ' s', 'Flying time before it must rest'],
+  ['Stamina', 'stamina', v => num(100 / STAMINA.drain * v), v => num(100 / STAMINA.drain * v) + ' s', 'How long it can fly'],
   ['Rest', 'rest', v => num(STAMINA.regen * v) + '%', v => num(STAMINA.regen * v) + '%/s', 'Stamina regained per second of rest'],
   ['Mend in flight', 'mend', v => num(v) + '%', v => num(v) + '%/s', 'Health regained per second of flight'],
 ]
@@ -38,6 +38,8 @@ export function stats(x: number, y: number) {
         text(g, base(BASE[s]), x + MID, ry, UI.dim, 'r')
         text(g, now(STAT[s] + (on && next ? gain(hot) : 0)), x + WIDE, ry, on && next ? UI.gold : UI.text, 'r')
       })
+    },
+    tip(g: Ctx) {
       if (over >= 0) note(g, [ROWS[over][4]], x - 8, y + over * 10 + 1, true)
     },
   }

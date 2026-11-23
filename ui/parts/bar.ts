@@ -1,7 +1,7 @@
 import type { Ctx } from '../../core/screen/canvas'
 import { UI } from '../../data/look/palette'
 
-export const LIFE = 40
+export const LIFE = 18
 
 export function bar(g: Ctx, x: number, y: number, v: number, w = 16, col = UI.text) {
   g.fillStyle = UI.panel

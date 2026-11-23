@@ -88,6 +88,7 @@ export function shop() {
         orb(g, x + CW - 12 - width(p), y + 8, ok ? '' : UI.dim)
       })
       if (pick) about(g, pick, SIDE, R - SIDE)
+      if (body()) table.tip(g)
       frame(g, R - BW, BY, BW, BH, go)
       text(g, side ? 'Continue' : 'Return', R - BW / 2, BY + 14, go ? UI.gold : UI.text, 'c')
     },

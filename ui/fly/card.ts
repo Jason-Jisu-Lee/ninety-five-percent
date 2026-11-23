@@ -4,6 +4,7 @@ import { H, W } from '../../data/look/screen'
 import { icon } from '../parts/icons'
 import { box, panel } from '../parts/panel'
 import { stats, TALL } from '../shop/stats'
+import { text } from '../text/text'
 
 const PW = 200, PH = TALL + 38, X = W - PW >> 1, Y = H - PH >> 1, SEE = .84, sheet = ctx(mk(PW, PH))
 
@@ -35,7 +36,9 @@ export function flyCard() {
       g.globalAlpha = 1
       box(g, X + PW - 19, Y + 6, 11, 11, hot ? UI.accent : UI.border, UI.panel)
       icon(g, 'x', X + PW - 16, Y + 9, UI.text)
+      text(g, 'Dragonfly', X + 12, Y + 21, UI.text, undefined, undefined, 2)
       table.draw(g)
+      table.tip(g)
     },
   }
 }
