@@ -6,7 +6,7 @@ const bins = new Uint8Array(512), LOUD = .6, GAP = 2600
 let ac: AudioContext | undefined, el: HTMLAudioElement, out: GainNode, scope: AnalyserNode, list = FRONT, at = 0
 
 const level = () => save.mute ? 0 : (save.vol / 5) ** 2 * LOUD
-const go = () => void (level() && !quiet && !turn && el.play().catch(() => {}))
+const go = () => void (save.vol && !quiet && !turn && el.play().catch(() => {}))
 let quiet = false, turn = 0, nap = 0
 
 function play(i: number) {
@@ -66,12 +66,12 @@ function apply() {
   store()
   if (!ac) return
   out.gain.setTargetAtTime(quiet ? 0 : level(), ac.currentTime, .05)
-  if (level()) go()
+  if (save.vol) go()
   else el.pause()
 }
 
 export function listen(dt: number) {
-  if (ac && !el.paused) scope.getByteFrequencyData(bins)
+  if (ac && !el.paused && level()) scope.getByteFrequencyData(bins)
   else bins.fill(0)
   hear(bins, dt)
 }

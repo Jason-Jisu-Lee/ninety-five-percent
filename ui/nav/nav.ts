@@ -11,6 +11,7 @@ export function nav(acts: (() => void)[]) {
   const X = W - 4 - P * acts.length
   const at = (x: number, y: number) => y >= Y && y < Y + S && x >= X && x < X + P * acts.length && (x - X) % P < S ? (x - X) / P | 0 : -1
   return {
+    at,
     hover: (x: number, y: number) => (hot = at(x, y)) >= 0,
     click(x: number, y: number) {
       const i = at(x, y)

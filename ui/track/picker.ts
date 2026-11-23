@@ -12,6 +12,9 @@ export function picker(right: number) {
   const head = (x: number, y: number) => !!playing() && y >= 6 && y < 25 && x < right + 2 && x >= right - width(playing()) - 22
   const row = (x: number, y: number) => open && x >= right - wide() && x < right && y >= TOP + 3 && y < TOP + 3 + tracks().length * ROW ? (y - TOP - 3) / ROW | 0 : -1
   return {
+    shut() {
+      open = false
+    },
     hover(x: number, y: number) {
       hot = row(x, y)
       return hot >= 0 || head(x, y)

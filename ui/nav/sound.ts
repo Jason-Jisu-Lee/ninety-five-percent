@@ -4,18 +4,20 @@ import { W } from '../../data/look/screen'
 import { mixer } from '../parts/mixer'
 import { box } from '../parts/panel'
 
-const PAD = 7, X = W - 4 - mixer.w - PAD * 2, Y = 28
+const PAD = 7, X = W - 4 - mixer.w - PAD * 2, Y = 28, REACH = 3
 
-export function soundBox() {
+export function soundBox(icon: (x: number, y: number) => boolean) {
   let open = false
+  const inside = (x: number, y: number) => x >= X && x < X + mixer.w + PAD * 2 && y >= Y - REACH && y < Y + mixer.h + PAD * 2
   return {
-    flip() {
-      open = !open
+    open: () => open,
+    hover(x: number, y: number) {
+      open = icon(x, y) || open && inside(x, y)
+      return open && mixer.on(x, y, X + PAD, Y + PAD)
     },
-    hover: (x: number, y: number) => open && mixer.on(x, y, X + PAD, Y + PAD),
     click(x: number, y: number) {
-      if (!open) return false
-      if (!mixer.click(x, y, X + PAD, Y + PAD)) open = false
+      if (!open || !inside(x, y)) return false
+      mixer.click(x, y, X + PAD, Y + PAD)
       return true
     },
     draw(g: Ctx) {

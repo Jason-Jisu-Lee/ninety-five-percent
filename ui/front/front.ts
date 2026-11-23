@@ -1,4 +1,4 @@
-import { silent } from '../../audio/player/music'
+import { silent, toggle } from '../../audio/player/music'
 import { ctx, mk, type Ctx } from '../../core/screen/canvas'
 import { dissolve, etch } from '../../core/draw/dissolve'
 import { save } from '../../core/save/save'
@@ -14,7 +14,7 @@ const BW = 96, BH = 78, RIGHT = W - 22, BOTTOM = H - 16, GROW = 4 / 3
 
 export function front(start: () => void, options: () => void) {
   const layer = ctx(mk(W, H)), plate = ctx(mk(BW, BH)), sharp = ctx(mk(1, 1)), go = { run: start, get label() { return save.started ? 'Continue' : 'Start' } }
-  const buttons = menu([go, { label: 'Settings', run: options }, { label: 'Exit', run: () => close() }], 0, BH), levels = soundBox(), sound = nav([levels.flip]), colors = hues()
+  const buttons = menu([go, { label: 'Settings', run: options }, { label: 'Exit', run: () => close() }], 0, BH), sound = nav([toggle]), levels = soundBox((x, y) => !sound.at(x, y)), colors = hues()
   let s = GROW
   const local = (x: number, y: number): [number, number] => [(x - RIGHT) / s + BW, (y - BOTTOM) / s + BH]
   return {
