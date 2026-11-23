@@ -1,6 +1,6 @@
 import { FIGHT } from '../../data/dragonfly/fight'
 import { COLOR, type Color } from '../../data/dragonfly/colors'
-import { BASE, STAT, type Stat } from '../../data/dragonfly/stats'
+import { BASE, SHARE, STAT, type Stat } from '../../data/dragonfly/stats'
 import { UPGRADES } from '../../data/shop/upgrades'
 import { QUESTS } from '../../data/game/quests'
 
@@ -22,10 +22,11 @@ export const save = { ...fresh(), ...read() } as ReturnType<typeof fresh>
 export const own = (s: Stat) => STAT[s]
 export const level = (name: string) => save.levels[name] ?? 0
 export const price = (name = '') => UPGRADES[name]?.[2][level(name)]
+export const gain = (name: string) => UPGRADES[name] ? UPGRADES[name][1] * (SHARE.includes(UPGRADES[name][0]) ? BASE[UPGRADES[name][0]] : 1) : 0
 
 function grow() {
   Object.assign(STAT, BASE)
-  for (const [name, [stat, each]] of Object.entries(UPGRADES)) STAT[stat] += each * level(name)
+  for (const [name, [stat]] of Object.entries(UPGRADES)) STAT[stat] += gain(name) * level(name)
 }
 grow()
 

@@ -3,6 +3,7 @@ export const UI = {
   border: '#c9c0b2',
   text: '#e9e2d4',
   dim: '#8f877b',
+  faint: '#59635c',
   accent: '#7fb062',
   ally: '#8fc4c2',
   foe: '#d8442c',

@@ -6,11 +6,11 @@ import { PLACES } from '../../data/game/map'
 import { H, W } from '../../data/look/screen'
 import { UPGRADES } from '../../data/shop/upgrades'
 import { SHOP } from '../../data/shop/shop'
-import { OPEN } from '../../data/shop/open'
+import { HIDDEN, OPEN } from '../../data/shop/open'
 import { WILD } from '../../data/shop/wild'
 import { scene, settle } from '../../world/place/place'
 import { frame } from '../parts/frame'
-import { orb } from '../parts/icons'
+import { icon, orb } from '../parts/icons'
 import { text, width } from '../text/text'
 import { about } from './about'
 import { emblem } from './emblem'
@@ -19,7 +19,7 @@ import { skill } from './skill'
 import { wild } from './wild'
 
 const L = 32, R = W - L, CW = 184, CH = 17, PX = CW + 12, PY = 20, TOP = 98, ROWS = 10, SIDE = L + PX * 2 + 8, GAP = 26, BW = 96, BH = 20, BY = H - 40
-const NAMES = ['Blood shop', 'Evolution shop'], SHOPS = NAMES.map(n => SHOP.filter(t => t.shop === n))
+const NAMES = ['Blood shop', 'Evolution shop'], SHOPS = NAMES.map(n => SHOP.filter(t => t.shop === n && !HIDDEN.includes(t.name)))
 
 export function shop() {
   let shown = false, side = 0, tab = 0, hot = -1, over = -1, go = false, then: (() => void) | undefined
@@ -71,6 +71,7 @@ export function shop() {
         g.fillStyle = UI.gold
         if (i === tab) g.fillRect(spots()[i], 72, width(c.name), 1)
       })
+      if (!side) icon(g, 'lock', spots()[tabs().length - 1] + width(tabs()[tabs().length - 1].name) + GAP, 61, UI.faint)
       text(g, tabs()[tab].note, L, 88, UI.dim)
       items().forEach((it, i) => {
         const [x, y] = cell(i)

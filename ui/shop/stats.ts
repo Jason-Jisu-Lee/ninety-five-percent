@@ -1,4 +1,4 @@
-import { level } from '../../core/save/save'
+import { gain, level } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { CM, FLY, STAMINA } from '../../data/dragonfly/flight'
 import { BASE, STAT, type Stat } from '../../data/dragonfly/stats'
@@ -29,14 +29,14 @@ export function stats(x: number, y: number) {
       over = ROWS[i]?.[4] ? i : -1
     },
     draw(g: Ctx, hot = '') {
-      const [stat, each, cost] = UPGRADES[hot] ?? [], next = level(hot) < (cost?.length ?? 0)
+      const [stat, , cost] = UPGRADES[hot] ?? [], next = level(hot) < (cost?.length ?? 0)
       text(g, 'Base', x + MID, y, UI.dim, 'r')
       text(g, 'Now', x + WIDE, y, UI.dim, 'r')
       ROWS.forEach(([label, s, base, now], i) => {
         const ry = y + 12 + i * 10, on = s === stat
         text(g, label, x, ry, on ? UI.gold : i === over ? UI.accent : UI.text)
         text(g, base(BASE[s]), x + MID, ry, UI.dim, 'r')
-        text(g, now(STAT[s] + (on && next ? each! : 0)), x + WIDE, ry, on && next ? UI.gold : UI.text, 'r')
+        text(g, now(STAT[s] + (on && next ? gain(hot) : 0)), x + WIDE, ry, on && next ? UI.gold : UI.text, 'r')
       })
       if (over >= 0) note(g, [ROWS[over][4]], x - 8, y + over * 10 + 1, true)
     },
