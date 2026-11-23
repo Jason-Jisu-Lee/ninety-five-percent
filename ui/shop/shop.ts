@@ -15,7 +15,6 @@ import { about } from './about'
 import { emblem } from './emblem'
 import { head } from './head'
 import { skill } from './skill'
-import { stats } from './stats'
 import { wild } from './wild'
 
 const L = 32, R = W - L, CW = 184, CH = 17, PX = CW + 12, PY = 20, TOP = 98, ROWS = 10, SIDE = L + PX * 2 + 8, GAP = 26, BW = 96, BH = 20, BY = H - 40
@@ -23,7 +22,7 @@ const NAMES = ['Blood shop', 'Evolution shop'], SHOPS = NAMES.map(n => SHOP.filt
 
 export function shop() {
   let shown = false, side = 0, tab = 0, hot = -1, over = -1, go = false, then: (() => void) | undefined
-  const table = stats(432, 110), born = () => tabs()[tab].name === 'Instinct', feral = () => tabs()[tab].name === 'Wildlife'
+  const born = () => tabs()[tab].name === 'Instinct', feral = () => tabs()[tab].name === 'Wildlife'
   const tabs = () => SHOPS[side], spots = () => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L)), items = () => feral() ? WILD : tabs()[tab].items.slice(0, ROWS * 2)
   const cell = (i: number) => feral() ? [L + (WILD[i].stage - 1) * PX, TOP + WILD[i].row * PY] : [L + (i / ROWS | 0) * PX, TOP + i % ROWS * PY]
   const cost = (i: number) => feral() ? i < save.wild ? undefined : WILD[i]?.cost : price(items()[i]?.name), can = (i: number) => save.blood >= (cost(i) ?? Infinity) && (!feral() || i === save.wild)
@@ -42,7 +41,6 @@ export function shop() {
       hot = items().findIndex((_, i) => inside(x, y, cell(i)[0], cell(i)[1], CW, CH))
       over = tabs().findIndex((c, i) => inside(x, y, spots()[i] - 6, 54, width(c.name) + 12, 22))
       go = inside(x, y, R - BW, BY, BW, BH)
-      table.hover(side || born() || feral() ? -1 : x, y)
       return go || over >= 0 || can(hot)
     },
     click() {
@@ -62,10 +60,9 @@ export function shop() {
       const pick = feral() ? undefined : items()[hot], mark = emblem()
       g.fillStyle = UI.night
       g.fillRect(0, 0, W, H)
-      if (side) g.drawImage(mark, SIDE + (R - SIDE - mark.width >> 1), 40)
-      else if (born()) skill(g, pick?.name)
+      if (born()) skill(g, pick?.name)
       else if (feral()) wild(g, WILD[hot] ?? WILD[save.wild])
-      else table.draw(g, pick?.name)
+      else g.drawImage(mark, SIDE + (R - SIDE - mark.width >> 1), 40)
       head(g, NAMES[side], side, L, R)
       tabs().forEach((c, i) => {
         text(g, c.name, spots()[i], 68, i === tab ? UI.text : i === over ? UI.border : UI.dim)
