@@ -6,6 +6,7 @@ import { PLACES } from '../../data/game/map'
 import { H, W } from '../../data/look/screen'
 import { UPGRADES } from '../../data/shop/upgrades'
 import { SHOP } from '../../data/shop/shop'
+import { OPEN } from '../../data/shop/open'
 import { WILD } from '../../data/shop/wild'
 import { scene, settle } from '../../world/place/place'
 import { frame } from '../parts/frame'
@@ -25,7 +26,8 @@ export function shop() {
   const born = () => tabs()[tab].name === 'Instinct', feral = () => tabs()[tab].name === 'Wildlife'
   const tabs = () => SHOPS[side], spots = () => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L)), items = () => feral() ? WILD : tabs()[tab].items.slice(0, ROWS * 2)
   const cell = (i: number) => feral() ? [L + (WILD[i].stage - 1) * PX, TOP + WILD[i].row * PY] : [L + (i / ROWS | 0) * PX, TOP + i % ROWS * PY]
-  const cost = (i: number) => feral() ? i < save.wild ? undefined : WILD[i]?.cost : price(items()[i]?.name), can = (i: number) => save.blood >= (cost(i) ?? Infinity) && (!feral() || i === save.wild)
+  const closed = (i: number) => !!OPEN[tabs()[tab].name] && !OPEN[tabs()[tab].name].includes(items()[i]?.name)
+  const cost = (i: number) => closed(i) ? undefined : feral() ? i < save.wild ? undefined : WILD[i]?.cost : price(items()[i]?.name), can = (i: number) => save.blood >= (cost(i) ?? Infinity) && (!feral() || i === save.wild)
   const inside = (x: number, y: number, bx: number, by: number, w: number, h: number) => x >= bx && x < bx + w && y >= by && y < by + h
   const shut = () => {
     shown = false
@@ -45,7 +47,7 @@ export function shop() {
     },
     click() {
       if (over >= 0) [tab, hot] = [over, -1]
-      else if (hot >= 0 && !feral()) buy(items()[hot].name)
+      else if (hot >= 0 && !feral()) can(hot) && buy(items()[hot].name)
       else if (hot >= 0) can(hot) && !unlock()?.kind && settle()
       else if (go) shut()
     },

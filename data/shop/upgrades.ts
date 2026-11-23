@@ -3,7 +3,7 @@ import type { Stat } from '../dragonfly/stats'
 const SMALL = [10, 16, 26, 42, 67], BIG = [120, 300], FAST = (first: number, n: number, by: number) => Array.from({ length: n }, (_, i) => first * by ** i)
 
 export const UPGRADES: Record<string, [stat: Stat, each: number, cost: number[]]> = {
-  'Sharp Mandibles': ['power', .25, SMALL],
+  'Sharp Mandibles': ['power', .25, [5, ...SMALL.slice(1)]],
   'Sharper Mandibles': ['power', .5, BIG],
   'Hard Shell': ['health', .25, SMALL],
   'Harder Shell': ['health', .5, BIG],
