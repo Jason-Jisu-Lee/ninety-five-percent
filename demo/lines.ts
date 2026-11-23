@@ -7,7 +7,7 @@ import { text } from '../ui/text/text'
 
 const K = Math.max(2, Math.round(2 * devicePixelRatio)), CX = 16, CY = 54, CW = 360, CH = 40, L = 32, Y = 88
 const LINES: Record<string, string[]> = {
-  Anatomy: ["Ninety-five percent of every hunt ends the same way", "Thirty thousand eyes, and none of them blink", "Four wings, each with a mind of its own", "Once, they were the size of hawks", "Before birds, before bats, before blossoms", "Born underwater, made for the air", "The oldest design still flying", "Unchanged for three hundred million years", "The last thing a gnat ever sees", "Nothing in the reeds moves faster", "A shadow over the water, then nothing", "The reeds go quiet when it passes", "Small enough to miss, fast enough not to matter", "Each molt a little closer to the sky", "Made by the water, kept by the wind", "What the water gives up, the sky keeps", "Patience below, fury above", "Every hunter starts small", "The pond's oldest hunter", "It sees you before you see it"],
+  Anatomy: ["The wings are new, the hunger is not", "Mind the water's edge", "No wing wasted", "Shed in the reeds, worn by no other", "Remind the pond what it fears", "Grant it eyes, grant it wings", "Lighter every time it returns", "The pond takes notice", "Molted skin, still warm", "Built for the next life"],
 }
 const blood = SHOP.filter(t => t.shop === 'Blood shop').map(t => t.name)
 for (const [tab, lines] of Object.entries(LINES)) {
