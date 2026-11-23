@@ -1,3 +1,4 @@
+import { sound } from '../../audio/player/sound'
 import type { Ctx } from '../../core/screen/canvas'
 import { UI } from '../../data/look/palette'
 import { W } from '../../data/look/screen'
@@ -11,6 +12,10 @@ export function dialog() {
   let lines: string[] = [], acts: [string, () => void][] = [], sel = 0, shown = false, since = 0
   const h = () => lines.length * 12 + BH + 21, bx = (i: number) => (W - acts.length * BW - (acts.length - 1) * GAP >> 1) + i * (BW + GAP)
   const at = (x: number, y: number) => y >= TOP + h() - BH - 6 && y < TOP + h() - 6 ? acts.findIndex((_, i) => x >= bx(i) && x < bx(i) + BW) : -1
+  const light = (i: number) => {
+    if (i >= 0 && i !== sel) sound('hover')
+    return (sel = i) >= 0
+  }
   const run = (i: number) => {
     shown = false
     acts[i][1]()
@@ -24,7 +29,7 @@ export function dialog() {
       ;[shown, since] = [true, performance.now()]
     },
     hover(x: number, y: number) {
-      return (sel = at(x, y)) >= 0
+      return light(at(x, y))
     },
     click(x: number, y: number) {
       const i = at(x, y)
@@ -32,7 +37,7 @@ export function dialog() {
     },
     key(k: string) {
       const d = k === 'ArrowRight' || k === 'd' ? 1 : k === 'ArrowLeft' || k === 'a' ? -1 : 0
-      if (d) sel = sel < 0 ? d > 0 ? 0 : acts.length - 1 : (sel + d + acts.length) % acts.length
+      if (d) light(sel < 0 ? d > 0 ? 0 : acts.length - 1 : (sel + d + acts.length) % acts.length)
       else if (k === 'Escape') run(acts.length - 1)
       else if ((k === 'Enter' || k === ' ') && sel >= 0) run(sel)
       return true

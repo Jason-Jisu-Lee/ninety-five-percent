@@ -9,7 +9,7 @@ import { hud } from '../../ui/hud/hud'
 import { settings } from '../../ui/settings/settings'
 import { where } from '../place/place'
 import { tools } from './dev'
-import { ask, card, evos, self } from './notices'
+import { ask, card, evos, herald, self } from './notices'
 import { restart, run } from './run'
 import { G } from './state'
 
@@ -19,7 +19,7 @@ const begin = () => {
 }
 export const story = intro(begin)
 export const title = front(() => {
-  if (save.started) begin()
+  if (save.started) herald(begin, true)
   else story.begin()
 }, () => opts.open(false))
 const leave = () => {

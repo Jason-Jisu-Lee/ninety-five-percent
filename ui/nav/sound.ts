@@ -4,7 +4,7 @@ import { W } from '../../data/look/screen'
 import { mixer } from '../parts/mixer'
 import { box } from '../parts/panel'
 
-const PAD = 7, X = W - 4 - mixer.w - PAD * 2, Y = 28, REACH = 8, GRACE = 400
+const PAD = 7, X = W - 4 - mixer.w - PAD * 2, Y = 28, REACH = 6, GRACE = 280
 
 export function soundBox(icon: (x: number, y: number) => boolean) {
   let open = false, left = 0

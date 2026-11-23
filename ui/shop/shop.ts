@@ -39,8 +39,10 @@ export function shop() {
       const was = hot
       hot = items().findIndex((_, i) => inside(x, y, cell(i)[0], cell(i)[1], CW, CH))
       if (hot >= 0 && hot !== was) sound('tap')
+      const [tabbed, gone] = [over, go]
       over = tabs().findIndex((c, i) => inside(x, y, spots()[i] - 6, 54, width(c.name) + 12, 22))
       go = inside(x, y, R - BW, BY, BW, BH)
+      if (over >= 0 && over !== tabbed || go && !gone) sound('hover')
       table.hover(body() ? x : -1, y)
       return go || over >= 0 || can(hot)
     },
