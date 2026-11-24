@@ -16,14 +16,16 @@ import { skill } from './skill'
 import { stats } from './stats'
 
 const L = 32, R = W - L, CW = 184, CH = 17, PX = CW + 12, PY = 20, TOP = 98, ROWS = 10, SIDE = L + PX * 2 + 8, GAP = 26, BW = 96, BH = 20, BY = H - 40
-const DEV = import.meta.env.DEV, SECRET = 'Pink: players cannot see this until after their first Feast', NAMES = ['Blood shop', 'Evolution shop'], SHOPS = NAMES.map(n => SHOP.filter(t => t.shop === n && !HIDDEN.includes(t.name)))
+const DEV = import.meta.env.DEV, SECRET = 'Pink: hidden from players', NAMES = ['Blood shop', 'Evolution shop'], TITLES = ['Lair', 'Evolution'], SHOPS = NAMES.map(n => SHOP.filter(t => t.shop === n))
 
 export function shop() {
   let shown = false, side = 0, tab = 0, hot = -1, over = -1, go = false, then: (() => void) | undefined
-  const table = stats(432, 110), body = () => tabs()[tab].name === 'Anatomy', born = () => tabs()[tab].name === 'Instinct'
-  const early = () => !side && !save.fed, tabs = () => SHOPS[side].filter(t => DEV || !early() || FIRST[t.name]), known = (name = '') => !early() || !!FIRST[tabs()[tab].name]?.includes(name)
+  const table = stats(432, 110, true), body = () => tabs()[tab].name === 'Anatomy', born = () => tabs()[tab].name === 'Instinct'
+  const early = () => !side && !save.fed, veiled = (name: string) => HIDDEN.includes(name) || early() && !FIRST[name]
+  const tabs = () => [...SHOPS[side].filter(t => !veiled(t.name)), ...SHOPS[side].filter(t => DEV && veiled(t.name))]
+  const known = (name = '') => !veiled(tabs()[tab].name) && (!early() || !!FIRST[tabs()[tab].name]?.includes(name))
   const all = () => tabs()[tab].items.slice(0, ROWS * 2), spots = () => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L))
-  const items = () => early() ? [...all().filter(it => known(it.name)), ...all().filter(it => DEV && !known(it.name))] : all()
+  const items = () => [...all().filter(it => known(it.name)), ...all().filter(it => DEV && !known(it.name))]
   const cell = (i: number) => [L + (i / ROWS | 0) * PX, TOP + i % ROWS * PY]
   const closed = (i: number) => !known(items()[i]?.name) || !!OPEN[tabs()[tab].name] && !OPEN[tabs()[tab].name].includes(items()[i]?.name)
   const cost = (i: number) => closed(i) ? undefined : price(items()[i]?.name), can = (i: number) => save.blood >= (cost(i) ?? Infinity)
@@ -67,9 +69,9 @@ export function shop() {
       if (born()) skill(g, pick?.name)
       else if (body()) table.draw(g, pick?.name)
       else g.drawImage(mark, SIDE + (R - SIDE - mark.width >> 1), 40)
-      head(g, NAMES[side], side, L, R)
+      head(g, TITLES[side], side, L, R)
       tabs().forEach((c, i) => {
-        text(g, c.name, spots()[i], 68, early() && !FIRST[c.name] ? FOREST.pink : i === tab ? UI.text : i === over ? UI.border : UI.dim)
+        text(g, c.name, spots()[i], 68, veiled(c.name) ? FOREST.pink : i === tab ? UI.text : i === over ? UI.border : UI.dim)
         g.fillStyle = UI.gold
         if (i === tab) g.fillRect(spots()[i], 72, width(c.name), 1)
       })
@@ -90,7 +92,7 @@ export function shop() {
       })
       if (pick) about(g, pick, SIDE, R - SIDE)
       if (body()) table.tip(g)
-      if (DEV && early()) text(g, SECRET, L, BY + 14, FOREST.pink)
+      if (tabs().some(t => veiled(t.name))) text(g, SECRET, L, BY + 14, FOREST.pink)
       frame(g, R - BW, BY, BW, BH, go)
       text(g, side ? 'Continue' : 'Return', R - BW / 2, BY + 14, go ? UI.gold : UI.text, 'c')
     },
