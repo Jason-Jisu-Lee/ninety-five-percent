@@ -45,7 +45,7 @@ export function hud(pause: () => void, options: () => void, feast: () => void, b
       if (out) pop(g, u, meal.draw, SPOT)
       songs.draw(g)
       levels.draw(g)
-      if (exact) note(g, ['Blood Points'], edge + 6, 6)
+      if (exact) note(g, ['Lifeblood'], edge + 6, 6)
       if (paused) text(g, 'Paused', W / 2, H / 2 + 7, UI.text, 'c', UI.panel, 2)
     },
   }

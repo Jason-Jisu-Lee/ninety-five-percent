@@ -13,7 +13,7 @@ import { wrap } from '../text/wrap'
 import { ROWS, statistics } from './statistics'
 
 const PW = 200, X = W - PW >> 1, B = 232, MX = W - 96 >> 1, CX = X + PW - 19
-const WIPE = ['Are you sure?', 'This will delete all progress.'], QUIT = wrap('This will forfeit your current run and you will lose 95% of current blood points. Continue?', PW - 24)
+const WIPE = ['Are you sure?', 'This will delete all progress.'], QUIT = wrap('This will forfeit your current run and you will lose 95% of current lifeblood. Continue?', PW - 24)
 
 export function settings(toMenu: () => void, reset: () => void) {
   let shown = false, stats = false, play = false, hot = false, mx = 0, my = 0, sure: [ReturnType<typeof menu>, string[]] | undefined

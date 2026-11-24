@@ -2,15 +2,20 @@ import { sound } from '../../audio/player/sound'
 import { save } from '../../core/save/save'
 import { pack } from '../../core/save/wild'
 import type { Ctx } from '../../core/screen/canvas'
+import { PREY } from '../../data/enemies/enemies'
 import { UI } from '../../data/look/palette'
+import { H, W } from '../../data/look/screen'
 import { WILD, type Wild } from '../../data/shop/wild'
+import { info, PW } from '../enemy/card'
 import { frame } from '../parts/frame'
 import { orb } from '../parts/icons'
 import { text, width } from '../text/text'
 
-const X = 8, Y = 30, TALL = 15, PITCH = 17, HIDE = '?????'
+const TALL = 15, PITCH = 17, HIDE = '?????'
 const label = (w: Wild) => w.kind ? w.name : 'Expansion: ' + w.name
-const WIDE = Math.max(...WILD.map(w => width(label(w)) + width(String(w.cost)))) + 30
+const WIDE = Math.max(...WILD.map(w => width(label(w)) + width(String(w.cost)))) + 30, X = W - 8 - WIDE, Y = H - 8 - TALL - PITCH
+
+export const SLOTS = [X, Y, WIDE, TALL + PITCH]
 
 function slot(g: Ctx, name: string, cost: number, y: number, ink: string, pay: string, lit = false) {
   const p = String(cost)
@@ -41,6 +46,7 @@ export function nextWild(buy: () => void) {
       if (!w) return
       slot(g, label(w), w.cost, Y, hot && can() ? UI.gold : UI.text, can() ? UI.text : UI.dim, can())
       if (after) slot(g, HIDE, after.cost, Y + PITCH, UI.dim, UI.dim)
+      if (hot && w.kind) info(g, w.kind, PREY[w.kind].hp, t => [W - 8 - PW, Y - 6 - t])
     },
   }
 }

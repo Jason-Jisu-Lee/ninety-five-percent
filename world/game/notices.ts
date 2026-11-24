@@ -26,7 +26,7 @@ export function herald(then: () => void, soft = false) {
   calls[+soft].begin()
 }
 
-export const fate = story([["You've lost 95% of blood points"]], () => {
+export const fate = story([["You've lost 95% of lifeblood"]], () => {
   run.sim.away = true
   G.dusk = 1
   evos.open(0, () => herald(() => restart(true)))

@@ -10,7 +10,7 @@ const clock = (s: number) => `${s / 3600 | 0}:${String(s / 60 % 60 | 0).padStart
 
 export function statistics(g: Ctx, left: number, right: number, top: number) {
   const rows: [string, string | number][] = [
-    ['Play time', clock(save.time)], ['Blood earned', Math.floor(save.earned)], ['Upgrades bought', save.bought], ['Deaths', save.deaths],
+    ['Play time', clock(save.time)], ['Lifeblood earned', Math.floor(save.earned)], ['Upgrades bought', save.bought], ['Deaths', save.deaths],
     ['Enemies caught', Object.values(save.caught).reduce((a, b) => a + b, 0)], ...cast(1).map((k): [string, number] => [PREY[k].many, save.caught[k] ?? 0]),
   ]
   rows.forEach(([name, n], i) => {
