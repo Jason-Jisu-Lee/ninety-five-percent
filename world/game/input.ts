@@ -1,5 +1,6 @@
 import { toggle } from '../../audio/player/music'
 import type { Scene } from '../../core/loop/scene'
+import { progress } from '../../core/save/save'
 import { opts, story, title, top, ui } from './menus'
 import { attack, fate, inspect, omen, self } from './notices'
 import { bound, skip } from './opening'
@@ -29,7 +30,7 @@ export const input: Pick<Scene, 'hover' | 'click' | 'key'> = {
     if (top()) return top()!.click(x, y)
     if (G.fade > 0) return void title.click(x, y)
     if (ui.click(x, y) || inspect(run.sim.prey.at(x, y, G.hot))) return
-    if (onFly(x, y)) self.open()
+    if (onFly(x, y)) progress('self'), self.open()
     else if (!run.paused) run.sim.mark = null
   },
   key(k) {
