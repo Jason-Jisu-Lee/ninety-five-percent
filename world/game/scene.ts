@@ -40,7 +40,7 @@ export const stage1: Scene = {
     if (sim.fell) mourn()
     sim.fell = false
     if (!sim.away || sim.fly.x > -FLY.gone) G.dusk = Math.max(0, G.dusk - dt / DUSK)
-    else if ((G.dusk += dt / DUSK) >= 1) sim.onward ? onward() : (save.fed = true, progress('feast'), evos.open(0, () => herald(() => restart(true))))
+    else if ((G.dusk += dt / DUSK) >= 1) sim.onward ? onward() : (progress('feast'), evos.open(0, () => (save.fed = true, herald(() => restart(true)))))
     save.time += dt * run.rate
     if ((G.kept += dt) < 5) return
     G.kept = 0

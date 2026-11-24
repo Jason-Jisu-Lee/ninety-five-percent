@@ -15,7 +15,7 @@ export const UPGRADES: Record<string, [stat: Stat, each: number, cost: number[]]
   'Wider Spiracles': ['stamina', .5, BIG],
   'Warm Blood': ['rest', .1, [40]],
   'Slow Mend': ['mend', 1, [150]],
-  'Lunge': ['lunge', 1, [25]],
+  'Lunge': ['lunge', 1, [20]],
   'Ambush': ['ambush', 1, [200]],
   'Dive Strike': ['dive', 1, [180000]],
   'Killing Streak': ['streak', 1, FAST(500, 4, 5)],

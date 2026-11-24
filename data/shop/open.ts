@@ -1,2 +1,3 @@
 export const HIDDEN = ['Appetite']
 export const OPEN: Record<string, string[]> = { Instinct: ['Lunge', 'Ambush', 'Dive Strike'] }
+export const FIRST: Record<string, string[]> = { Anatomy: ['Sharp Mandibles', 'Wide Spiracles'], Instinct: ['Lunge'] }

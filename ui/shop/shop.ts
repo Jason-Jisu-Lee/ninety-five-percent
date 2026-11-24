@@ -1,11 +1,11 @@
 import { sound } from '../../audio/player/sound'
 import { buy, level, price, save } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
-import { UI } from '../../data/look/palette'
+import { FOREST, UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
 import { UPGRADES } from '../../data/shop/upgrades'
 import { SHOP } from '../../data/shop/shop'
-import { HIDDEN, OPEN } from '../../data/shop/open'
+import { FIRST, HIDDEN, OPEN } from '../../data/shop/open'
 import { frame } from '../parts/frame'
 import { icon, orb } from '../parts/icons'
 import { text, width } from '../text/text'
@@ -16,14 +16,16 @@ import { skill } from './skill'
 import { stats } from './stats'
 
 const L = 32, R = W - L, CW = 184, CH = 17, PX = CW + 12, PY = 20, TOP = 98, ROWS = 10, SIDE = L + PX * 2 + 8, GAP = 26, BW = 96, BH = 20, BY = H - 40
-const NAMES = ['Blood shop', 'Evolution shop'], SHOPS = NAMES.map(n => SHOP.filter(t => t.shop === n && !HIDDEN.includes(t.name)))
+const DEV = import.meta.env.DEV, SECRET = 'Pink: players cannot see this until after their first Feast', NAMES = ['Blood shop', 'Evolution shop'], SHOPS = NAMES.map(n => SHOP.filter(t => t.shop === n && !HIDDEN.includes(t.name)))
 
 export function shop() {
   let shown = false, side = 0, tab = 0, hot = -1, over = -1, go = false, then: (() => void) | undefined
   const table = stats(432, 110), body = () => tabs()[tab].name === 'Anatomy', born = () => tabs()[tab].name === 'Instinct'
-  const tabs = () => SHOPS[side], spots = () => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L)), items = () => tabs()[tab].items.slice(0, ROWS * 2)
+  const early = () => !side && !save.fed, tabs = () => SHOPS[side].filter(t => DEV || !early() || FIRST[t.name]), known = (name = '') => !early() || !!FIRST[tabs()[tab].name]?.includes(name)
+  const all = () => tabs()[tab].items.slice(0, ROWS * 2), spots = () => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L))
+  const items = () => early() ? [...all().filter(it => known(it.name)), ...all().filter(it => DEV && !known(it.name))] : all()
   const cell = (i: number) => [L + (i / ROWS | 0) * PX, TOP + i % ROWS * PY]
-  const closed = (i: number) => !!OPEN[tabs()[tab].name] && !OPEN[tabs()[tab].name].includes(items()[i]?.name)
+  const closed = (i: number) => !known(items()[i]?.name) || !!OPEN[tabs()[tab].name] && !OPEN[tabs()[tab].name].includes(items()[i]?.name)
   const cost = (i: number) => closed(i) ? undefined : price(items()[i]?.name), can = (i: number) => save.blood >= (cost(i) ?? Infinity)
   const inside = (x: number, y: number, bx: number, by: number, w: number, h: number) => x >= bx && x < bx + w && y >= by && y < by + h
   const shut = () => {
@@ -67,7 +69,7 @@ export function shop() {
       else g.drawImage(mark, SIDE + (R - SIDE - mark.width >> 1), 40)
       head(g, NAMES[side], side, L, R)
       tabs().forEach((c, i) => {
-        text(g, c.name, spots()[i], 68, i === tab ? UI.text : i === over ? UI.border : UI.dim)
+        text(g, c.name, spots()[i], 68, early() && !FIRST[c.name] ? FOREST.pink : i === tab ? UI.text : i === over ? UI.border : UI.dim)
         g.fillStyle = UI.gold
         if (i === tab) g.fillRect(spots()[i], 72, width(c.name), 1)
       })
@@ -77,7 +79,9 @@ export function shop() {
         const [x, y] = cell(i)
         const c = cost(i), p = String(c), ok = can(i)
         frame(g, x, y, CW, CH, i === hot)
-        text(g, it.name, x + 7, y + 12, it.off || UPGRADES[it.name] && !c ? UI.dim : i === hot ? UI.gold : UI.text)
+        g.fillStyle = FOREST.pink
+        if (!known(it.name)) g.fillRect(x, y, 2, CH)
+        text(g, it.name, x + 7, y + 12, !known(it.name) ? FOREST.pink : it.off || UPGRADES[it.name] && !c ? UI.dim : i === hot ? UI.gold : UI.text)
         const n = level(it.name), of = UPGRADES[it.name]?.[2].length ?? 0
         if (n && of > 1) text(g, `${n}/${of}`, x + 12 + width(it.name), y + 12, UI.dim)
         if (!c) return
@@ -86,6 +90,7 @@ export function shop() {
       })
       if (pick) about(g, pick, SIDE, R - SIDE)
       if (body()) table.tip(g)
+      if (DEV && early()) text(g, SECRET, L, BY + 14, FOREST.pink)
       frame(g, R - BW, BY, BW, BH, go)
       text(g, side ? 'Continue' : 'Return', R - BW / 2, BY + 14, go ? UI.gold : UI.text, 'c')
     },

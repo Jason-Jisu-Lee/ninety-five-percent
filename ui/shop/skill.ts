@@ -22,7 +22,7 @@ type Act = { hit: number; bonus: number; slide: number; rush?: boolean; cue?: nu
 
 const BW = 176, BH = 112, MID = 60, X = 432, Y = 100, RUN = 2.2, FADE = .4, WAIT = 1, EDGE = .25, GLIDE = .6, stage = ctx(mk(BW, BH))
 const ACTS: Record<string, Act> = {
-  'Lunge': { hit: 1.5, bonus: 1.5, slide: 12, cue: .86, jolt: true, foe: () => [126, -1.2] },
+  'Lunge': { hit: 1.5, bonus: 2, slide: 12, cue: .86, jolt: true, foe: () => [126, -1.2] },
   'Ambush': {
     hit: 1.4, bonus: 2, slide: 10, foe: t => [84 + 30 * Math.min(1, t / 1.4), 0],
     mark(g, x, y, ang, since) {
