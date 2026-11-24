@@ -13,13 +13,19 @@ import { ask, card, evos, herald, self } from './notices'
 import { restart, run } from './run'
 import { G } from './state'
 
-const begin = () => {
+const enter = () => {
   G.fade = 0
   G.frozen = false
   save.started = true
+}
+const begin = () => {
+  enter()
   mood(true)
 }
-export const story = intro(begin)
+export const story = intro(() => {
+  enter()
+  G.start = 0
+}, () => mood(true))
 export const title = front(() => {
   if (save.started) herald(begin, true)
   else story.begin()

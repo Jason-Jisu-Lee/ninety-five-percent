@@ -6,6 +6,7 @@ import { QUESTS } from '../../data/game/quests'
 import { W } from '../../data/look/screen'
 import { icon, orb } from '../parts/icons'
 import { text, width } from '../text/text'
+import { pop } from './pop'
 
 const R = W - 8, BAR = 64, WAIT = .35, FLY = .45, GAP = .09, HOLD = 3, SLIDE = .3, FAR = 270, MAX = 8, GLOW = .12, DONE = 'Objective Complete'
 let seen = save.quest, done: typeof QUESTS[number] | undefined, at = 0
@@ -29,18 +30,18 @@ export function owed() {
 
 export const lit = () => !!done && landed() > 0 && now() - at - WAIT - FLY - (landed() - 1) * GAP < GLOW
 
-function track(g: Ctx, q: typeof QUESTS[number], got: number, col: string, dx: number, tick = false) {
+function track(g: Ctx, q: typeof QUESTS[number], got: number, col: string, dx: number, tick = false, dy = 0) {
   const r = R + dx, pay = '+' + q.blood, x = r - width(pay) - 14 - BAR
-  text(g, q.text, r, 41, col, 'r', UI.panel)
+  text(g, q.text, r, 41 + dy, col, 'r', UI.panel)
   g.fillStyle = UI.panel
-  g.fillRect(x - 1, 47, BAR + 2, 6)
+  g.fillRect(x - 1, 47 + dy, BAR + 2, 6)
   g.fillStyle = UI.line
-  g.fillRect(x, 48, BAR, 4)
+  g.fillRect(x, 48 + dy, BAR, 4)
   g.fillStyle = UI.accent
-  g.fillRect(x, 48, Math.round(BAR * Math.min(1, got / q.n)), 4)
-  text(g, pay, r, 54, UI.gold, 'r', UI.panel)
-  orb(g, r - width(pay) - 6, 50, '', UI.panel)
-  text(g, `${got} / ${q.n}`, x - 6, 54, UI.accent, 'r', UI.panel)
+  g.fillRect(x, 48 + dy, Math.round(BAR * Math.min(1, got / q.n)), 4)
+  text(g, pay, r, 54 + dy, UI.gold, 'r', UI.panel)
+  orb(g, r - width(pay) - 6, 50 + dy, '', UI.panel)
+  text(g, `${got} / ${q.n}`, x - 6, 54 + dy, UI.accent, 'r', UI.panel)
   if (tick) icon(g, 'tick', r - width(q.text) - 11, 35, UI.accent, UI.panel)
 }
 
@@ -56,13 +57,13 @@ function title(g: Ctx, name: string, t: number) {
   g.globalAlpha = 1
 }
 
-export function quest(g: Ctx) {
+export function quest(g: Ctx, born = 9) {
   sync()
   const q = QUESTS[save.quest], t = now() - at
   if (done && t < HOLD + SLIDE) {
     track(g, done, done.n, UI.gold, ease((t - HOLD) / SLIDE) * FAR, true)
     title(g, done.text, t)
-  } else if (q) track(g, q, save.count, UI.text, done ? (1 - ease((t - HOLD - SLIDE) / SLIDE)) * FAR : 0)
+  } else if (q && born >= 0) pop(g, born, (to, dy) => track(to, q, save.count, UI.text, done ? (1 - ease((t - HOLD - SLIDE) / SLIDE)) * FAR : 0, false, dy))
   if (!done) return
   const x = R - width('+' + done.blood) - 6
   for (let i = 0; i < drops(); i++) {

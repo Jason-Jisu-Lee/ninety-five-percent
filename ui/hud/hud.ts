@@ -25,9 +25,9 @@ export function hud(pause: () => void, options: () => void, feast: () => void, b
       return on
     },
     click: (x: number, y: number) => parts.some(p => p.click(x, y)),
-    draw(g: Ctx, paused: boolean, bonus = 0, left = 0) {
+    draw(g: Ctx, paused: boolean, bonus = 0, left = 0, born = 9) {
       blood(g, save.blood - owed(), exact, bonus, left, lit())
-      quest(g)
+      quest(g, born)
       wild.draw(g)
       bar.draw(g, paused, silent())
       now(g, W - 73)

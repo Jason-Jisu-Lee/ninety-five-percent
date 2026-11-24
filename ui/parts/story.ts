@@ -20,10 +20,9 @@ function plan(page: Page, fixed?: number) {
   return { lines, end: fixed ?? t + HOLD + EDGE }
 }
 
-export function story(pages: Page[], done: () => void, lead = .6, back = .6, fixed?: number) {
-  const layer = ctx(mk(W, H)), plans = pages.map(p => plan(p, fixed)), starts: number[] = []
-  const END = plans.reduce((s, p) => (starts.push(s), s + p.end), lead)
-  let t = -1, due = false
+export function story(pages: Page[], done: () => void, lead = .6, back = .6, fixed?: number, cue?: () => void, ahead = 0) {
+  const layer = ctx(mk(W, H))
+  let t = -1, due = false, told = false, plans: ReturnType<typeof plan>[] = [], starts: number[] = [], END = 0
   const at = () => {
     let i = plans.length - 1
     while (i > 0 && t < starts[i]) i--
@@ -32,7 +31,8 @@ export function story(pages: Page[], done: () => void, lead = .6, back = .6, fix
   return {
     on: () => t >= 0,
     begin() {
-      ;[t, due] = [0, true]
+      ;[t, due, told, plans, starts] = [0, true, false, pages.map(p => plan(p, fixed)), []]
+      END = plans.reduce((s, p) => (starts.push(s), s + p.end), lead)
     },
     next() {
       if (t > lead && t < END) t = starts[at() + 1] ?? END
@@ -43,6 +43,10 @@ export function story(pages: Page[], done: () => void, lead = .6, back = .6, fix
     update(dt: number) {
       if (t < 0) return
       t += dt
+      if (cue && !told && t >= END - ahead) {
+        told = true
+        cue()
+      }
       if (due && t >= END) {
         due = false
         done()

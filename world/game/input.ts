@@ -2,6 +2,7 @@ import { toggle } from '../../audio/player/music'
 import type { Scene } from '../../core/loop/scene'
 import { opts, story, title, top, ui } from './menus'
 import { attack, fate, inspect, omen, self } from './notices'
+import { bound, skip } from './opening'
 import { run } from './run'
 import { G } from './state'
 
@@ -12,7 +13,7 @@ export const input: Pick<Scene, 'hover' | 'click' | 'key'> = {
   hover(x, y) {
     const was = G.hot
     G.me = false
-    if (story.on() || fate.on() || omen.on()) return false
+    if (story.on() || fate.on() || omen.on() || bound()) return false
     if (top()) return top()!.hover(x, y)
     if (G.fade > 0) return title.hover(x, y)
     G.hot = null
@@ -24,7 +25,7 @@ export const input: Pick<Scene, 'hover' | 'click' | 'key'> = {
   click(x, y) {
     if (story.on()) return void (DEV && story.next())
     if (omen.on()) return void (DEV && omen.next())
-    if (fate.on()) return
+    if (fate.on() || bound()) return
     if (top()) return top()!.click(x, y)
     if (G.fade > 0) return void title.click(x, y)
     if (ui.click(x, y) || inspect(run.sim.prey.at(x, y, G.hot))) return
@@ -35,6 +36,7 @@ export const input: Pick<Scene, 'hover' | 'click' | 'key'> = {
     if (story.on()) return DEV && (k === 'Escape' ? story.skip() : story.next()), true
     if (omen.on()) return DEV && omen.next(), true
     if (fate.on()) return true
+    if (bound()) return DEV && k === 'Escape' && skip(), true
     if (top()) return top()!.key(k)
     if (k === 'm') return toggle(), true
     if (G.fade > 0) return title.key(k)

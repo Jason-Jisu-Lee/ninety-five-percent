@@ -19,3 +19,15 @@ export function knock() {
     return Math.sin(TAU * ph) * hit(t, .002, .013) + bp2 * .25 * hit(t, .001, .003)
   })
 }
+
+export function cork() {
+  let seed = 3370493291, lo = 0, bp = 0, ph = 0
+  const f = 2 * Math.sin(Math.PI * 2600 / SR)
+  return make(.1, t => {
+    const hp = (seed = seed * 1664525 + 1013904223 >>> 0) / 2 ** 31 - 1 - lo - bp / 1.2
+    bp += f * hp
+    lo += f * bp
+    ph += (950 - 690 * Math.min(1, t / .04) ** .7) / SR
+    return Math.sin(TAU * ph) * hit(t, .002, .024) + bp * .5 * hit(t, .0005, .002) * Math.max(0, Math.min(1, (.02 - t) / .004))
+  })
+}

@@ -1,5 +1,6 @@
 import { DESK, H, W } from '../../data/look/screen'
 import { ctx, mk, type Ctx } from './canvas'
+import { pointer } from './pointer'
 
 export const canvas = document.querySelector('canvas')!
 export const world = ctx(mk(W, H))
@@ -24,6 +25,7 @@ export function fit() {
     top: Math.round((innerHeight - H * s) * d / 2) / d + 'px',
     imageRendering: Math.abs(s * d - k) < .001 ? 'pixelated' : 'auto',
   })
+  pointer(s, d)
   if (canvas.width === W * k) return
   canvas.width = W * k
   canvas.height = H * k

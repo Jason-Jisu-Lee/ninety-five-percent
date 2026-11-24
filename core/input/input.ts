@@ -5,7 +5,7 @@ import { current } from '../loop/loop'
 export function listen() {
   let at: [number, number] | undefined
   const point = () => {
-    if (at) canvas.style.cursor = current().hover(...at) ? 'pointer' : ''
+    if (at) current().hover(...at)
   }
   canvas.addEventListener('pointermove', e => {
     at = toWorld(e)

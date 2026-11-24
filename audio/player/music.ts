@@ -2,7 +2,8 @@ import { save, store } from '../../core/save/save'
 import { hear } from './hear'
 import { FRONT, GAME } from './tracks'
 
-const bins = new Uint8Array(512), LOUD = .6, GAP = 2600
+export const GAP = 2600
+const bins = new Uint8Array(512), LOUD = .6
 let ac: AudioContext | undefined, el: HTMLAudioElement, out: GainNode, scope: AnalyserNode, list = FRONT, at = 0
 
 const level = () => save.mute ? 0 : (save.vol / 5) ** 2 * LOUD

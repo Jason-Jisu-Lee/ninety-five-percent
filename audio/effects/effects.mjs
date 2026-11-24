@@ -1,4 +1,4 @@
-import { blip, knock } from './taps.mjs'
+import { blip, cork, knock } from './taps.mjs'
 import { wings } from './wings.mjs'
 
 export default {
@@ -8,4 +8,5 @@ export default {
   feast: { wave: wings, peak: .277 },
   hover: { wave: blip, peak: .07 },
   tap: { wave: knock, peak: .12 },
+  cork: { wave: cork, peak: .12 },
 }
