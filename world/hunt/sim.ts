@@ -20,8 +20,13 @@ export function sim() {
   }
   const gap = (o: Perch) => Math.hypot(o.x - fly.x, o.y - fly.y), ahead = (d: number) => [fly.x + Math.cos(fly.ang) * d * DF.scale, fly.y + Math.sin(fly.ang) * d * DF.scale]
   const span = () => s.mark ? Math.hypot(s.mark.x - ahead(DF.headAt)[0], s.mark.y - ahead(DF.headAt)[1]) : 0
+  const fit = () => {
+    if (!s.mark) return false
+    const d = span(), [x, y] = fly.aim(s.mark)
+    return d >= LUNGE.near && d <= LUNGE.far && Math.cos(Math.atan2(y - fly.y, x - fly.x) - fly.ang) > 0 && fly.reach(x, y) >= fly.top() * LUNGE.speed
+  }
   return Object.assign(s, {
-    gap, ahead, span,
+    gap, ahead, span, fit,
     near: () => place().perches.reduce((a, b) => gap(b) < gap(a) ? b : a),
     leave() {
       s.rest = null
@@ -29,8 +34,7 @@ export function sim() {
     },
     dart() {
       if (!own('lunge') || !s.mark || s.held || s.rest || s.primed) return
-      const d = span()
-      if (s.used || d < LUNGE.near || d > LUNGE.far) return void ([s.used, s.miss] = [true, 0])
+      if (s.used || !fit()) return void ([s.used, s.miss] = [true, 0])
       ;[s.used, s.primed, s.boost] = [true, true, LUNGE.time]
       fly.speed = fly.top() * LUNGE.speed
     },

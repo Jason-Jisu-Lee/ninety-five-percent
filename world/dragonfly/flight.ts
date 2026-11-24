@@ -12,13 +12,18 @@ export function flight(x: number, y: number) {
   const n = DF.flapFrames, [close, open] = FLY.hover, rest = fidget(f)
   const top = () => FLY.top * own('speed')
   let spin = 0, glide = between(VARY.glide), wall = false, away = false
-  function seek(tx: number, ty: number, max: number, dt: number, th = FLY.height, arc = false) {
+  const reach = (tx: number, ty: number) => FLY.turn * own('turn') * Math.hypot(tx - f.x, ty - f.y) / (2 * Math.abs(Math.sin(wrap(Math.atan2(ty - f.y, tx - f.x) - f.ang))) + 1e-6)
+  const aim = (p: { x: number; y: number; vx: number; vy: number }) => {
+    const lead = Math.min(FLY.lead, Math.hypot(p.x - f.x, p.y - f.y) / top())
+    return [p.x + p.vx * lead, p.y + p.vy * lead]
+  }
+  function seek(tx: number, ty: number, max: number, dt: number, th = FLY.height, arc = false, rush = false) {
     const d = Math.hypot(tx - f.x, ty - f.y), want = Math.atan2(ty - f.y, tx - f.x), was = f.ang, rate = FLY.turn * own('turn')
-    const keep = Math.min(max, top() * FLY.keep), reach = rate * d / (2 * Math.abs(Math.sin(wrap(want - f.ang))) + 1e-6)
-    away = arc && !wall && d > 2 && reach < keep * (away ? FLY.clear : 1)
-    if (d > 2 && !away) f.ang = turn(f.ang, want, rate * dt)
+    const keep = rush ? max : Math.min(max, top() * FLY.keep), room = reach(tx, ty)
+    away = arc && !wall && d > 2 && room < keep * (away ? FLY.clear : 1)
+    if (d > 2 && !away) f.ang = turn(f.ang, want, rate * dt * (rush ? Math.min(1, f.speed / keep) : 1))
     const off = wrap(want - f.ang), face = Math.max(0, Math.cos(off)), far = clamp((d - close) / (open - close))
-    const goal = away ? keep : arc ? Math.min(max, d * FLY.arrive, reach * FLY.bank) : Math.min(max, d * FLY.arrive, d * rate * FLY.tight / (Math.abs(Math.sin(off)) + 1e-6)) * (face + (1 - face) * far)
+    const goal = away || rush ? keep : arc ? Math.min(max, d * FLY.arrive, room * FLY.bank) : Math.min(max, d * FLY.arrive, d * rate * FLY.tight / (Math.abs(Math.sin(off)) + 1e-6)) * (face + (1 - face) * far)
     spin += (wrap(f.ang - was) / (dt || 1) / rate - spin) * Math.min(1, dt * 8)
     f.speed += (goal - f.speed) * Math.min(1, dt * (goal < f.speed ? FLY.brake : FLY.accel))
     f.base += (th - f.base) * Math.min(1, dt * 3)
@@ -26,9 +31,11 @@ export function flight(x: number, y: number) {
   return Object.assign(f, {
     top,
     seek,
+    reach,
+    aim,
     chase(p: { x: number; y: number; vx: number; vy: number; h: number }, max: number, dt: number) {
-      const lead = Math.min(FLY.lead, Math.hypot(p.x - f.x, p.y - f.y) / top())
-      seek(p.x + p.vx * lead, p.y + p.vy * lead, max, dt, p.h)
+      const [x, y] = aim(p)
+      seek(x, y, max, dt, p.h, true, true)
     },
     step(dt: number, t: number) {
       if (f.perched) rest(dt)
