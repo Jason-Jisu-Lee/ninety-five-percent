@@ -8,7 +8,8 @@ import { key } from '../parts/key'
 import { marks } from '../parts/marks'
 
 const BEAT = 1.2, CLOSE = .4, WIDE = 9, V = [[0, 0], [1, 1], [2, 2], [3, 1], [4, 0]]
-let aim: Prey | null = null, was = 0
+let aim: Prey | null = null
+const off = (p: Prey) => Math.hypot(p.x - W / 2, p.y - H / 2)
 
 function chevron(g: Ctx, x: number, y: number, way: number) {
   for (let n = 0; n < 10; n++) {
@@ -20,8 +21,7 @@ function chevron(g: Ctx, x: number, y: number, way: number) {
 export function hint(g: Ctx, sim: Sim, hot: Prey | null, t: number) {
   const c = t % BEAT, list = sim.prey.list
   if (hot || sim.mark || sim.held || sim.away) return
-  if (!aim || !list.includes(aim) || c < was) aim = list.filter(p => p.kind === 'fruitfly' && p.x > 20 && p.x < W - 20 && p.y > 40 && p.y < H - 20).reduce<Prey | null>((a, b) => !a || sim.gap(b) < sim.gap(a) ? b : a, null)
-  was = c
+  if (!aim || !list.includes(aim)) aim = list.filter(p => p.kind === 'fruitfly').reduce<Prey | null>((a, b) => !a || off(b) < off(a) ? b : a, null)
   if (!aim) return
   const x = Math.round(aim.x), y = Math.round(aim.y - aim.h * .7), r = span(aim), up = y - r - 28 > 30, bob = +(c > BEAT / 2)
   marks(g, x, y, r + Math.round(WIDE * (1 - Math.min(1, c / CLOSE)) ** 2), UI.text)

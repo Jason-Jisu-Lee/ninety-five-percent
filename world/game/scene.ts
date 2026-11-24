@@ -31,7 +31,6 @@ export const stage1: Scene = {
     for (let i = 0; i < run.rate; i++) sim.step(dt, G.clock += dt)
     if (sim.jolt) [sim.jolt, G.halt] = [false, LUNGE.freeze], sound('thump')
     if (sim.spent) sim.spent = false, sound('tired')
-    if (sim.held?.kind === 'fruitfly') save.taught = true
     if (sim.fell) mourn()
     sim.fell = false
     if (!sim.away || sim.fly.x > -FLY.gone) G.dusk = Math.max(0, G.dusk - dt / DUSK)
@@ -42,7 +41,7 @@ export const stage1: Scene = {
     store()
   },
   draw(g) {
-    render(g, run.sim, G.clock, G.fade <= 0 && !asleep(), top() ? null : G.hot, G.me && !top(), !save.taught && !bound())
+    render(g, run.sim, G.clock, G.fade <= 0 && !asleep(), top() ? null : G.hot, G.me && !top(), !save.caught.fruitfly && !bound())
     if (G.fade > 0) title.draw(g, G.fade)
     else {
       ui.draw(g, run.paused, run.sim.chain, 1 - run.sim.since / STREAK.time, born())
