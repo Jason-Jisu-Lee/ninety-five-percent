@@ -46,9 +46,10 @@ export const opts = settings(leave, () => {
 })
 export const layers = [ask, evos, card, self, opts], top = () => layers.find(l => l.shown())
 const flee = () => run.sim.away || (sound('feast'), run.sim.feast())
+const FIRST = 'You can enhance your Dragonfly at the Lair with blood points, but it will reset the run. Continue?'
 export const ui = hud(() => {
   run.paused = !run.paused
-}, () => opts.open(true), flee, () => {
+}, () => opts.open(true), () => save.fed || run.sim.away ? flee() : ask.open([FIRST], [["Let's go!", flee], ["I'll stay a bit longer", () => {}]]), () => {
   const w = run.sim.away ? undefined : unlock()
   if (w?.kind && PREY[w.kind].stage === where.stage) run.sim.prey.join(w.kind)
   else if (w && !w.kind) flee(), run.sim.onward = true

@@ -6,10 +6,10 @@ import { text, width } from '../text/text'
 import { wrap } from '../text/wrap'
 import { box } from './panel'
 
-const BW = 54, BH = 15, GAP = 8, TOP = 240, WIDE = 230, GUARD = 300
+const MIN = 54, BH = 15, GAP = 8, TOP = 240, WIDE = 230, GUARD = 300
 
 export function dialog() {
-  let lines: string[] = [], acts: [string, () => void][] = [], sel = 0, shown = false, since = 0
+  let lines: string[] = [], acts: [string, () => void][] = [], sel = 0, shown = false, since = 0, BW = MIN
   const h = () => lines.length * 12 + BH + 21, bx = (i: number) => (W - acts.length * BW - (acts.length - 1) * GAP >> 1) + i * (BW + GAP)
   const at = (x: number, y: number) => y >= TOP + h() - BH - 6 && y < TOP + h() - 6 ? acts.findIndex((_, i) => x >= bx(i) && x < bx(i) + BW) : -1
   const light = (i: number) => {
@@ -25,6 +25,7 @@ export function dialog() {
     open(say: string[], list: [string, () => void][]) {
       lines = say.flatMap(l => wrap(l, WIDE))
       acts = list
+      BW = Math.max(MIN, ...list.map(a => width(a[0]) + 14))
       sel = -1
       ;[shown, since] = [true, performance.now()]
     },

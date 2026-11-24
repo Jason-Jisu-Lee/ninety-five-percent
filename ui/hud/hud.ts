@@ -36,7 +36,7 @@ export function hud(pause: () => void, options: () => void, feast: () => void, b
       const u = age()
       if (u >= 0 && u < .3 && !out) sound('cork')
       out = u >= 0
-      blood(g, save.blood - owed(), exact, bonus, left, lit())
+      const edge = blood(g, save.blood - owed(), exact, bonus, left, lit())
       quest(g, born)
       wild.draw(g)
       bar.draw(g, paused, silent())
@@ -45,7 +45,7 @@ export function hud(pause: () => void, options: () => void, feast: () => void, b
       if (out) pop(g, u, meal.draw, SPOT)
       songs.draw(g)
       levels.draw(g)
-      if (exact) note(g, ['Blood Drop Count'], 8, 28)
+      if (exact) note(g, ['Blood Points'], edge + 6, 6)
       if (paused) text(g, 'Paused', W / 2, H / 2 + 7, UI.text, 'c', UI.panel, 2)
     },
   }
