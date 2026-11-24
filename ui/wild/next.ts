@@ -22,7 +22,7 @@ function slot(g: Ctx, name: string, cost: number, y: number, ink: string, pay: s
 
 export function nextWild(buy: () => void) {
   let hot = false
-  const now = () => WILD[pack.got], can = () => save.blood >= now()?.cost
+  const now = () => save.fed ? WILD[pack.got] : undefined, can = () => save.blood >= (now()?.cost ?? Infinity)
   const on = (x: number, y: number, rows: number) => x >= X && x < X + WIDE && y >= Y && y < Y + TALL + PITCH * (rows - 1)
   return {
     hover(x: number, y: number) {

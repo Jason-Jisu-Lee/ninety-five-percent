@@ -8,6 +8,8 @@ import { text, width } from '../text/text'
 
 const BW = width('Feast') + 10, X = W - 8 - BW, Y = H - 23
 
+export const SPOT = [X + BW / 2, Y + 8, BW / 2 + 2, 9]
+
 export function feastButton(run: () => void) {
   let hot = false
   const on = (x: number, y: number) => x >= X && x < X + BW && y >= Y && y < Y + 15
@@ -20,9 +22,9 @@ export function feastButton(run: () => void) {
       if (on(x, y)) run()
       return on(x, y)
     },
-    draw(g: Ctx) {
-      box(g, X, Y, BW, 15, hot ? UI.text : UI.gold, UI.panel)
-      text(g, 'Feast', X + 5, Y + 11, UI.text)
+    draw(g: Ctx, dy = 0) {
+      box(g, X, Y + dy, BW, 15, hot ? UI.text : UI.gold, UI.panel)
+      text(g, 'Feast', X + 5, Y + 11 + dy, UI.text)
       if (hot) note(g, ['End this run'], X + BW, Y - 4, true, true)
     },
   }

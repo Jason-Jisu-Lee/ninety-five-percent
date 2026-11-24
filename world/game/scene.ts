@@ -2,9 +2,10 @@ import { hush } from '../../audio/player/music'
 import { sound } from '../../audio/player/sound'
 import { shade, veil } from '../../core/draw/dissolve'
 import type { Scene } from '../../core/loop/scene'
-import { save, store } from '../../core/save/save'
+import { progress, save, store } from '../../core/save/save'
 import { LUNGE, STREAK } from '../../data/dragonfly/fight'
 import { FLY } from '../../data/dragonfly/flight'
+import { TIRED } from '../../data/game/hints'
 import { DUSK } from '../../data/game/map'
 import { glow, tick } from '../../ui/track/track'
 import { input } from './input'
@@ -30,18 +31,23 @@ export const stage1: Scene = {
     if (run.paused || top() || (G.halt -= dt) > 0) return
     for (let i = 0; i < run.rate; i++) sim.step(dt, G.clock += dt)
     if (sim.jolt) [sim.jolt, G.halt] = [false, LUNGE.freeze], sound('thump')
-    if (sim.spent) sim.spent = false, sound('tired')
+    if (sim.spent) {
+      sim.spent = false
+      sound('tired')
+      if (!save.tired) [save.tired, G.weary] = [true, 0]
+    }
+    if (G.weary >= 0 && ((G.weary += dt) >= TIRED.hold && sim.fly.perched || !sim.rest)) G.weary = -1
     if (sim.fell) mourn()
     sim.fell = false
     if (!sim.away || sim.fly.x > -FLY.gone) G.dusk = Math.max(0, G.dusk - dt / DUSK)
-    else if ((G.dusk += dt / DUSK) >= 1) sim.onward ? onward() : evos.open(0, () => herald(() => restart(true)))
+    else if ((G.dusk += dt / DUSK) >= 1) sim.onward ? onward() : (save.fed = true, progress('feast'), evos.open(0, () => herald(() => restart(true))))
     save.time += dt * run.rate
     if ((G.kept += dt) < 5) return
     G.kept = 0
     store()
   },
   draw(g) {
-    render(g, run.sim, G.clock, G.fade <= 0 && !asleep(), top() ? null : G.hot, G.me && !top(), !save.caught.fruitfly && !bound())
+    render(g, run.sim, G.clock, G.fade <= 0 && !asleep(), top() ? null : G.hot, G.me && !top(), !save.caught.fruitfly && !bound(), G.weary)
     if (G.fade > 0) title.draw(g, G.fade)
     else {
       ui.draw(g, run.paused, run.sim.chain, 1 - run.sim.since / STREAK.time, born())

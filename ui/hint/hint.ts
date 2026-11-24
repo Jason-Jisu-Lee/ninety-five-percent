@@ -4,19 +4,13 @@ import { H, W } from '../../data/look/screen'
 import type { Prey } from '../../world/creatures/prey'
 import { span } from '../../world/creatures/span'
 import type { Sim } from '../../world/hunt/sim'
+import { chevron } from '../parts/chevron'
 import { key } from '../parts/key'
 import { marks } from '../parts/marks'
 
-const BEAT = 1.2, CLOSE = .4, WIDE = 9, V = [[0, 0], [1, 1], [2, 2], [3, 1], [4, 0]]
+const BEAT = 1.2, CLOSE = .4, WIDE = 9
 let aim: Prey | null = null
 const off = (p: Prey) => Math.hypot(p.x - W / 2, p.y - H / 2)
-
-function chevron(g: Ctx, x: number, y: number, way: number) {
-  for (let n = 0; n < 10; n++) {
-    g.fillStyle = n < 9 ? UI.panel : UI.text
-    for (const [i, j] of V) g.fillRect(x + i + (n < 9 ? n % 3 - 1 : 0), y + j * way + (n < 9 ? (n / 3 | 0) - 1 : 0), 1, 1)
-  }
-}
 
 export function hint(g: Ctx, sim: Sim, hot: Prey | null, t: number) {
   const c = t % BEAT, list = sim.prey.list

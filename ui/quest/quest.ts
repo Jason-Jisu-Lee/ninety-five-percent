@@ -16,7 +16,7 @@ const drops = () => Math.min(done!.blood, MAX), landed = () => Math.max(0, Math.
 
 function sync() {
   if (save.quest !== seen) {
-    done = save.quest > seen ? QUESTS[seen] : undefined
+    done = save.quest > seen && QUESTS[seen].blood ? QUESTS[seen] : undefined
     ;[seen, at] = [save.quest, now()]
     if (done) sound('quest')
   }
@@ -28,10 +28,11 @@ export function owed() {
   return done ? done.blood * (1 - landed() / drops()) : 0
 }
 
+export const since = () => now() - at - HOLD - SLIDE * 2
 export const lit = () => !!done && landed() > 0 && now() - at - WAIT - FLY - (landed() - 1) * GAP < GLOW
 
 function track(g: Ctx, q: typeof QUESTS[number], got: number, col: string, dx: number, tick = false, dy = 0) {
-  const r = R + dx, pay = '+' + q.blood, x = r - width(pay) - 14 - BAR
+  const r = R + dx, pay = q.blood ? '+' + q.blood : '', x = r - (pay ? width(pay) + 14 : 0) - BAR
   text(g, q.text, r, 41 + dy, col, 'r', UI.panel)
   g.fillStyle = UI.panel
   g.fillRect(x - 1, 47 + dy, BAR + 2, 6)
@@ -39,8 +40,7 @@ function track(g: Ctx, q: typeof QUESTS[number], got: number, col: string, dx: n
   g.fillRect(x, 48 + dy, BAR, 4)
   g.fillStyle = UI.accent
   g.fillRect(x, 48 + dy, Math.round(BAR * Math.min(1, got / q.n)), 4)
-  text(g, pay, r, 54 + dy, UI.gold, 'r', UI.panel)
-  orb(g, r - width(pay) - 6, 50 + dy, '', UI.panel)
+  if (pay) text(g, pay, r, 54 + dy, UI.gold, 'r', UI.panel), orb(g, r - width(pay) - 6, 50 + dy, '', UI.panel)
   text(g, `${got} / ${q.n}`, x - 6, 54 + dy, UI.accent, 'r', UI.panel)
   if (tick) icon(g, 'tick', r - width(q.text) - 11, 35, UI.accent, UI.panel)
 }
