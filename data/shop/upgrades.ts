@@ -5,9 +5,9 @@ const SMALL = [8, 13, 21, 34, 55], BIG = [120, 300], FAST = (first: number, n: n
 export const UPGRADES: Record<string, [stat: Stat, each: number, cost: number[]]> = {
   'Sharp Mandibles': ['power', .25, [5, 10, 16, 26, 42]],
   'Sharper Mandibles': ['power', .5, BIG],
-  'Hard Shell': ['health', .25, [20, 30, 45, 68, 100]],
-  'Harder Shell': ['health', .5, BIG],
-  'Thick Hide': ['armor', 2, [300, 900, 2700]],
+  'Strong Heart': ['health', .25, [20, 30, 45, 68, 100]],
+  'Stronger Heart': ['health', .5, BIG],
+  'Hard Shell': ['armor', 1, [300, 900, 2700]],
   'Long Wings': ['speed', .1, SMALL],
   'Longer Wings': ['speed', .2, BIG],
   'Split Wingbeat': ['turn', 1 / 3, [15, 35, 80]],

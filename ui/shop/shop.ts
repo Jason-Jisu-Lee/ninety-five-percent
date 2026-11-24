@@ -18,14 +18,14 @@ import { stats } from './stats'
 const L = 32, R = W - L, CW = 184, CH = 17, PX = CW + 12, PY = 20, TOP = 98, ROWS = 10, SIDE = L + PX * 2 + 8, GAP = 26, BW = 96, BH = 20, BY = H - 40
 const DEV = import.meta.env.DEV, SECRET = 'Pink: hidden from players', NAMES = ['Blood shop', 'Evolution shop'], TITLES = ['Lair', 'Evolution'], SHOPS = NAMES.map(n => SHOP.filter(t => t.shop === n))
 
-export function shop() {
+export function shop(peek = DEV) {
   let shown = false, side = 0, tab = 0, hot = -1, over = -1, go = false, then: (() => void) | undefined
   const table = stats(432, 110, true), body = () => tabs()[tab].name === 'Anatomy', born = () => tabs()[tab].name === 'Instinct'
   const early = () => !side && !save.fed, veiled = (name: string) => HIDDEN.includes(name) || early() && !FIRST[name]
-  const tabs = () => [...SHOPS[side].filter(t => !veiled(t.name)), ...SHOPS[side].filter(t => DEV && veiled(t.name))]
+  const tabs = () => [...SHOPS[side].filter(t => !veiled(t.name)), ...SHOPS[side].filter(t => peek && veiled(t.name))]
   const known = (name = '') => !veiled(tabs()[tab].name) && (!early() || !!FIRST[tabs()[tab].name]?.includes(name))
   const all = () => tabs()[tab].items.slice(0, ROWS * 2), spots = () => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L))
-  const items = () => [...all().filter(it => known(it.name)), ...all().filter(it => DEV && !known(it.name))]
+  const items = () => [...all().filter(it => known(it.name)), ...all().filter(it => peek && !known(it.name))]
   const cell = (i: number) => [L + (i / ROWS | 0) * PX, TOP + i % ROWS * PY]
   const closed = (i: number) => !known(items()[i]?.name) || !!OPEN[tabs()[tab].name] && !OPEN[tabs()[tab].name].includes(items()[i]?.name)
   const cost = (i: number) => closed(i) ? undefined : price(items()[i]?.name), can = (i: number) => save.blood >= (cost(i) ?? Infinity)

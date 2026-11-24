@@ -9,6 +9,7 @@ import { blood } from '../blood/blood'
 import { devConsole, type Tool } from '../dev/console'
 import { feastButton, SPOT } from '../feast/button'
 import { nav } from '../nav/nav'
+import { note } from '../parts/note'
 import { soundBox } from '../nav/sound'
 import { pop } from '../quest/pop'
 import { lit, owed, quest, since } from '../quest/quest'
@@ -44,6 +45,7 @@ export function hud(pause: () => void, options: () => void, feast: () => void, b
       if (out) pop(g, u, meal.draw, SPOT)
       songs.draw(g)
       levels.draw(g)
+      if (exact) note(g, ['Blood Drop Count'], 8, 28)
       if (paused) text(g, 'Paused', W / 2, H / 2 + 7, UI.text, 'c', UI.panel, 2)
     },
   }
