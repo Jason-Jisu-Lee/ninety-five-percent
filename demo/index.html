@@ -16,7 +16,7 @@ iframe{flex:1;border:0}
 <nav></nav>
 <iframe allow="autoplay"></iframe>
 <script>
-const PAGES = []
+const PAGES = [['Start: circle', 'start.html?v=circle'], ['Start: quest poof', 'start.html?v=poof'], ['Start: A key hint', 'start.html?v=hint']]
 const frame = document.querySelector('iframe'), tabs = PAGES.map(([name, src]) => {
   const b = document.querySelector('nav').appendChild(document.createElement('button'))
   b.textContent = name
