@@ -1,4 +1,5 @@
 import { clamp } from '../../core/math/clamp'
+import { save } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { PREY } from '../../data/enemies/enemies'
 import { UI } from '../../data/look/palette'
@@ -19,5 +20,5 @@ export function tag(g: Ctx, p: Prey, reach: number, under: boolean, tap = false)
   g.fillRect(bx, y + 14, LIFE, 2)
   g.fillStyle = UI.foe
   g.fillRect(bx, y + 14, Math.ceil(LIFE * clamp(p.hp / k.hp)), 2)
-  key(g, at, y + 3, 'A', tap)
+  if (!save.fed || p.kind !== 'fruitfly') key(g, at, y + 3, 'A', tap)
 }
