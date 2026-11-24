@@ -10,14 +10,6 @@ export function stamp(g: Ctx, rows: string[], x: number, y: number, inks: Record
   })
 }
 
-export function disc(g: Ctx, x: number, y: number, r: number, col: string) {
-  g.fillStyle = col
-  for (let j = -r; j <= r; j++) {
-    const w = Math.floor(Math.sqrt((r + .5) ** 2 - j * j))
-    g.fillRect(x - w, y + j, w * 2 + 1, 1)
-  }
-}
-
 export function arrow(g: Ctx, x: number, y: number) {
   g.beginPath()
   ;[[0, 0], [0, 17], [4, 13.4], [7, 20], [9.6, 18.8], [6.7, 12.4], [12, 12.4]].forEach(([a, b], i) => g[i ? 'lineTo' : 'moveTo'](x + a * 1.2, y + b * 1.2))

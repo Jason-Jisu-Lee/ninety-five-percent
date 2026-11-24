@@ -1,27 +1,10 @@
-const R0 = 30, HOLD = 2
-const up = (t: number, time: number, power: number) => Math.min(1, Math.max(0, t - HOLD) / time) ** power
-const back = (u: number) => 1 + 2.7 * (u - 1) ** 3 + 1.7 * (u - 1) ** 2
+import { clamp } from '../../core/math/clamp'
 
-export const CIRCLES: { name: string; note: string; at(t: number, far: number): { r: number; band: number; show: number } }[] = [
-  {
-    name: 'Hard edge',
-    note: 'Appears at once. A crisp pixel circle. Opens slowly, then faster, over 1.8 s',
-    at: (t, far) => ({ r: R0 + (far - R0) * up(t, 1.8, 3), band: 0, show: 1 }),
-  },
-  {
-    name: 'Soft edge',
-    note: 'Fades in. A dotted edge, like the other fades in the game. Opens slowly, then faster, over 1.8 s',
-    at(t, far) {
-      const r = 38 + (far / .66 - 38) * up(t, 1.8, 3)
-      return { r, band: r / 3, show: Math.min(1, t / .4) }
-    },
-  },
-  {
-    name: 'Pull back, then burst',
-    note: 'Pops open. Tightens for a moment just before 2 s, then bursts open over 1.3 s',
-    at(t, far) {
-      const pull = Math.min(1, Math.max(0, (t - HOLD + .3) / .3)), tight = R0 * (1 - .22 * pull * pull * (3 - 2 * pull))
-      return { r: t < .3 ? R0 * back(t / .3) : tight + (far - tight) * up(t, 1.3, 4), band: 0, show: 1 }
-    },
-  },
-]
+const R0 = 38, PULL = .3, BURST = 1.3
+
+export const HOLD = 1.2, OPEN = HOLD + BURST
+
+export function circle(t: number, far: number) {
+  const pull = clamp((t - HOLD + PULL) / PULL), tight = R0 * (1 - .22 * pull * pull * (3 - 2 * pull)), r = tight + (far / .66 - tight) * clamp((t - HOLD) / BURST) ** 4
+  return { r, band: r / 3, show: Math.min(1, t / .4) }
+}
