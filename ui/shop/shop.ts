@@ -59,7 +59,7 @@ export function shop(peek = DEV) {
     },
     click() {
       if (over >= 0) [tab, hot] = [over, -1]
-      else if (hot >= 0) can(hot) && buy(items()[hot].name)
+      else if (hot >= 0) can(hot) && (buy(items()[hot].name), sound('buy'))
       else if (go) shut()
       else if (must()) miss = clock()
     },

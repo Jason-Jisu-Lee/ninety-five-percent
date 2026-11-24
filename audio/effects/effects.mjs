@@ -9,4 +9,5 @@ export default {
   hover: { wave: blip, peak: .07 },
   tap: { wave: knock, peak: .12 },
   cork: { wave: cork, peak: .12 },
+  buy: { a: '@2 v9 x0 l32 o4 g x1 >g8', ring: .15, peak: .075 },
 }
