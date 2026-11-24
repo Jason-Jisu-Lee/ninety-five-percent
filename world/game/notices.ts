@@ -30,7 +30,7 @@ export const fate = story([["You've lost 95% of blood points"]], () => {
   run.sim.away = true
   G.dusk = 1
   evos.open(0, () => herald(() => restart(true)))
-}, 0, 0)
+}, 0, 0, 4.4)
 
 export function mourn() {
   hush(true)
@@ -48,7 +48,7 @@ export function attack(p: Prey | null) {
 
 export function inspect(p: Prey | null) {
   if (!p) return false
-  if (run.sim.fly.perched) progress('look')
+  if (p.kind === 'fruitfly') progress('look')
   card.open(p)
   return true
 }
