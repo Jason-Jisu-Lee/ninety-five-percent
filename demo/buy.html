@@ -2,7 +2,7 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lair tutorial</title>
+<title>Purchase sounds</title>
 <link rel="icon" href="data:,">
 <style>
 html,body{margin:0;background:#0a1312;color:#e9e2d4;font:15px/1.4 ui-monospace,Consolas,monospace}
@@ -11,18 +11,14 @@ h2{font:inherit;color:#8f877b;margin:10px auto 0;padding:0 16px;max-width:1280px
 button{border:2px solid #33403c;background:#100d0b;color:#e9e2d4;font:inherit;text-align:left;padding:5px 10px;cursor:inherit}
 button:hover{border-color:#c9c0b2}
 button.on{border-color:#c9a45c}
-section{display:grid;gap:18px;padding:14px 16px 40px;justify-content:center}
-figure{margin:0}
+figure{margin:12px auto 40px;width:1284px}
 canvas{display:block;border:2px solid #33403c}
-p{margin:6px 2px 0;color:#7fb062;white-space:pre;min-height:21px}
-figcaption{padding:2px 2px 0;max-width:1280px}
 b{font-size:20px;color:#c9a45c;margin-right:10px}
 i{font-style:normal;color:#8f877b;display:block;font-size:13px}
 </style>
-<h2>Purchase sounds. Click a number to hear it. The one you clicked last plays on every purchase in the pictures below</h2>
+<h2>Purchase sounds, second set. Each follows the pattern of the purchase or pickup sound of the game it names. None is copied from that game</h2>
+<h2>Click a number to hear it. Then buy things in the Lair below: every purchase plays the sound you clicked last. You have 500 blood, and Return refills it. Nothing here is in the game</h2>
 <div id="sounds"></div>
-<h2>Four ways to force the first Lair visit: buy Sharp Mandibles, open Instinct, buy Lunge, then free. Each picture is the real Lair as a player sees it, with 33 blood. Play it with your own mouse</h2>
-<h2>Clicks anywhere else are blocked until the three steps are done. Return starts the picture over. Scroll for all four. Nothing here is in the game</h2>
-<section></section>
+<figure></figure>
 <script>Storage.prototype.setItem = () => {}</script>
-<script type="module" src="./lair.ts"></script>
+<script type="module" src="./buy.ts"></script>

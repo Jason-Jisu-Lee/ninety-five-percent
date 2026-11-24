@@ -5,7 +5,8 @@ import { FOREST, UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
 import { UPGRADES } from '../../data/shop/upgrades'
 import { SHOP } from '../../data/shop/shop'
-import { FIRST, HIDDEN, OPEN } from '../../data/shop/open'
+import { FIRST, HIDDEN, LESSON, OPEN } from '../../data/shop/open'
+import { brackets } from '../parts/brackets'
 import { frame } from '../parts/frame'
 import { icon, orb } from '../parts/icons'
 import { text, width } from '../text/text'
@@ -19,7 +20,7 @@ const L = 32, R = W - L, CW = 184, CH = 17, PX = CW + 12, PY = 20, TOP = 98, ROW
 const DEV = import.meta.env.DEV, SECRET = 'Pink: hidden from players', NAMES = ['Blood shop', 'Evolution shop'], TITLES = ['Lair', 'Evolution'], SHOPS = NAMES.map(n => SHOP.filter(t => t.shop === n))
 
 export function shop(peek = DEV) {
-  let shown = false, side = 0, tab = 0, hot = -1, over = -1, go = false, then: (() => void) | undefined
+  let shown = false, side = 0, tab = 0, hot = -1, over = -1, go = false, led = false, freed = -9, miss = -9, then: (() => void) | undefined
   const table = stats(432, 110, true), body = () => tabs()[tab].name === 'Anatomy', born = () => tabs()[tab].name === 'Instinct'
   const early = () => !side && !save.fed, veiled = (name: string) => HIDDEN.includes(name) || early() && !FIRST[name]
   const tabs = () => [...SHOPS[side].filter(t => !veiled(t.name)), ...SHOPS[side].filter(t => peek && veiled(t.name))]
@@ -30,6 +31,11 @@ export function shop(peek = DEV) {
   const closed = (i: number) => !known(items()[i]?.name) || !!OPEN[tabs()[tab].name] && !OPEN[tabs()[tab].name].includes(items()[i]?.name)
   const cost = (i: number) => closed(i) ? undefined : price(items()[i]?.name), can = (i: number) => save.blood >= (cost(i) ?? Infinity)
   const inside = (x: number, y: number, bx: number, by: number, w: number, h: number) => x >= bx && x < bx + w && y >= by && y < by + h
+  const clock = () => performance.now() / 1000, slot = (i: number) => [spots()[i] - 6, 54, width(tabs()[i].name) + 12, 22]
+  const must = () => {
+    if (early()) for (const [where, name] of LESSON) if (!level(name) && save.blood >= (price(name) ?? Infinity))
+      return tabs()[tab].name === where ? [...cell(items().findIndex(it => it.name === name)), CW, CH] : slot(tabs().findIndex(t => t.name === where))
+  }
   const shut = () => {
     shown = false
     then?.()
@@ -37,14 +43,15 @@ export function shop(peek = DEV) {
   return {
     shown: () => shown,
     open(s: number, done?: () => void) {
-      ;[shown, side, tab, hot, then] = [true, s, 0, -1, done]
+      ;[shown, side, tab, hot, led, freed, miss, then] = [true, s, 0, -1, false, -9, -9, done]
     },
     hover(x: number, y: number) {
-      const was = hot
+      const was = hot, m = must()
+      if (m && !inside(x, y, m[0], m[1], m[2], m[3])) x = y = -1
       hot = items().findIndex((_, i) => inside(x, y, cell(i)[0], cell(i)[1], CW, CH))
       if (hot >= 0 && hot !== was) sound('tap')
       const [tabbed, gone] = [over, go]
-      over = tabs().findIndex((c, i) => inside(x, y, spots()[i] - 6, 54, width(c.name) + 12, 22))
+      over = tabs().findIndex((_, i) => inside(x, y, slot(i)[0], 54, slot(i)[2], 22))
       go = inside(x, y, R - BW, BY, BW, BH)
       if (over >= 0 && over !== tabbed || go && !gone) sound('hover')
       table.hover(body() ? x : -1, y)
@@ -54,8 +61,10 @@ export function shop(peek = DEV) {
       if (over >= 0) [tab, hot] = [over, -1]
       else if (hot >= 0) can(hot) && buy(items()[hot].name)
       else if (go) shut()
+      else if (must()) miss = clock()
     },
     key(k: string) {
+      if (must()) return true
       const d = k === 'ArrowRight' || k === 'd' ? 1 : k === 'ArrowLeft' || k === 'a' ? -1 : 0
       if (d) [tab, hot] = [(tab + d + tabs().length) % tabs().length, -1]
       else if (k === 'Escape' || k === 'Enter' || k === ' ') shut()
@@ -93,6 +102,11 @@ export function shop(peek = DEV) {
       if (pick) about(g, pick, SIDE, R - SIDE)
       if (body()) table.tip(g)
       if (tabs().some(t => veiled(t.name))) text(g, SECRET, L, BY + 14, FOREST.pink)
+      const m = must(), t = clock()
+      if (m) brackets(g, m, 2 + Math.round(7 * (1 - Math.min(1, t % 1.2 / .4)) ** 2), t - miss < .24 ? Math.round(Math.sin((t - miss) / .24 * Math.PI * 6) * 2) : 0)
+      else if (led) freed = t
+      led = !!m
+      if (t - freed < .9 && (t - freed) % .3 < .18) for (const r of [slot(tabs().findIndex((c, i) => i !== tab && !veiled(c.name))), [R - BW, BY, BW, BH]]) brackets(g, r, 2)
       frame(g, R - BW, BY, BW, BH, go)
       text(g, side ? 'Continue' : 'Return', R - BW / 2, BY + 14, go ? UI.gold : UI.text, 'c')
     },
