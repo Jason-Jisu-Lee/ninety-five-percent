@@ -13,6 +13,6 @@ export function brain(fly: Flight) {
         ;[gx, gy] = [fly.x + Math.cos(a) * d, fly.y + Math.sin(a) * d]
       } while (gx < ROAM.pad || gx > W - ROAM.pad || gy < ROAM.top || gy > H - ROAM.pad)
     }
-    fly.seek(gx, gy, fly.top() * FLY.cruise, dt)
+    fly.seek(gx, gy, fly.top() * FLY.cruise, dt, FLY.height, true)
   }
 }

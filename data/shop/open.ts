@@ -1,4 +1,5 @@
-export const HIDDEN = ['Appetite']
+export const HIDDEN = ['Appetite', 'Swarm', 'Wildlife'], RIPE = 3
+export const NEEDS: Record<string, string> = { 'Sharper Mandibles': 'Sharp Mandibles', 'Stronger Heart': 'Strong Heart', 'Longer Wings': 'Long Wings', 'Wider Spiracles': 'Wide Spiracles' }
 export const OPEN: Record<string, string[]> = { Instinct: ['Lunge', 'Ambush', 'Dive Strike'] }
 export const LESSON = [['Anatomy', 'Sharp Mandibles'], ['Instinct', 'Lunge']]
 export const FIRST: Record<string, string[]> = { Anatomy: ['Sharp Mandibles', 'Long Wings', 'Split Wingbeat', 'Wide Spiracles'], Instinct: ['Lunge'] }

@@ -11,12 +11,14 @@ export function flight(x: number, y: number) {
   const f = { x, y, ang: -Math.PI / 2, speed: 0, base: FLY.height, h: FLY.height, flap: 0, heading: 0, frame: 0, lean: 0, perched: false, out: false }
   const n = DF.flapFrames, [close, open] = FLY.hover, rest = fidget(f)
   const top = () => FLY.top * own('speed')
-  let spin = 0, glide = between(VARY.glide)
-  function seek(tx: number, ty: number, max: number, dt: number, th = FLY.height) {
+  let spin = 0, glide = between(VARY.glide), wall = false, away = false
+  function seek(tx: number, ty: number, max: number, dt: number, th = FLY.height, arc = false) {
     const d = Math.hypot(tx - f.x, ty - f.y), want = Math.atan2(ty - f.y, tx - f.x), was = f.ang, rate = FLY.turn * own('turn')
-    if (d > 2) f.ang = turn(f.ang, want, rate * dt)
+    const keep = Math.min(max, top() * FLY.keep), reach = rate * d / (2 * Math.abs(Math.sin(wrap(want - f.ang))) + 1e-6)
+    away = arc && !wall && d > 2 && reach < keep * (away ? FLY.clear : 1)
+    if (d > 2 && !away) f.ang = turn(f.ang, want, rate * dt)
     const off = wrap(want - f.ang), face = Math.max(0, Math.cos(off)), far = clamp((d - close) / (open - close))
-    const goal = Math.min(max, d * FLY.arrive, d * rate * FLY.tight / (Math.abs(Math.sin(off)) + 1e-6)) * (face + (1 - face) * far)
+    const goal = away ? keep : arc ? Math.min(max, d * FLY.arrive, reach * FLY.bank) : Math.min(max, d * FLY.arrive, d * rate * FLY.tight / (Math.abs(Math.sin(off)) + 1e-6)) * (face + (1 - face) * far)
     spin += (wrap(f.ang - was) / (dt || 1) / rate - spin) * Math.min(1, dt * 8)
     f.speed += (goal - f.speed) * Math.min(1, dt * (goal < f.speed ? FLY.brake : FLY.accel))
     f.base += (th - f.base) * Math.min(1, dt * 3)
@@ -32,8 +34,10 @@ export function flight(x: number, y: number) {
       if (f.perched) rest(dt)
       else {
         const pace = f.speed / top(), calm = Math.abs(spin) < VARY.spin
-        f.x = clamp(f.x + Math.cos(f.ang) * f.speed * dt, f.out ? -99 : 10, W - 10)
-        f.y = clamp(f.y + Math.sin(f.ang) * f.speed * dt, 16, H - 4)
+        const x = f.x + Math.cos(f.ang) * f.speed * dt, y = f.y + Math.sin(f.ang) * f.speed * dt
+        f.x = clamp(x, f.out ? -99 : 10, W - 10)
+        f.y = clamp(y, 16, H - 4)
+        wall = f.x !== x || f.y !== y
         f.flap += dt * FLY.beat * n * (VARY.hover - (VARY.hover - 1) * Math.min(1, pace * 2))
         f.lean = calm ? 0 : Math.sign(spin)
         if ((glide -= dt) < -between(VARY.hold) || !calm || pace < .35) glide = between(VARY.glide)

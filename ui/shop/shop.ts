@@ -5,7 +5,7 @@ import { FOREST, UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
 import { UPGRADES } from '../../data/shop/upgrades'
 import { SHOP } from '../../data/shop/shop'
-import { FIRST, HIDDEN, LESSON, OPEN } from '../../data/shop/open'
+import { FIRST, HIDDEN, LESSON, NEEDS, OPEN, RIPE } from '../../data/shop/open'
 import { brackets } from '../parts/brackets'
 import { frame } from '../parts/frame'
 import { icon, orb } from '../parts/icons'
@@ -24,7 +24,7 @@ export function shop(peek = DEV) {
   const table = stats(432, 110, true), body = () => tabs()[tab].name === 'Anatomy', born = () => tabs()[tab].name === 'Instinct'
   const early = () => !side && !save.fed, veiled = (name: string) => HIDDEN.includes(name) || early() && !FIRST[name]
   const tabs = () => [...SHOPS[side].filter(t => !veiled(t.name)), ...SHOPS[side].filter(t => peek && veiled(t.name))]
-  const known = (name = '') => !veiled(tabs()[tab].name) && (!early() || !!FIRST[tabs()[tab].name]?.includes(name))
+  const known = (name = '') => !veiled(tabs()[tab].name) && (!early() || !!FIRST[tabs()[tab].name]?.includes(name)) && (!NEEDS[name] || level(NEEDS[name]) >= RIPE)
   const all = () => tabs()[tab].items.slice(0, ROWS * 2), spots = () => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L))
   const items = () => [...all().filter(it => known(it.name)), ...all().filter(it => peek && !known(it.name))]
   const cell = (i: number) => [L + (i / ROWS | 0) * PX, TOP + i % ROWS * PY]
