@@ -7,22 +7,12 @@
 <style>
 html,body{margin:0;background:#0a1312;color:#e9e2d4;font:15px/1.4 ui-monospace,Consolas,monospace}
 h2{font:inherit;color:#8f877b;margin:10px auto 0;padding:0 16px;max-width:1280px;text-align:center}
-#whole{width:1284px;margin:12px auto 0}
+#whole{width:1284px;margin:12px auto 40px}
 canvas{display:block;border:2px solid #33403c;cursor:pointer}
 p{margin:6px 2px 0;color:#7fb062;white-space:pre;min-height:21px}
-#row{display:flex;gap:16px;justify-content:center;padding:10px 16px 40px}
-#corner p{display:none}
-#sounds{display:grid;grid-template-columns:repeat(2,360px);gap:6px 8px;align-content:start}
-button{border:2px solid #33403c;background:#100d0b;color:#e9e2d4;font:inherit;text-align:left;padding:5px 10px;cursor:pointer}
-button:hover{border-color:#c9c0b2}
-button.on{border-color:#c9a45c}
-b{font-size:20px;color:#c9a45c;margin-right:10px}
-i{font-style:normal;color:#8f877b;display:block;font-size:13px}
 </style>
-<h2>Your picks together: soft edge that tightens and bursts open, the quest pop, and the marked fly with an A key in place of the mouse</h2>
-<h2>1.2 s lit, then the burst. Nothing moves and no bar shows until the screen is fully open. Click the picture to play it again. Nothing here is in the game</h2>
+<h2>Your picks together: soft edge that tightens and bursts open, the quest pop with the Cork sound, and the marked fly with an A key</h2>
+<h2>1.2 s lit, the burst, then 1.2 s more of stillness before anything moves. Click the picture to play it again. Nothing here is in the game</h2>
 <div id="whole"></div>
-<h2>Pop sounds. Click a number: the quest pops with that sound. The last one you clicked also plays in the big picture</h2>
-<div id="row"><div id="corner"></div><div id="sounds"></div></div>
 <script>Storage.prototype.setItem = () => {}</script>
 <script type="module" src="./start.ts"></script>

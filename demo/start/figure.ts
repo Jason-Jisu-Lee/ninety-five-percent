@@ -22,11 +22,11 @@ import { pop } from './pop'
 import { arrow } from './stamp'
 
 const none = () => {}, wild = nextWild(none), bar = nav([none, none, none]), feast = feastButton(none), page = ctx(mk(W, H))
-const PRE = 2.2, QUEST = OPEN + 3, CONTROL = QUEST + 1, WAIT = 2.9, FROM = [452, 300], LAST = ['But an ancient bloodline survived', 'Dragonflies', 'The sky will be theirs again...']
+const PRE = 2.2, WAKE = OPEN + 1.2, QUEST = WAKE + 3, CONTROL = QUEST + 1, WAIT = 2.9, FROM = [452, 300], LAST = ['But an ancient bloodline survived', 'Dragonflies', 'The sky will be theirs again...']
 LAST.forEach((line, j) => text(page, line, W / 2, H / 2 + 14 + (j - 1.5) * 22, UI.text, 'c', undefined, 2))
 
-export function figure(host: HTMLElement, zoom: number, sound: () => void, crop?: number[]) {
-  const k = zoom, [cx, cy, cw, ch] = crop ?? [0, 0, W, H], c = host.appendChild(mk(cw * k, ch * k)), out = ctx(c), low = ctx(mk(W, H)), hole = mask(), said = host.appendChild(document.createElement('p'))
+export function figure(host: HTMLElement, k: number, sound: () => void) {
+  const c = host.appendChild(mk(W * k, H * k)), out = ctx(c), low = ctx(mk(W, H)), hole = mask(), said = host.appendChild(document.createElement('p'))
   let sim = hunt(), T = 0, clock = 0, got = 0, kills = 0, bit = -1, shut = -1, pressed = false, hot: Prey | null = null, aim: Prey | null = null, tip: number[] | null = null
 
   function reset() {
@@ -38,20 +38,19 @@ export function figure(host: HTMLElement, zoom: number, sound: () => void, crop?
       kill(p, t)
     }
     for (clock = 0; clock < 6; clock += 1 / 60) sim.prey.step(1 / 60, clock, -999, -999, null)
-    ;[T, got, kills, bit, shut, pressed, hot, aim, tip] = [crop ? 99 : -PRE, 0, 0, -1, -1, false, null, null, null]
+    ;[T, got, kills, bit, shut, pressed, hot, aim, tip] = [-PRE, 0, 0, -1, -1, false, null, null, null]
     Object.assign(save, { blood: 0, count: 0, quest: 0 })
   }
 
   const nearest = () => sim.prey.list.filter(p => p.kind === 'fruitfly' && p.x > 20 && p.x < W - 20 && p.y > 40 && p.y < H - 20).reduce<Prey | null>((a, b) => !a || sim.gap(b) < sim.gap(a) ? b : a, null)
-  const phase = () => T < 0 ? 'the last black screen fades out' : T < HOLD ? 'dragonfly lit, music starts, everything is paused' : T < OPEN ? 'the circle bursts open, everything is still paused' : T < QUEST ? 'fully open: the world moves, no control yet' : T < CONTROL ? 'the quest pops in, no control yet' : bit >= 0 ? 'first bite, the hint is gone' : pressed ? 'the player pressed A' : hot ? 'the player has the pointer on a fruit fly' : tip ? 'the player moves the pointer' : 'control starts, the hint shows'
+  const phase = () => T < 0 ? 'the last black screen fades out' : T < HOLD ? 'dragonfly lit, music starts, everything is paused' : T < OPEN ? 'the circle bursts open, everything is still paused' : T < WAKE ? 'fully open, still paused' : T < QUEST ? 'the world moves, no control yet' : T < CONTROL ? 'the quest pops in, no control yet' : bit >= 0 ? 'first bite, the hint is gone' : pressed ? 'the player pressed A' : hot ? 'the player has the pointer on a fruit fly' : tip ? 'the player moves the pointer' : 'control starts, the hint shows'
 
   function step(dt: number) {
     if (shut >= 0) return void ((shut += dt) > .55 && reset())
     if (T < QUEST && (T += dt) >= QUEST) sound()
     else if (T >= QUEST) T += dt
-    if (T < OPEN) return
+    if (T < WAKE) return
     sim.step(dt, clock += dt)
-    if (crop) return
     if (bit < 0 && sim.held) bit = T
     const t = T - CONTROL
     if (t >= 0 && bit < 0) {
@@ -67,26 +66,25 @@ export function figure(host: HTMLElement, zoom: number, sound: () => void, crop?
   }
 
   function draw() {
-    const t = T - CONTROL, line = crop ? '' : `${Math.max(0, T).toFixed(1)} s   ${phase()}`
+    const t = T - CONTROL, line = `${Math.max(0, T).toFixed(1)} s   ${phase()}`
     if (said.textContent !== line) said.textContent = line
     if (T < 0) {
       low.fillStyle = '#000'
       low.fillRect(0, 0, W, H)
       dissolve(low, page.canvas, 0, 0, clamp((-T - .3) / .7))
     } else {
-      render(low, sim, clock, T >= OPEN, hot, false)
+      render(low, sim, clock, T >= WAKE, hot, false)
       blood(low, got)
       pop(low, T - QUEST, kills)
       wild.draw(low)
       bar.draw(low, false, silent())
       now(low, W - 73)
       feast.draw(low)
-      if (!crop && t >= 0 && bit < 0) hint(low, { t, aim, hot, marked: !!sim.mark })
+      if (t >= 0 && bit < 0) hint(low, { t, aim, hot, marked: !!sim.mark })
     }
     if (shut >= 0) veil(low, Math.min(1, shut / .4))
     const dark = shade.n
     shade.n = 0
-    out.setTransform(1, 0, 0, 1, -cx * k, -cy * k)
     out.imageSmoothingEnabled = false
     out.drawImage(low.canvas, 0, 0, W * k, H * k)
     if (T >= 0) glow(out, k, 1, dark)
@@ -100,11 +98,8 @@ export function figure(host: HTMLElement, zoom: number, sound: () => void, crop?
 
   c.onclick = reset
   reset()
-  return {
-    pop: () => T = QUEST - .35,
-    frame(dt: number) {
-      step(dt)
-      draw()
-    },
+  return (dt: number) => {
+    step(dt)
+    draw()
   }
 }
