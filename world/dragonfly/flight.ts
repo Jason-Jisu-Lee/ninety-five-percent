@@ -12,13 +12,14 @@ export function flight(x: number, y: number) {
   const n = DF.flapFrames, [close, open] = FLY.hover, rest = fidget(f)
   const top = () => FLY.top * own('speed')
   let spin = 0, glide = between(VARY.glide), wall = false, away = false
-  const reach = (tx: number, ty: number) => FLY.turn * own('turn') * Math.hypot(tx - f.x, ty - f.y) / (2 * Math.abs(Math.sin(wrap(Math.atan2(ty - f.y, tx - f.x) - f.ang))) + 1e-6)
+  const veer = () => FLY.turn * own('turn') * own('speed')
+  const reach = (tx: number, ty: number) => veer() * Math.hypot(tx - f.x, ty - f.y) / (2 * Math.abs(Math.sin(wrap(Math.atan2(ty - f.y, tx - f.x) - f.ang))) + 1e-6)
   const aim = (p: { x: number; y: number; vx: number; vy: number }) => {
     const lead = Math.min(FLY.lead, Math.hypot(p.x - f.x, p.y - f.y) / top())
     return [p.x + p.vx * lead, p.y + p.vy * lead]
   }
   function seek(tx: number, ty: number, max: number, dt: number, th = FLY.height, arc = false, rush = false) {
-    const d = Math.hypot(tx - f.x, ty - f.y), want = Math.atan2(ty - f.y, tx - f.x), was = f.ang, rate = FLY.turn * own('turn')
+    const d = Math.hypot(tx - f.x, ty - f.y), want = Math.atan2(ty - f.y, tx - f.x), was = f.ang, rate = veer()
     const keep = rush ? max : Math.min(max, top() * FLY.keep), room = reach(tx, ty)
     away = arc && !wall && d > 2 && room < keep * (away ? FLY.clear : 1)
     if (d > 2 && !away) f.ang = turn(f.ang, want, rate * dt * (rush ? Math.min(1, f.speed / keep) : 1))

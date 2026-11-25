@@ -1,5 +1,6 @@
 import { vnoise } from '../../core/math/noise'
 import { H, W } from '../../data/look/screen'
+import { NESTS } from '../../data/game/map'
 import { POND } from '../../data/place/looks'
 import { kit } from './kit'
 import { shape, tidy } from './land'
@@ -41,7 +42,7 @@ export function pond(seed: number) {
     last.push([x, y])
     K.tuft(x, y)
   }
-  K.swarms.splice(0, Infinity, [252, 150], [522, 324], [66, 312])
+  K.swarms.splice(0, Infinity, ...NESTS[1][0])
   K.zone('open', CX, CY, 96, 50)
   return K.done()
 }
