@@ -49,7 +49,7 @@ export function figure(host: HTMLElement, n: number) {
       render(low, sim, clock, true, null, false)
       if (way.late && u >= 0 && u < way.late) save.blood -= pay
       ui.draw(low, false)
-      if (u >= 0 && u < HOLD) way.draw(low, u, [13, 10, 24 + width(String(Math.floor(save.blood))) - 13, 11], from)
+      if (u >= 0 && u < HOLD) way.draw(low, u, [13, 10, 24 + width(String(Math.floor(save.blood))) - 13, 11], from, Math.floor(save.blood))
       if (u > HOLD + AFTER) reset()
       out.imageSmoothingEnabled = false
       out.drawImage(low.canvas, 0, 0, W * K, H * K)
