@@ -1,3 +1,4 @@
+import { num } from '../../core/math/num'
 import type { Ctx } from '../../core/screen/canvas'
 import { ORB, UI } from '../../data/look/palette'
 import { text } from '../text/text'
@@ -16,7 +17,7 @@ export function gain() {
     for (const p of list) {
       const u = (now - p.at) / LIFE
       g.globalAlpha = Math.min(1, (1 - u) * 3)
-      text(g, (p.n > 0 ? '+' : '') + +p.n.toFixed(2), x, Math.round(y - u * RISE), ORB['#'], side, UI.panel)
+      text(g, (p.n > 0 ? '+' : '') + num(p.n), x, Math.round(y - u * RISE), ORB['#'], side, UI.panel)
     }
     g.globalAlpha = 1
   }

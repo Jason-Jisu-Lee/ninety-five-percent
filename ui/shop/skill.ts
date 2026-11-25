@@ -1,3 +1,4 @@
+import { num } from '../../core/math/num'
 import { sound } from '../../audio/player/sound'
 import { ctx, mk, type Ctx } from '../../core/screen/canvas'
 import { dissolve } from '../../core/draw/dissolve'
@@ -52,7 +53,7 @@ function frame(act: Act, t: number) {
   if (!bit && u >= cue) key(stage, Math.round(fx) - 5, MID - 30, 'S')
   act.mark?.(stage, ex, ey, ang, t - act.hit)
   stage.drawImage(fly, Math.round(fx) - half, MID - half)
-  if (bit && t < act.hit + .7) text(stage, String(+(own('power') * act.bonus).toFixed(2)), Math.round(ex), Math.round(MID - 12 - (t - act.hit) * 22), UI.gold, 'c', UI.panel)
+  if (bit && t < act.hit + .7) text(stage, num(own('power') * act.bonus), Math.round(ex), Math.round(MID - 12 - (t - act.hit) * 22), UI.gold, 'c', UI.panel)
   return stage.canvas
 }
 

@@ -1,3 +1,4 @@
+import { num } from '../../core/math/num'
 import { gain, level } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { CM, FLY, STAMINA } from '../../data/dragonfly/flight'
@@ -7,7 +8,7 @@ import { UPGRADES } from '../../data/shop/upgrades'
 import { note } from '../parts/note'
 import { text } from '../text/text'
 
-const WIDE = 176, MID = 116, num = (v: number) => String(+v.toFixed(2))
+const WIDE = 176, MID = 116
 export const ROWS: [label: string, stat: Stat, base: (v: number) => string, now: (v: number, speed: number) => string, hint: string][] = [
   ['Damage', 'power', num, num, 'Damage per attack'],
   ['Health', 'health', num, num, 'Hit points'],

@@ -10,6 +10,8 @@ export const UI = {
   gold: '#c9a45c',
   night: '#0a1312',
   line: '#33403c',
+  gilt: '#3a3020',
+  well: '#232a27',
 }
 
 export const ORB: Record<string, string> = { '#': '#c2442c', o: '#ddb09c', d: '#8c2a22' }

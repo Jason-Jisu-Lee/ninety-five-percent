@@ -19,6 +19,8 @@ import { advance, asleep, born, bound, reveal } from './opening'
 import { onward, restart, run } from './run'
 import { G } from './state'
 
+const lunging = () => QUESTS[save.quest]?.kind === 'lunge'
+
 export const stage1: Scene = {
   enter: restart,
   update(dt) {
@@ -52,7 +54,7 @@ export const stage1: Scene = {
     else if ((G.dusk += dt / DUSK) >= 1) sim.onward ? onward() : (evos.open(0, () => (save.fed = true, herald(() => {
       restart(true)
       if (!save.told) [save.told, G.news] = [true, 0]
-      if (QUESTS[save.quest]?.kind === 'lunge') G.back = -DUSK
+      if (lunging()) G.back = -DUSK
     }))))
     save.time += dt * run.rate
     if ((G.kept += dt) < 5) return
@@ -63,7 +65,7 @@ export const stage1: Scene = {
     render(g, run.sim, G.clock, G.fade <= 0 && !asleep(), top() ? null : G.hot, G.me && !top(), !save.caught.fruitfly && !bound(), G.weary)
     if (G.fade > 0) title.draw(g, G.fade)
     else {
-      ui.draw(g, run.paused, run.sim.chain, 1 - run.sim.since / STREAK.time, QUESTS[save.quest]?.kind === 'lunge' && !save.fed ? -1 : Math.min(born(), G.back))
+      ui.draw(g, run.paused, run.sim.chain, 1 - run.sim.since / STREAK.time, lunging() && !save.fed ? -1 : Math.min(born(), G.back))
       if (G.news >= NEWS.wait) unlocked(g, G.news - NEWS.wait)
       if (G.dusk > 0) veil(g, Math.min(1, G.dusk))
     }

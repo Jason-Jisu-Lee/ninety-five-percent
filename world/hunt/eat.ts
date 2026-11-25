@@ -1,3 +1,4 @@
+import { num } from '../../core/math/num'
 import { between } from '../../core/math/between'
 import { own, progress, save } from '../../core/save/save'
 import { DF } from '../../data/dragonfly/body'
@@ -16,7 +17,7 @@ export function eat(s: Sim, h: Prey, dt: number, t: number) {
     s.strike = k.strike * between(FIGHT.jitter)
     s.health -= hit
     s.hurt = FIGHT.flash
-    fx.hit(fly.x, fly.y - fly.h * .7 - 16, '-' + +hit.toFixed(2), C.pink)
+    fx.hit(fly.x, fly.y - fly.h * .7 - 16, '-' + num(hit), C.pink)
     if (s.health <= 0) return s.die()
   }
   if (k.grip && (s.hold += dt) > k.grip) {
@@ -29,7 +30,7 @@ export function eat(s: Sim, h: Prey, dt: number, t: number) {
   s.extra = 0
   h.hp -= bite
   h.flash = .1
-  fx.hit(mx, my - fly.h * .7 - 10, String(+bite.toFixed(2)))
+  fx.hit(mx, my - fly.h * .7 - 10, num(bite))
   if (h.wings && (!k.grip || h.hp <= 0)) {
     fx.shed(mx, my, fly.h, k.wing)
     h.wings = false
