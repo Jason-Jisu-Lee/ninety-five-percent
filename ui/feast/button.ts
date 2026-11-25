@@ -5,7 +5,7 @@ import { note } from '../parts/note'
 import { box } from '../parts/panel'
 import { text, width } from '../text/text'
 
-const NAME = 'Lair', BW = width(NAME) + 10, X = 8, Y = 30
+const NAME = 'Return to Lair', BW = width(NAME) + 10, X = 8, Y = 30
 
 export const SPOT = [X + BW / 2, Y + 8, BW / 2 + 2, 9]
 

@@ -9,7 +9,7 @@ import { text } from '../text/text'
 
 const WIDE = 176, MID = 116, num = (v: number) => String(+v.toFixed(2))
 export const ROWS: [label: string, stat: Stat, base: (v: number) => string, now: (v: number, speed: number) => string, hint: string][] = [
-  ['Power', 'power', num, num, 'Damage per attack'],
+  ['Damage', 'power', num, num, 'Damage per attack'],
   ['Health', 'health', num, num, 'Hit points'],
   ['Armor', 'armor', num, num, 'Damage blocked per attack'],
   ['Speed', 'speed', v => num(FLY.top * v / CM), v => num(FLY.top * v / CM) + ' cm/s', 'Flying speed'],

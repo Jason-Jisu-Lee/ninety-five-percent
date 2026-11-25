@@ -16,7 +16,7 @@ export function info(g: Ctx, kind: Kind, hp: number, at: (tall: number) => numbe
   const k = PREY[kind], whole = Math.round
   const [, top, tall] = details(g, {
     name: k.name, col: tone(kind), about: k.text, skills: traits(k),
-    rows: [['Power', num(k.power)], ['Health', hp < k.hp ? `${Math.ceil(hp)} / ${whole(k.hp)}` : String(whole(k.hp))], ['Speed', num(k.speed / CM) + ' cm/s'], ['Lifeblood', String(whole(k.blood))]],
+    rows: [['Damage', num(k.power)], ['Health', hp < k.hp ? `${Math.ceil(hp)} / ${whole(k.hp)}` : String(whole(k.hp))], ['Speed', num(k.speed / CM) + ' cm/s'], ['Lifeblood', String(whole(k.blood))]],
   }, at, mx, my)
   return [top, tall]
 }
