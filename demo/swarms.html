@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Swarm places</title>
+<link rel="icon" href="data:,">
+<style>
+html,body{margin:0;background:#0a1312;color:#e9e2d4;font:15px/1.4 ui-monospace,Consolas,monospace}
+h2{font:inherit;color:#8f877b;margin:10px auto 0;padding:0 16px;max-width:1280px;text-align:center}
+section{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,640px),820px));gap:18px;padding:14px 16px 40px;justify-content:center}
+figure{margin:0}
+canvas{display:block;width:100%;border:2px solid #33403c;cursor:pointer}
+figcaption{padding:4px 2px 0}
+b{font-size:20px;color:#c9a45c;margin-right:10px}
+i{font-style:normal;color:#8f877b;display:block}
+</style>
+<h2>Where the three fruit fly swarms sit. Base turning, no upgrades. A pretend player always locks the nearest fruit fly ahead of the dragonfly; the pale trail is where it flew</h2>
+<h2>Each picture starts with the dragonfly coming in from the left and restarts every 60 s. Click a picture to restart it. Nothing here is in the game</h2>
+<h2>Times come from 20 runs of the same pretend player with stamina kept full</h2>
+<section></section>
+<script>Storage.prototype.setItem = () => {}</script>
+<script type="module" src="./swarms.ts"></script>
