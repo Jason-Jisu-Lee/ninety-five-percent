@@ -2,7 +2,7 @@ import { pack } from '../../core/save/wild'
 import { hunt } from '../hunt/hunt'
 import { rotate, settle } from '../place/place'
 
-export const run = { sim: (rotate(0), hunt()), rate: 1, paused: false }
+export const run = { sim: hunt(), rate: 1, paused: false }
 
 export function restart(edge = false, keep = false) {
   if (!keep) pack.got = 0, settle()
