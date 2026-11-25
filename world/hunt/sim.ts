@@ -2,6 +2,7 @@ import { fall, own } from '../../core/save/save'
 import { roster } from '../../core/save/wild'
 import { DF } from '../../data/dragonfly/body'
 import { FIGHT, LUNGE } from '../../data/dragonfly/fight'
+import { FLY } from '../../data/dragonfly/flight'
 import { HOME } from '../../data/game/map'
 import type { Prey } from '../creatures/prey'
 import { swarm } from '../creatures/swarm'
@@ -22,8 +23,8 @@ export function sim() {
   const span = () => s.mark ? Math.hypot(s.mark.x - ahead(DF.headAt)[0], s.mark.y - ahead(DF.headAt)[1]) : 0
   const fit = () => {
     if (!s.mark) return false
-    const d = span(), [x, y] = fly.aim(s.mark)
-    return d >= LUNGE.near && d <= LUNGE.far && Math.cos(Math.atan2(y - fly.y, x - fly.x) - fly.ang) > 0 && fly.reach(x, y) >= fly.top() * LUNGE.speed
+    const [x, y] = fly.aim(s.mark), off = Math.atan2(y - fly.y, x - fly.x) - fly.ang
+    return span() <= LUNGE.far && Math.cos(off) > 0 && (fly.reach(x, y) >= fly.top() * LUNGE.speed || Math.hypot(x - fly.x, y - fly.y) * Math.abs(Math.sin(off)) < FLY.catch * own('reach'))
   }
   return Object.assign(s, {
     gap, ahead, span, fit,

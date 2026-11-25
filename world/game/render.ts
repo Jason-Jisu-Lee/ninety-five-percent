@@ -33,7 +33,7 @@ export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live
     drawPrey(g, held, clock)
     if (held !== hot) bar(g, Math.round(held.x), Math.round(held.y - held.h * .7) + (Math.sin(fly.ang) > .35 ? 7 : -9), Math.max(0, held.hp) / PREY[held.kind].hp, LIFE, UI.foe)
   }
-  if (live) for (const p of hot === sim.mark ? [hot] : [sim.mark, hot]) if (p) marks(g, Math.round(p.x) + (p === sim.mark ? jig : 0), Math.round(p.y - p.h * .7), p === sim.mark && ready ? squeeze(span(p), sim.span()) : span(p), UI.foe)
+  if (live) for (const p of hot === sim.mark ? [hot] : [sim.mark, hot]) if (p) marks(g, Math.round(p.x) + (p === sim.mark ? jig : 0), Math.round(p.y - p.h * .7), p === sim.mark && (ready || sim.primed) ? squeeze(span(p), sim.span()) : span(p), UI.foe)
   if (live && me) marks(g, x, y, 13, UI.accent)
   if (live && teach) hint(g, sim, hot, clock)
   if (live && weary >= 0) tired(g, sim, weary)

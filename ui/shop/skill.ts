@@ -48,7 +48,7 @@ function frame(act: Act, t: number) {
     stage.fillRect(Math.round(fx + dx - len), MID + dy, len, 1)
   }
   drawPrey(stage, foe, t)
-  if (act.cue && !bit) marks(stage, Math.round(ex), Math.round(ey), u < cue ? squeeze(span(foe), far) : span(foe), UI.foe)
+  if (act.cue && !bit) marks(stage, Math.round(ex), Math.round(ey), squeeze(span(foe), far), UI.foe)
   if (!bit && u >= cue) key(stage, Math.round(fx) - 5, MID - 30, 'S')
   act.mark?.(stage, ex, ey, ang, t - act.hit)
   stage.drawImage(fly, Math.round(fx) - half, MID - half)
