@@ -1,4 +1,4 @@
-import { GAP } from '../../audio/player/music'
+import { FADE, GAP } from '../../audio/player/music'
 import { story, type Page } from '../parts/story'
 
 const PAGES: Page[] = [
@@ -7,4 +7,4 @@ const PAGES: Page[] = [
   ['But an ancient bloodline survived', 'Dragonflies', 3.5, 'The sky will be theirs again...'],
 ]
 
-export const intro = (done: () => void, cue: () => void) => story(PAGES, done, .6, 0, undefined, cue, GAP / 1000)
+export const intro = (done: () => void, cue: () => void) => story(PAGES, done, .6, 0, undefined, cue, (FADE + GAP) / 1000)

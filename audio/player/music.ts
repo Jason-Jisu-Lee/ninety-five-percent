@@ -2,7 +2,7 @@ import { save, store } from '../../core/save/save'
 import { hear } from './hear'
 import { FRONT, GAME } from './tracks'
 
-export const GAP = 2600
+export const GAP = 2600, FADE = 1500
 const bins = new Uint8Array(512), LOUD = .6
 let ac: AudioContext | undefined, el: HTMLAudioElement, out: GainNode, scope: AnalyserNode, list = FRONT, at = 0
 
@@ -17,9 +17,13 @@ function play(i: number) {
 }
 
 function fade(to: number, rest = false) {
-  out.gain.setTargetAtTime(to, ac!.currentTime, .1)
+  const g = out.gain, t = ac!.currentTime
+  g.cancelScheduledValues(t)
+  g.setValueAtTime(g.value, t)
+  if (to) g.setTargetAtTime(to, t, .1)
+  else g.linearRampToValueAtTime(0, t + FADE / 1000)
   clearTimeout(nap)
-  if (rest) nap = setTimeout(() => el.pause(), 400)
+  if (rest) nap = setTimeout(() => el.pause(), FADE + 50)
 }
 
 export function wake() {
@@ -46,7 +50,7 @@ export function mood(game: boolean) {
     if (quiet) return
     play(0)
     fade(level())
-  }, game ? GAP : 400)
+  }, game ? FADE + GAP : FADE + 50)
 }
 
 export function hush(on: boolean, again = true) {
