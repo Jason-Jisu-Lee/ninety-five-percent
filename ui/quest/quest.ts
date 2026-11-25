@@ -4,6 +4,7 @@ import { save } from '../../core/save/save'
 import { UI } from '../../data/look/palette'
 import { QUESTS } from '../../data/game/quests'
 import { W } from '../../data/look/screen'
+import { gauge } from '../parts/bar'
 import { icon, orb } from '../parts/icons'
 import { text, width } from '../text/text'
 import { pop } from './pop'
@@ -34,12 +35,7 @@ export const lit = () => !!done && landed() > 0 && now() - at - WAIT - FLY - (la
 function track(g: Ctx, q: typeof QUESTS[number], got: number, col: string, dx: number, tick = false, dy = 0) {
   const r = R + dx, pay = q.blood ? '+' + q.blood : '', x = r - (pay ? width(pay) + 14 : 0) - BAR
   text(g, q.text, r, 41 + dy, col, 'r', UI.panel)
-  g.fillStyle = UI.panel
-  g.fillRect(x - 1, 47 + dy, BAR + 2, 6)
-  g.fillStyle = UI.line
-  g.fillRect(x, 48 + dy, BAR, 4)
-  g.fillStyle = UI.accent
-  g.fillRect(x, 48 + dy, Math.round(BAR * Math.min(1, got / q.n)), 4)
+  gauge(g, x, 48 + dy, BAR, got / q.n, UI.accent)
   if (pay) text(g, pay, r, 54 + dy, UI.gold, 'r', UI.panel), orb(g, r - width(pay) - 6, 50 + dy, '', UI.panel)
   text(g, `${got} / ${q.n}`, x - 6, 54 + dy, UI.accent, 'r', UI.panel)
   if (tick) icon(g, 'tick', r - width(q.text) - 11, 35, UI.accent, UI.panel)

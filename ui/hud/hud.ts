@@ -9,6 +9,8 @@ import { blood } from '../blood/blood'
 import { gain } from '../blood/gain'
 import { devConsole, type Tool } from '../dev/console'
 import { feastButton, SPOT } from '../feast/button'
+import { meter } from '../mutate/meter'
+import { offer } from '../mutate/offer'
 import { nav } from '../nav/nav'
 import { note } from '../parts/note'
 import { soundBox } from '../nav/sound'
@@ -22,8 +24,8 @@ import { now } from '../track/track'
 
 const GATE = QUESTS.findIndex(q => q.kind === 'feast'), age = () => save.quest > GATE ? 9 : save.quest === GATE ? since() - REVEAL : -1
 
-export function hud(pause: () => void, options: () => void, feast: () => void, buy: () => void, tools: Tool[]) {
-  const bar = nav([toggle, pause, options]), levels = soundBox((x, y) => !bar.at(x, y)), songs = picker(W - 73), meal = feastButton(feast), dev = devConsole(tools), wild = nextWild(buy), parts = [levels, songs, bar, meal, dev, wild], change = gain()
+export function hud(pause: () => void, options: () => void, feast: () => void, buy: () => void, mutate: () => void, tools: Tool[]) {
+  const bar = nav([toggle, pause, options]), levels = soundBox((x, y) => !bar.at(x, y)), songs = picker(W - 73), meal = feastButton(feast), dev = devConsole(tools), wild = nextWild(buy), gene = offer(mutate), fill = meter(), parts = [levels, songs, bar, meal, dev, wild, gene, fill], change = gain()
   let exact = false, out = false
   const live = (p: typeof parts[number]) => p !== meal || age() >= 0
   return {
@@ -43,6 +45,8 @@ export function hud(pause: () => void, options: () => void, feast: () => void, b
       life(g, edge)
       quest(g, born)
       wild.draw(g)
+      gene.draw(g)
+      fill.draw(g)
       bar.draw(g, paused, silent())
       now(g, W - 73)
       dev.draw(g)

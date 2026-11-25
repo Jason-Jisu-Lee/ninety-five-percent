@@ -7,22 +7,14 @@ import { H, W } from '../../data/look/screen'
 import { WILD, type Wild } from '../../data/shop/wild'
 import { foe } from '../enemy/card'
 import { details, DW } from '../parts/details'
-import { orb } from '../parts/icons'
-import { panel } from '../parts/panel'
-import { text, width } from '../text/text'
+import { width } from '../text/text'
+import { slot, tag, TALL } from './slot'
 
-const TALL = 15, DROP = 26, SEE = .84, HIDE = '?????'
+const DROP = 26, LIFT = 25, HIDE = '?????'
 const label = (w: Wild) => w.kind ? w.name : 'Expansion: ' + w.name
 const WIDE = Math.max(...WILD.map(w => width(label(w)) + width(String(w.cost)))) + 30, X = W - 8 - WIDE, Y = H - 38
 
 export const SLOTS = [X, Y, WIDE, 30]
-
-function line(g: Ctx, name: string, cost: number, y: number, ink: string, pay: string, edge?: string) {
-  const p = String(cost)
-  text(g, name, X + 6, y, ink, undefined, edge)
-  text(g, p, X + WIDE - 6, y, pay, 'r', edge)
-  orb(g, X + WIDE - 11 - width(p), y - 4, pay === UI.dim ? UI.dim : '', edge)
-}
 
 export function nextWild(buy: () => void) {
   let hot = false
@@ -43,14 +35,9 @@ export function nextWild(buy: () => void) {
     draw(g: Ctx) {
       const w = now(), after = WILD[pack.got + 1]
       if (!w) return
-      g.globalAlpha = SEE
-      panel(g, X, Y, WIDE, TALL, can() ? hot ? UI.text : UI.gold : UI.line, UI.panel)
-      g.globalAlpha = 1
-      g.fillStyle = can() ? UI.gilt : UI.well
-      g.fillRect(X + 2, Y + 2, Math.round((WIDE - 4) * Math.min(1, save.blood / w.cost)), TALL - 4)
-      line(g, label(w), w.cost, Y + 11, can() ? UI.gold : UI.text, can() ? UI.text : UI.dim)
-      if (after) line(g, HIDE, after.cost, Y + DROP, UI.dim, UI.dim, UI.panel)
-      if (hot && w.kind) details(g, foe(w.kind), t => [W - 8 - DW, Y - 6 - t])
+      slot(g, label(w), w.cost, X, Y, WIDE, can(), hot)
+      if (after) tag(g, HIDE, after.cost, X, Y + DROP, WIDE, UI.dim, UI.dim, UI.panel)
+      if (hot && w.kind) details(g, foe(w.kind), t => [W - 8 - DW, Y - LIFT - t])
     },
   }
 }

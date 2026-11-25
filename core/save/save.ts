@@ -24,9 +24,12 @@ export const level = (name: string) => save.levels[name] ?? 0
 export const price = (name = '') => UPGRADES[name]?.[2][level(name)]
 export const gain = (name: string) => UPGRADES[name] ? UPGRADES[name][1] * (SHARE.includes(UPGRADES[name][0]) ? BASE[UPGRADES[name][0]] : 1) : 0
 
-function grow() {
+export const strain: Partial<Record<Stat, number>> = {}
+
+export function grow() {
   Object.assign(STAT, BASE)
   for (const [name, [stat]] of Object.entries(UPGRADES)) STAT[stat] += gain(name) * level(name)
+  for (const [stat, add] of Object.entries(strain)) STAT[stat as Stat] += add
 }
 grow()
 

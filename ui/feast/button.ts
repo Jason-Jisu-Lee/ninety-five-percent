@@ -2,10 +2,11 @@ import { sound } from '../../audio/player/sound'
 import type { Ctx } from '../../core/screen/canvas'
 import { UI } from '../../data/look/palette'
 import { note } from '../parts/note'
-import { box } from '../parts/panel'
-import { text, width } from '../text/text'
+import { soft } from '../parts/panel'
+import { text } from '../text/text'
+import { SLOTS } from '../wild/next'
 
-const NAME = 'Return to Lair', BW = width(NAME) + 10, X = 8, Y = 30
+const NAME = 'Return to Lair', [X, , BW] = SLOTS, Y = SLOTS[1] - 19
 
 export const SPOT = [X + BW / 2, Y + 8, BW / 2 + 2, 9]
 
@@ -22,9 +23,9 @@ export function feastButton(run: () => void) {
       return on(x, y)
     },
     draw(g: Ctx, dy = 0) {
-      box(g, X, Y + dy, BW, 15, hot ? UI.text : UI.gold, UI.panel)
-      text(g, NAME, X + 5, Y + 11 + dy, UI.text)
-      if (hot) note(g, ['End this run'], X + BW + 4, Y - 2)
+      soft(g, X, Y + dy, BW, 15, hot ? UI.gold : UI.line)
+      text(g, NAME, X + BW / 2, Y + 11 + dy, hot ? UI.gold : UI.text, 'c')
+      if (hot) note(g, ['End this run'], X, Y, false, true)
     },
   }
 }

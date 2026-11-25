@@ -1,9 +1,11 @@
 import { hush } from '../../audio/player/music'
+import { shed } from '../../core/save/mutate'
 import { progress, save } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { PREY } from '../../data/enemies/enemies'
 import { enemyCard } from '../../ui/enemy/card'
 import { flyCard } from '../../ui/fly/card'
+import { mutationPick } from '../../ui/mutate/pick'
 import { dialog } from '../../ui/parts/dialog'
 import { story } from '../../ui/parts/story'
 import { shop } from '../../ui/shop/shop'
@@ -14,7 +16,7 @@ import { G } from './state'
 const none = () => {}, LINES = ['Prepare to feed...'], LINE = [''], READ = 2.6
 let after = none
 
-export const ask = dialog(), card = enemyCard(), self = flyCard(), evos = shop()
+export const ask = dialog(), card = enemyCard(), self = flyCard(), genes = mutationPick(), evos = shop()
 
 const calls = [0, .6].map(edge => story([LINE], () => after(), edge, edge, READ))
 export const omen = { on: () => calls.some(c => c.on()), next: () => calls.forEach(c => c.next()), update: (dt: number) => calls.forEach(c => c.update(dt)), draw: (g: Ctx) => calls.forEach(c => c.draw(g)) }
@@ -29,6 +31,7 @@ export function herald(then: () => void, soft = false) {
 export const fate = story([["You've lost 95% of lifeblood"]], () => {
   run.sim.away = true
   G.dusk = 1
+  shed()
   evos.open(0, () => herald(() => restart(true)))
 }, 0, 0, 4.4)
 

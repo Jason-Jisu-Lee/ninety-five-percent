@@ -1,4 +1,5 @@
-import { adopt, own, save } from '../../core/save/save'
+import { morph, shed } from '../../core/save/mutate'
+import { adopt, own, save, strain } from '../../core/save/save'
 import { pack } from '../../core/save/wild'
 import { view } from '../../core/screen/display'
 import type { Tool } from '../../ui/dev/console'
@@ -34,12 +35,15 @@ export const tools: Tool[] = import.meta.env.DEV ? [
   }],
   [view.name, view.next],
   [label('Save', ['Saved']), () => {
-    localStorage.setItem(SLOT, JSON.stringify({ ...save, got: pack.got }))
+    localStorage.setItem(SLOT, JSON.stringify({ ...save, got: pack.got, morph, strain }))
     say('Saved')
   }],
   [label('Load', ['Loaded', 'Empty']), () => {
-    const { got = 0, ...kept } = JSON.parse(localStorage.getItem(SLOT) ?? '{}')
+    const { got = 0, morph: grown, strain: adds, ...kept } = JSON.parse(localStorage.getItem(SLOT) ?? '{}')
     if (!kept.started) return void say('Empty')
+    shed()
+    Object.assign(morph, grown)
+    Object.assign(strain, adds)
     adopt(kept)
     pack.got = got
     settle()

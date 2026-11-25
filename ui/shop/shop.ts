@@ -18,16 +18,18 @@ import { stats } from './stats'
 
 const L = 32, R = W - L, CW = 184, CH = 17, PX = CW + 12, PY = 20, TOP = 98, ROWS = 10, SIDE = L + PX * 2 + 8, GAP = 26, BW = 96, BH = 20, BY = H - 40
 const DEV = import.meta.env.DEV, SECRET = 'Pink: hidden from players', NAMES = ['Blood shop', 'Evolution shop'], TITLES = ['Lair', 'Evolution'], SHOPS = NAMES.map(n => SHOP.filter(t => t.shop === n))
+const TIER = (i: number) => 'Tier ' + (i + 1), STEP = width(TIER(0)) + GAP
 
 export function shop(peek = DEV) {
-  let shown = false, side = 0, tab = 0, hot = -1, over = -1, go = false, led = false, freed = -9, miss = -9, then: (() => void) | undefined
+  let shown = false, side = 0, tab = 0, tier = 0, hot = -1, over = -1, rung = -1, go = false, led = false, freed = -9, miss = -9, then: (() => void) | undefined
   const table = stats(432, 110, true), body = () => tabs()[tab].name === 'Anatomy', born = () => tabs()[tab].name === 'Instinct'
   const early = () => !side && !save.fed, veiled = (name: string) => HIDDEN.includes(name) || early() && !FIRST[name]
   const tabs = () => [...SHOPS[side].filter(t => !veiled(t.name)), ...SHOPS[side].filter(t => peek && veiled(t.name))]
   const known = (name = '') => !veiled(tabs()[tab].name) && (!early() || !!FIRST[tabs()[tab].name]?.includes(name)) && (!NEEDS[name] || level(NEEDS[name]) >= RIPE)
-  const all = () => tabs()[tab].items.slice(0, ROWS * 2), spots = () => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L))
+  const tiers = () => Math.max(...tabs()[tab].items.map(it => it.tier)), split = () => tiers() > 0 && (peek || !early())
+  const all = () => tabs()[tab].items.filter(it => !it.tier || it.tier === tier + 1).slice(0, ROWS * 2), spots = () => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L))
   const items = () => [...all().filter(it => known(it.name)), ...all().filter(it => peek && !known(it.name))]
-  const cell = (i: number) => [L + (i / ROWS | 0) * PX, TOP + i % ROWS * PY]
+  const cell = (i: number, d = +(tiers() > 0)) => [L + (i / (ROWS - d) | 0) * PX, TOP + (i % (ROWS - d) + d) * PY]
   const closed = (i: number) => !known(items()[i]?.name) || !!OPEN[tabs()[tab].name] && !OPEN[tabs()[tab].name].includes(items()[i]?.name)
   const cost = (i: number) => closed(i) ? undefined : price(items()[i]?.name), can = (i: number) => save.blood >= (cost(i) ?? Infinity)
   const inside = (x: number, y: number, bx: number, by: number, w: number, h: number) => x >= bx && x < bx + w && y >= by && y < by + h
@@ -43,22 +45,24 @@ export function shop(peek = DEV) {
   return {
     shown: () => shown,
     open(s: number, done?: () => void) {
-      ;[shown, side, tab, hot, led, freed, miss, then] = [true, s, 0, -1, false, -9, -9, done]
+      ;[shown, side, tab, tier, hot, led, freed, miss, then] = [true, s, 0, 0, -1, false, -9, -9, done]
     },
     hover(x: number, y: number) {
       const was = hot, m = must()
       if (m && !inside(x, y, m[0], m[1], m[2], m[3])) x = y = -1
       hot = items().findIndex((_, i) => inside(x, y, cell(i)[0], cell(i)[1], CW, CH))
       if (hot >= 0 && hot !== was) sound('tap')
-      const [tabbed, gone] = [over, go]
+      const [tabbed, stepped, gone] = [over, rung, go]
       over = tabs().findIndex((_, i) => inside(x, y, slot(i)[0], 54, slot(i)[2], 22))
+      rung = split() && inside(x, y, L - 6, TOP, tiers() * STEP, CH) && (x - L + 6) % STEP < STEP - GAP + 12 ? (x - L + 6) / STEP | 0 : -1
       go = inside(x, y, R - BW, BY, BW, BH)
-      if (over >= 0 && over !== tabbed || go && !gone) sound('hover')
+      if (over >= 0 && over !== tabbed || rung >= 0 && rung !== stepped || go && !gone) sound('hover')
       table.hover(body() ? x : -1, y)
-      return go || over >= 0 || can(hot)
+      return go || over >= 0 || rung >= 0 || can(hot)
     },
     click() {
-      if (over >= 0) [tab, hot] = [over, -1]
+      if (over >= 0) [tab, tier, hot] = [over, 0, -1]
+      else if (rung >= 0) [tier, hot] = [rung, -1]
       else if (hot >= 0) can(hot) && (buy(items()[hot].name), sound('buy'))
       else if (go) shut()
       else if (must()) miss = clock()
@@ -66,7 +70,7 @@ export function shop(peek = DEV) {
     key(k: string) {
       if (must()) return true
       const d = k === 'ArrowRight' || k === 'd' ? 1 : k === 'ArrowLeft' || k === 'a' ? -1 : 0
-      if (d) [tab, hot] = [(tab + d + tabs().length) % tabs().length, -1]
+      if (d) [tab, tier, hot] = [(tab + d + tabs().length) % tabs().length, 0, -1]
       else if (k === 'Escape' || k === 'Enter' || k === ' ') shut()
       return true
     },
@@ -86,6 +90,11 @@ export function shop(peek = DEV) {
       })
       if (!side) icon(g, 'lock', spots()[tabs().length - 1] + width(tabs()[tabs().length - 1].name) + GAP, 61, UI.faint)
       text(g, tabs()[tab].note, L, 88, UI.dim)
+      if (split()) for (let i = 0; i < tiers(); i++) {
+        text(g, TIER(i), L + i * STEP, TOP + 12, early() ? FOREST.pink : i === tier ? UI.text : i === rung ? UI.border : UI.dim)
+        g.fillStyle = UI.gold
+        if (i === tier) g.fillRect(L + i * STEP, TOP + 16, width(TIER(i)), 1)
+      }
       items().forEach((it, i) => {
         const [x, y] = cell(i)
         const c = cost(i), p = String(c), ok = can(i)

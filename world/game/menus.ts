@@ -1,5 +1,6 @@
 import { mood } from '../../audio/player/music'
 import { sound } from '../../audio/player/sound'
+import { mutate } from '../../core/save/mutate'
 import { fall, progress, save, wipe } from '../../core/save/save'
 import { unlock } from '../../core/save/wild'
 import { PREY } from '../../data/enemies/enemies'
@@ -9,7 +10,7 @@ import { hud } from '../../ui/hud/hud'
 import { settings } from '../../ui/settings/settings'
 import { where } from '../place/place'
 import { tools } from './dev'
-import { ask, card, evos, herald, self } from './notices'
+import { ask, card, evos, genes, herald, self } from './notices'
 import { restart, run } from './run'
 import { G } from './state'
 
@@ -44,7 +45,7 @@ export const opts = settings(leave, () => {
   G.fade = 1
   G.frozen = run.paused = false
 })
-export const layers = [ask, evos, card, self, opts], top = () => layers.find(l => l.shown())
+export const layers = [ask, evos, card, self, genes, opts], top = () => layers.find(l => l.shown())
 const flee = () => run.sim.away || (sound('feast'), progress('feast'), run.sim.feast())
 const FIRST = 'You can enhance your Dragonfly at the Lair with lifeblood, but it will reset the run. Continue?'
 export const ui = hud(() => {
@@ -54,4 +55,4 @@ export const ui = hud(() => {
   if (w?.kind) progress('buy')
   if (w?.kind && PREY[w.kind].stage === where.stage) run.sim.prey.join(w.kind)
   else if (w && !w.kind) flee(), run.sim.onward = true
-}, tools)
+}, () => run.sim.away || mutate(), tools)

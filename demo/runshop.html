@@ -7,14 +7,15 @@
 <style>
 html,body{margin:0;background:#0a1312;color:#e9e2d4;font:15px/1.4 ui-monospace,Consolas,monospace}
 h2{font:inherit;color:#8f877b;margin:10px auto 0;padding:0 16px;max-width:1280px;text-align:center}
-section{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,640px),820px));gap:18px;padding:14px 16px 40px;justify-content:center}
+section{display:grid;grid-template-columns:repeat(auto-fit,804px);gap:18px;padding:14px 16px 40px;justify-content:center}
 figure{margin:0}
-canvas{display:block;width:100%;border:2px solid #33403c;cursor:pointer}
+canvas{display:block;width:800px;border:2px solid #33403c;cursor:pointer}
+figcaption{max-width:800px}
 figcaption{padding:2px 2px 0}
 b{font-size:20px;color:#c9a45c;margin-right:10px}
 i{font-style:normal;color:#8f877b;display:block}
 </style>
-<h2>The filling bar is in the game now (first picture). Five more designs for buying stronger enemies during a run. Hover the enemy to see its card. Click any picture to step all of them: too little lifeblood, enough, then later in the run</h2>
+<h2>Five new designs for buying during a run, none with a progress bar, each shown with the Return to Lair button. Click any picture to step all of them: too little lifeblood, enough for the Moth, later in the run with Mutations on offer, enough for everything. Point at a thing to see what it says</h2>
 <section></section>
 <script>Storage.prototype.setItem = () => {}</script>
 <script type="module" src="./runshop.ts"></script>

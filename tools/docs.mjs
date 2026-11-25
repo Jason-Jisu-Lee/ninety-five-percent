@@ -30,19 +30,20 @@ function enemies(file) {
 
 function shop(file) {
   const tabs = []
-  let shop = '', tab = null, fresh = false
+  let shop = '', tab = null, fresh = false, tier = 0
   for (const raw of readFileSync(file, 'utf8').split(/\r?\n/)) {
     const line = raw.replace(/^[#-]+ +/, '').trim(), at = line.indexOf(':')
     if (!line) continue
     if (/^(Blood|Evolution) shop$/.test(line)) [shop, tab] = [line, null]
     else if (!shop) continue
+    else if (tab && /^Tier \d$/.test(line)) tier = +line.slice(5)
     else if (at > 0 && tab) {
       const text = line.slice(at + 1).trim(), off = text.endsWith('(placeholder)')
-      tab.items.push({ name: line.slice(0, at).trim(), text: text.replace(/ *\(placeholder\)$/, ''), off })
+      tab.items.push({ name: line.slice(0, at).trim(), text: text.replace(/ *\(placeholder\)$/, ''), off, tier })
       fresh = false
     }
     else if (fresh) [tab.note, fresh] = [line, false]
-    else tabs.push(tab = { shop, name: line, note: '', items: [] }), fresh = true
+    else tabs.push(tab = { shop, name: line, note: '', items: [] }), [fresh, tier] = [true, 0]
   }
   if (!tabs.length) throw Error('docs/shop.md: no shop found. A shop starts with a line reading "Blood shop" or "Evolution shop"')
   return tabs
