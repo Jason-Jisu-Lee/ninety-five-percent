@@ -6,7 +6,8 @@ import { PREY } from '../../data/enemies/enemies'
 import { UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
 import { WILD, type Wild } from '../../data/shop/wild'
-import { info, PW } from '../enemy/card'
+import { info } from '../enemy/card'
+import { DW } from '../parts/details'
 import { frame } from '../parts/frame'
 import { orb } from '../parts/icons'
 import { text, width } from '../text/text'
@@ -46,7 +47,7 @@ export function nextWild(buy: () => void) {
       if (!w) return
       slot(g, label(w), w.cost, Y, hot && can() ? UI.gold : UI.text, can() ? UI.text : UI.dim, can())
       if (after) slot(g, HIDE, after.cost, Y + PITCH, UI.dim, UI.dim)
-      if (hot && w.kind) info(g, w.kind, PREY[w.kind].hp, t => [W - 8 - PW, Y - 6 - t])
+      if (hot && w.kind) info(g, w.kind, PREY[w.kind].hp, t => [W - 8 - DW, Y - 6 - t])
     },
   }
 }

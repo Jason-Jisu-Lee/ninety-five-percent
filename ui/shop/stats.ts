@@ -8,7 +8,7 @@ import { note } from '../parts/note'
 import { text } from '../text/text'
 
 const WIDE = 176, MID = 116, num = (v: number) => String(+v.toFixed(2))
-const ROWS: [label: string, stat: Stat, base: (v: number) => string, now: (v: number, speed: number) => string, hint: string][] = [
+export const ROWS: [label: string, stat: Stat, base: (v: number) => string, now: (v: number, speed: number) => string, hint: string][] = [
   ['Power', 'power', num, num, 'Damage per attack'],
   ['Health', 'health', num, num, 'Hit points'],
   ['Armor', 'armor', num, num, 'Damage blocked per attack'],
@@ -18,8 +18,6 @@ const ROWS: [label: string, stat: Stat, base: (v: number) => string, now: (v: nu
   ['Rest', 'rest', v => num(STAMINA.regen * v) + '%', v => num(STAMINA.regen * v) + '%/s', 'Stamina regained per second of rest'],
   ['Mend in flight', 'mend', v => num(v) + '%', v => num(v) + '%/s', 'Health regained per second of flight'],
 ]
-
-export const TALL = ROWS.length * 10 + 6
 
 export function stats(x: number, y: number, bare = false) {
   let over = -1

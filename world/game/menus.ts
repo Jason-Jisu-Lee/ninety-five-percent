@@ -1,6 +1,6 @@
 import { mood } from '../../audio/player/music'
 import { sound } from '../../audio/player/sound'
-import { fall, save, wipe } from '../../core/save/save'
+import { fall, progress, save, wipe } from '../../core/save/save'
 import { unlock } from '../../core/save/wild'
 import { PREY } from '../../data/enemies/enemies'
 import { front } from '../../ui/front/front'
@@ -45,7 +45,7 @@ export const opts = settings(leave, () => {
   G.frozen = run.paused = false
 })
 export const layers = [ask, evos, card, self, opts], top = () => layers.find(l => l.shown())
-const flee = () => run.sim.away || (sound('feast'), run.sim.feast())
+const flee = () => run.sim.away || (sound('feast'), progress('feast'), run.sim.feast())
 const FIRST = 'You can enhance your Dragonfly at the Lair with lifeblood, but it will reset the run. Continue?'
 export const ui = hud(() => {
   run.paused = !run.paused

@@ -1,27 +1,30 @@
-import { ctx, mk, type Ctx } from '../../core/screen/canvas'
+import { level, save } from '../../core/save/save'
+import type { Ctx } from '../../core/screen/canvas'
+import { COLORS } from '../../data/dragonfly/colors'
+import { STAT } from '../../data/dragonfly/stats'
 import { UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
+import { OPEN } from '../../data/shop/open'
+import { SHOP } from '../../data/shop/shop'
+import { details, DW } from '../parts/details'
 import { icon } from '../parts/icons'
-import { box, panel } from '../parts/panel'
-import { stats, TALL } from '../shop/stats'
-import { text } from '../text/text'
+import { box } from '../parts/panel'
+import { ROWS } from '../shop/stats'
 
-const PW = 200, PH = TALL + 32, X = W - PW >> 1, Y = H - PH >> 1, SEE = .84, sheet = ctx(mk(PW, PH))
+const X = W - DW >> 1, ITEMS = SHOP.flatMap(c => c.items)
+const say = (name: string) => ITEMS.find(i => i.name === name)!.text.replace(/^passive\. /, '').split('. ').filter(s => !/^\d+ levels?$/.test(s)).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('. ')
 
 export function flyCard() {
-  let shown = false, hot = false
-  const table = stats(X + 12, Y + 26, true), onX = (x: number, y: number) => x >= X + PW - 19 && x < X + PW - 8 && y >= Y + 6 && y < Y + 17
+  let shown = false, hot = false, top = 0, tall = 0, mx = -1, my = -1
+  const onX = (x: number, y: number) => x >= X + DW - 19 && x < X + DW - 8 && y >= top + 6 && y < top + 17
   return {
     shown: () => shown,
     open() {
       shown = true
     },
-    hover(x: number, y: number) {
-      table.hover(x, y)
-      return hot = onX(x, y)
-    },
+    hover: (x: number, y: number) => ([mx, my] = [x, y], hot = onX(x, y)),
     click(x: number, y: number) {
-      if (onX(x, y) || x < X || x >= X + PW || y < Y || y >= Y + PH) shown = false
+      if (onX(x, y) || x < X || x >= X + DW || y < top || y >= top + tall) shown = false
     },
     key(k: string) {
       if (k === 'Escape' || k === 'Enter' || k === ' ') shown = false
@@ -29,16 +32,13 @@ export function flyCard() {
     },
     draw(g: Ctx) {
       if (!shown) return
-      sheet.clearRect(0, 0, PW, PH)
-      panel(sheet, 0, 0, PW, PH, UI.border, UI.panel)
-      g.globalAlpha = SEE
-      g.drawImage(sheet.canvas, X, Y)
-      g.globalAlpha = 1
-      box(g, X + PW - 19, Y + 6, 11, 11, hot ? UI.accent : UI.border, UI.panel)
-      icon(g, 'x', X + PW - 16, Y + 9, UI.text)
-      text(g, 'Dragonfly', X + 12, Y + 21, UI.text, undefined, undefined, 2)
-      table.draw(g)
-      table.tip(g)
+      ;[, top, tall] = details(g, {
+        name: 'Dragonfly', col: COLORS[save.color][0], about: 'Agile predatory insect',
+        rows: ROWS.map(([n, s, , now, hint]) => [n, now(STAT[s], STAT.speed), hint]),
+        skills: OPEN.Instinct.filter(n => level(n)).map(n => [n, say(n)]),
+      }, t => [X, H - t >> 1], mx, my)
+      box(g, X + DW - 19, top + 6, 11, 11, hot ? UI.accent : UI.border, UI.panel)
+      icon(g, 'x', X + DW - 16, top + 9, UI.text)
     },
   }
 }

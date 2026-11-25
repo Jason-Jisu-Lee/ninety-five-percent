@@ -2,10 +2,10 @@ import { hush } from '../../audio/player/music'
 import { sound } from '../../audio/player/sound'
 import { shade, veil } from '../../core/draw/dissolve'
 import type { Scene } from '../../core/loop/scene'
-import { progress, save, store } from '../../core/save/save'
+import { save, store } from '../../core/save/save'
 import { LUNGE, STREAK } from '../../data/dragonfly/fight'
 import { FLY } from '../../data/dragonfly/flight'
-import { NEWS, TIRED } from '../../data/game/hints'
+import { NEWS } from '../../data/game/hints'
 import { DUSK } from '../../data/game/map'
 import { age, teach } from '../../ui/hint/life'
 import { unlocked } from '../../ui/hint/unlock'
@@ -42,11 +42,11 @@ export const stage1: Scene = {
       if (!save.tired) [save.tired, G.weary] = [true, 0]
     }
     if (G.news >= 0 && (G.news += dt) > NEWS.wait + NEWS.hold) G.news = -1
-    if (G.weary >= 0 && ((G.weary += dt) >= TIRED.hold && sim.fly.perched || !sim.rest)) G.weary = -1
+    if (G.weary >= 0 && ((G.weary += dt), !sim.rest)) G.weary = -1
     if (sim.fell) mourn()
     sim.fell = false
     if (!sim.away || sim.fly.x > -FLY.gone) G.dusk = Math.max(0, G.dusk - dt / DUSK)
-    else if ((G.dusk += dt / DUSK) >= 1) sim.onward ? onward() : (progress('feast'), evos.open(0, () => (save.fed = true, herald(() => {
+    else if ((G.dusk += dt / DUSK) >= 1) sim.onward ? onward() : (evos.open(0, () => (save.fed = true, herald(() => {
       restart(true)
       if (!save.told) [save.told, G.news] = [true, 0]
     }))))
