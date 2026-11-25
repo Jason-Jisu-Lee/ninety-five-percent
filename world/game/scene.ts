@@ -2,7 +2,8 @@ import { hush } from '../../audio/player/music'
 import { sound } from '../../audio/player/sound'
 import { shade, veil } from '../../core/draw/dissolve'
 import type { Scene } from '../../core/loop/scene'
-import { save, store } from '../../core/save/save'
+import { progress, save, store } from '../../core/save/save'
+import { QUESTS } from '../../data/game/quests'
 import { LUNGE, STREAK } from '../../data/dragonfly/fight'
 import { FLY } from '../../data/dragonfly/flight'
 import { NEWS } from '../../data/game/hints'
@@ -35,13 +36,15 @@ export const stage1: Scene = {
     for (let i = 0; i < run.rate; i++) sim.step(dt, G.clock += dt)
     if (first && h && Object.keys(save.caught).length) teach(h.x, h.y - h.h * .7, save.blood - was)
     age(dt)
-    if (sim.jolt) [sim.jolt, G.halt] = [false, LUNGE.freeze], sound('thump')
+    if (sim.jolt) [sim.jolt, G.halt] = [false, LUNGE.freeze], sound('thump'), progress('lunge')
     if (sim.spent) {
       sim.spent = false
       sound('tired')
       if (!save.tired) [save.tired, G.weary] = [true, 0]
     }
     if (G.news >= 0 && (G.news += dt) > NEWS.wait + NEWS.hold) G.news = -1
+    if (G.back < 0 && G.back + dt >= 0) sound('cork')
+    G.back += dt
     if (G.weary >= 0 && ((G.weary += dt), !sim.rest)) G.weary = -1
     if (sim.fell) mourn()
     sim.fell = false
@@ -49,6 +52,7 @@ export const stage1: Scene = {
     else if ((G.dusk += dt / DUSK) >= 1) sim.onward ? onward() : (evos.open(0, () => (save.fed = true, herald(() => {
       restart(true)
       if (!save.told) [save.told, G.news] = [true, 0]
+      if (QUESTS[save.quest]?.kind === 'lunge') G.back = -DUSK
     }))))
     save.time += dt * run.rate
     if ((G.kept += dt) < 5) return
@@ -59,7 +63,7 @@ export const stage1: Scene = {
     render(g, run.sim, G.clock, G.fade <= 0 && !asleep(), top() ? null : G.hot, G.me && !top(), !save.caught.fruitfly && !bound(), G.weary)
     if (G.fade > 0) title.draw(g, G.fade)
     else {
-      ui.draw(g, run.paused, run.sim.chain, 1 - run.sim.since / STREAK.time, born())
+      ui.draw(g, run.paused, run.sim.chain, 1 - run.sim.since / STREAK.time, QUESTS[save.quest]?.kind === 'lunge' && !save.fed ? -1 : Math.min(born(), G.back))
       if (G.news >= NEWS.wait) unlocked(g, G.news - NEWS.wait)
       if (G.dusk > 0) veil(g, Math.min(1, G.dusk))
     }
