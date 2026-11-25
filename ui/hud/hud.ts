@@ -13,6 +13,7 @@ import { nav } from '../nav/nav'
 import { note } from '../parts/note'
 import { soundBox } from '../nav/sound'
 import { pop } from '../quest/pop'
+import { flash, life, owing } from '../hint/life'
 import { lit, owed, quest, since } from '../quest/quest'
 import { text } from '../text/text'
 import { picker } from '../track/picker'
@@ -37,8 +38,9 @@ export function hud(pause: () => void, options: () => void, feast: () => void, b
       const u = age()
       if (u >= 0 && u < .3 && !out) sound('cork')
       out = u >= 0
-      const shown = save.blood - owed(), edge = blood(g, shown, exact, bonus, left, lit())
+      const shown = save.blood - owed() - owing(), edge = blood(g, shown, exact, bonus, left, lit() || flash())
       change(g, shown, edge + 6, 19)
+      life(g, edge)
       quest(g, born)
       wild.draw(g)
       bar.draw(g, paused, silent())

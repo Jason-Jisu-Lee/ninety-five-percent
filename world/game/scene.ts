@@ -7,6 +7,7 @@ import { LUNGE, STREAK } from '../../data/dragonfly/fight'
 import { FLY } from '../../data/dragonfly/flight'
 import { NEWS, TIRED } from '../../data/game/hints'
 import { DUSK } from '../../data/game/map'
+import { age, teach } from '../../ui/hint/life'
 import { unlocked } from '../../ui/hint/unlock'
 import { glow, tick } from '../../ui/track/track'
 import { input } from './input'
@@ -30,7 +31,10 @@ export const stage1: Scene = {
     if (advance(dt)) return
     if (fate.on() || omen.on()) return sim.idle(dt, G.clock += dt)
     if (run.paused || top() || (G.halt -= dt) > 0) return
+    const first = !Object.keys(save.caught).length, was = save.blood, h = sim.held
     for (let i = 0; i < run.rate; i++) sim.step(dt, G.clock += dt)
+    if (first && h && Object.keys(save.caught).length) teach(h.x, h.y - h.h * .7, save.blood - was)
+    age(dt)
     if (sim.jolt) [sim.jolt, G.halt] = [false, LUNGE.freeze], sound('thump')
     if (sim.spent) {
       sim.spent = false
