@@ -13,18 +13,20 @@ const INK: Record<string, string[]> = { '#': [UI.text, UI.gold], o: [UI.text, UI
 
 export const SPOT = [CX, CY, R + 2, R + 2]
 
-export function feastButton(run: () => void) {
+export function feastButton(press: () => void, drop: () => void) {
   let hot = false
   const on = (x: number, y: number) => Math.hypot(x - CX, y - CY) < R + 1
   return {
     hover(x: number, y: number) {
       if (on(x, y) && !hot) sound('hover')
+      if (hot && !on(x, y)) drop()
       return hot = on(x, y)
     },
     click(x: number, y: number) {
-      if (on(x, y)) run()
+      if (on(x, y)) press()
       return on(x, y)
     },
+    lift: drop,
     draw(g: Ctx, dy = 0) {
       const cut = G.cut < RECALL.shake, part = G.cast >= 0 ? G.cast / RECALL.time : cut ? G.part : +(G.lit < RECALL.flash)
       disc(g, CX, CY + dy, R, hot ? UI.gold : UI.line)

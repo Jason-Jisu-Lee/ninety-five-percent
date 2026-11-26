@@ -24,8 +24,8 @@ import { now } from '../track/track'
 
 const GATE = QUESTS.findIndex(q => q.kind === 'feast'), age = () => save.quest > GATE ? 9 : save.quest === GATE ? since() - REVEAL : -1
 
-export function hud(pause: () => void, options: () => void, feast: () => void, buy: () => void, mutate: () => void, tools: Tool[]) {
-  const bar = nav([toggle, pause, options]), levels = soundBox((x, y) => !bar.at(x, y)), songs = picker(W - 73), meal = feastButton(feast), dev = devConsole(tools), wild = nextWild(buy), gene = offer(mutate), fill = meter(), parts = [levels, songs, bar, meal, wild, gene, fill], change = gain()
+export function hud(pause: () => void, options: () => void, feast: () => void, stay: () => void, buy: () => void, mutate: () => void, tools: Tool[]) {
+  const bar = nav([toggle, pause, options]), levels = soundBox((x, y) => !bar.at(x, y)), songs = picker(W - 73), meal = feastButton(feast, stay), dev = devConsole(tools), wild = nextWild(buy), gene = offer(mutate), fill = meter(), parts = [levels, songs, bar, meal, wild, gene, fill], change = gain()
   let exact = false, out = false
   const live = (p: typeof parts[number]) => p !== meal || age() >= 0
   return {
@@ -38,7 +38,7 @@ export function hud(pause: () => void, options: () => void, feast: () => void, b
       return on || held
     },
     click: (x: number, y: number) => dev.click(x, y) || parts.some(p => live(p) && p.click(x, y)),
-    lift: dev.lift,
+    lift: () => (dev.lift(), meal.lift()),
     draw(g: Ctx, paused: boolean, bonus = 0, left = 0, born = 9) {
       const u = age()
       if (u >= 0 && u < .3 && !out) sound('cork')

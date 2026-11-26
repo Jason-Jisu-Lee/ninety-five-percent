@@ -39,6 +39,7 @@ function track(g: Ctx, q: typeof QUESTS[number], got: number, col: string, dx: n
   if (pay) text(g, pay, r, 54 + dy, UI.gold, 'r', UI.panel), orb(g, r - width(pay) - 6, 50 + dy, '', UI.panel)
   text(g, `${got} / ${q.n}`, x - 6, 54 + dy, UI.accent, 'r', UI.panel)
   if (tick) icon(g, 'tick', r - width(q.text) - 11, 35, UI.accent, UI.panel)
+  else if (q.hint) text(g, q.hint, r, 67 + dy, UI.text, 'r', UI.panel)
 }
 
 function title(g: Ctx, name: string, t: number) {

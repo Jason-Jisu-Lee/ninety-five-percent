@@ -25,7 +25,7 @@ const STAGES: [title: string, fly: number, versions: [string, Make][]][] = [
 const SWARM = [[0, 0, 29], [-26, 14, 27], [22, 18, 31], [-8, 30, 28], [30, -10, 30]]
 
 const q = new URLSearchParams(location.search), big = document.querySelector<HTMLCanvasElement>('main canvas')!, out = ctx(big), side = document.querySelector('aside')!, grid = side.querySelector('.grid')!
-const frame = ctx(mk(W, H)), ui = hud(() => {}, () => {}, () => {}, () => {}, () => {}, []), hudOn = document.querySelector<HTMLButtonElement>('#hud')!
+const frame = ctx(mk(W, H)), ui = hud(() => {}, () => {}, () => {}, () => {}, () => {}, () => {}, []), hudOn = document.querySelector<HTMLButtonElement>('#hud')!
 let seed = +(q.get('seed') ?? 0) || 1 + Math.random() * 99998 | 0, pick = +(q.get('v') ?? 0), buttons = q.get('hud') !== '0', places: Place[] = []
 
 const thumbs = STAGES.flatMap(([title, , versions], stage) => {

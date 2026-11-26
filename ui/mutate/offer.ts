@@ -6,13 +6,11 @@ import { MUTATE as M } from '../../data/game/mutations'
 import { H } from '../../data/look/screen'
 import { note } from '../parts/note'
 import { card, GAP, PEEK, RISE } from '../wild/card'
-import { CW, X as NEXT } from '../wild/next'
-
-const X = NEXT - CW - GAP
+import { CW, spot } from '../wild/next'
 
 export function offer(buy: () => void) {
   let hot = false
-  const on = (x: number, y: number) => offered() && x >= X && x < X + CW && y >= H - PEEK - RISE, can = () => save.blood >= M.cost
+  const left = () => spot() - CW - GAP, on = (x: number, y: number) => offered() && x >= left() && x < left() + CW && y >= H - PEEK - RISE, can = () => save.blood >= M.cost
   return {
     hover(x: number, y: number) {
       const was = hot
@@ -21,13 +19,14 @@ export function offer(buy: () => void) {
       return hot && can()
     },
     click(x: number, y: number) {
-      if (on(x, y)) buy()
-      return on(x, y)
+      const hit = on(x, y)
+      if (hit) buy()
+      return hit
     },
     draw(g: Ctx) {
       if (!offered()) return
-      const y = card(g, X, CW, [M.name], M.cost, can(), hot)
-      if (hot) note(g, [M.say], X, y - 4, false, true)
+      const y = card(g, left(), CW, [M.name], M.cost, can(), hot)
+      if (hot) note(g, [M.say], left(), y - 4, false, true)
     },
   }
 }
