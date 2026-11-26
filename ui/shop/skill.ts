@@ -50,7 +50,7 @@ function frame(act: Act, t: number) {
   }
   drawPrey(stage, foe, t)
   if (act.cue && !bit) marks(stage, Math.round(ex), Math.round(ey), squeeze(span(foe), far), UI.foe)
-  if (!bit && u >= cue) key(stage, Math.round(fx) - 5, MID - 30, 'S')
+  if (act.cue && !bit && far <= LUNGE.far) key(stage, Math.round(fx) - 5, MID - 30, 'S', u >= cue)
   act.mark?.(stage, ex, ey, ang, t - act.hit)
   stage.drawImage(fly, Math.round(fx) - half, MID - half)
   if (bit && t < act.hit + .7) text(stage, num(own('power') * act.bonus), Math.round(ex), Math.round(MID - 12 - (t - act.hit) * 22), UI.gold, 'c', UI.panel)

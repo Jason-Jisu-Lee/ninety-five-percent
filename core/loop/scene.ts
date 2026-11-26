@@ -8,4 +8,5 @@ export type Scene = {
   key(k: string): boolean
   hover(x: number, y: number): boolean
   click(x: number, y: number): void
+  lift(): void
 }

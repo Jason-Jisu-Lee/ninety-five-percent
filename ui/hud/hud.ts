@@ -25,17 +25,20 @@ import { now } from '../track/track'
 const GATE = QUESTS.findIndex(q => q.kind === 'feast'), age = () => save.quest > GATE ? 9 : save.quest === GATE ? since() - REVEAL : -1
 
 export function hud(pause: () => void, options: () => void, feast: () => void, buy: () => void, mutate: () => void, tools: Tool[]) {
-  const bar = nav([toggle, pause, options]), levels = soundBox((x, y) => !bar.at(x, y)), songs = picker(W - 73), meal = feastButton(feast), dev = devConsole(tools), wild = nextWild(buy), gene = offer(mutate), fill = meter(), parts = [levels, songs, bar, meal, dev, wild, gene, fill], change = gain()
+  const bar = nav([toggle, pause, options]), levels = soundBox((x, y) => !bar.at(x, y)), songs = picker(W - 73), meal = feastButton(feast), dev = devConsole(tools), wild = nextWild(buy), gene = offer(mutate), fill = meter(), parts = [levels, songs, bar, meal, wild, gene, fill], change = gain()
   let exact = false, out = false
   const live = (p: typeof parts[number]) => p !== meal || age() >= 0
   return {
     hover(x: number, y: number) {
-      exact = x < 72 && y < 28
+      const held = dev.hover(x, y)
+      if (held) x = y = -9
+      exact = !held && x < 72 && y < 28
       const on = parts.map(p => live(p) && p.hover(x, y)).some(Boolean)
       if (levels.open()) songs.shut()
-      return on
+      return on || held
     },
-    click: (x: number, y: number) => parts.some(p => live(p) && p.click(x, y)),
+    click: (x: number, y: number) => dev.click(x, y) || parts.some(p => live(p) && p.click(x, y)),
+    lift: dev.lift,
     draw(g: Ctx, paused: boolean, bonus = 0, left = 0, born = 9) {
       const u = age()
       if (u >= 0 && u < .3 && !out) sound('cork')
@@ -49,11 +52,11 @@ export function hud(pause: () => void, options: () => void, feast: () => void, b
       fill.draw(g)
       bar.draw(g, paused, silent())
       now(g, W - 73)
-      dev.draw(g)
       if (out) pop(g, u, meal.draw, SPOT)
       songs.draw(g)
       levels.draw(g)
       if (exact) note(g, ['Lifeblood'], edge + 6, 6)
+      dev.draw(g)
       if (paused) text(g, 'Paused', W / 2, H / 2 + 7, UI.text, 'c', UI.panel, 2)
     },
   }

@@ -1,4 +1,5 @@
 import { sound } from '../../audio/player/sound'
+import { offered } from '../../core/save/mutate'
 import { save } from '../../core/save/save'
 import { pack } from '../../core/save/wild'
 import type { Ctx } from '../../core/screen/canvas'
@@ -10,7 +11,7 @@ import { details, DW } from '../parts/details'
 import { width } from '../text/text'
 import { slot, tag, TALL } from './slot'
 
-const DROP = 26, LIFT = 25, HIDE = '?????'
+const DROP = 26, LIFT = 25, ROW = 19, HIDE = '?????'
 const label = (w: Wild) => w.kind ? w.name : 'Expansion: ' + w.name
 const WIDE = Math.max(...WILD.map(w => width(label(w)) + width(String(w.cost)))) + 30, X = W - 8 - WIDE, Y = H - 38
 
@@ -37,7 +38,7 @@ export function nextWild(buy: () => void) {
       if (!w) return
       slot(g, label(w), w.cost, X, Y, WIDE, can(), hot)
       if (after) tag(g, HIDE, after.cost, X, Y + DROP, WIDE, UI.dim, UI.dim, UI.panel)
-      if (hot && w.kind) details(g, foe(w.kind), t => [W - 8 - DW, Y - LIFT - t])
+      if (hot && w.kind) details(g, foe(w.kind), t => [W - 8 - DW, Y - LIFT - +offered() * ROW - t])
     },
   }
 }

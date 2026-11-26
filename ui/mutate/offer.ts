@@ -4,11 +4,10 @@ import { save } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { MUTATE as M } from '../../data/game/mutations'
 import { note } from '../parts/note'
-import { width } from '../text/text'
 import { SLOTS } from '../wild/next'
 import { slot, TALL } from '../wild/slot'
 
-const WIDE = width(M.name) + width(String(M.cost)) + 30, X = SLOTS[0] - 4 - WIDE, Y = SLOTS[1]
+const [X, , WIDE] = SLOTS, Y = SLOTS[1] - 38
 
 export function offer(buy: () => void) {
   let hot = false
@@ -27,7 +26,7 @@ export function offer(buy: () => void) {
     draw(g: Ctx) {
       if (!offered()) return
       slot(g, M.name, M.cost, X, Y, WIDE, can(), hot)
-      if (hot) note(g, [M.say], X + WIDE, Y - 4, true, true)
+      if (hot) note(g, [M.say], X, Y - 4, false, true)
     },
   }
 }

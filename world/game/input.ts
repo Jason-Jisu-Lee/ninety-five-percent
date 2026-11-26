@@ -10,7 +10,8 @@ import { G } from './state'
 const DEV = import.meta.env.DEV
 const onFly = (x: number, y: number) => Math.hypot(x - run.sim.fly.x, y - run.sim.fly.y + run.sim.fly.h * .7) < 13
 
-export const input: Pick<Scene, 'hover' | 'click' | 'key'> = {
+export const input: Pick<Scene, 'hover' | 'click' | 'lift' | 'key'> = {
+  lift: () => ui.lift(),
   hover(x, y) {
     const was = G.hot
     G.me = false

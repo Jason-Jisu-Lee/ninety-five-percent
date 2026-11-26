@@ -18,6 +18,7 @@ export function listen() {
     wake()
     current().click(...toWorld(e))
   })
+  addEventListener('pointerup', () => current().lift())
   addEventListener('keydown', e => {
     wake()
     if (!current().key(e.key.length > 1 ? e.key : e.key.toLowerCase())) return
