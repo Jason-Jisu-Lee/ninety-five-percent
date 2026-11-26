@@ -3,15 +3,16 @@ import { offered } from '../../core/save/mutate'
 import { save } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { MUTATE as M } from '../../data/game/mutations'
+import { H } from '../../data/look/screen'
 import { note } from '../parts/note'
-import { SLOTS } from '../wild/next'
-import { slot, TALL } from '../wild/slot'
+import { card, GAP, PEEK, RISE } from '../wild/card'
+import { CW, X as NEXT } from '../wild/next'
 
-const [X, , WIDE] = SLOTS, Y = SLOTS[1] - 19
+const X = NEXT - CW - GAP
 
 export function offer(buy: () => void) {
   let hot = false
-  const on = (x: number, y: number) => offered() && x >= X && x < X + WIDE && y >= Y && y < Y + TALL, can = () => save.blood >= M.cost
+  const on = (x: number, y: number) => offered() && x >= X && x < X + CW && y >= H - PEEK - RISE, can = () => save.blood >= M.cost
   return {
     hover(x: number, y: number) {
       const was = hot
@@ -25,8 +26,8 @@ export function offer(buy: () => void) {
     },
     draw(g: Ctx) {
       if (!offered()) return
-      slot(g, M.name, M.cost, X, Y, WIDE, can(), hot)
-      if (hot) note(g, [M.say], X, Y - 4, false, true)
+      const y = card(g, X, CW, [M.name], M.cost, can(), hot)
+      if (hot) note(g, [M.say], X, y - 4, false, true)
     },
   }
 }

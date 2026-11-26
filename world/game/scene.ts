@@ -8,12 +8,12 @@ import { QUESTS } from '../../data/game/quests'
 import { LUNGE, STREAK } from '../../data/dragonfly/fight'
 import { FLY } from '../../data/dragonfly/flight'
 import { NEWS } from '../../data/game/hints'
-import { DUSK } from '../../data/game/map'
+import { DUSK, RECALL } from '../../data/game/map'
 import { age, teach } from '../../ui/hint/life'
 import { unlocked } from '../../ui/hint/unlock'
 import { glow, tick } from '../../ui/track/track'
 import { input } from './input'
-import { layers, story, title, top, ui } from './menus'
+import { flee, layers, story, title, top, ui } from './menus'
 import { evos, fate, genes, herald, mourn, omen } from './notices'
 import { render } from './render'
 import { advance, asleep, born, bound, reveal } from './opening'
@@ -38,6 +38,10 @@ export const stage1: Scene = {
     const first = !Object.keys(save.caught).length, was = save.blood, h = sim.held
     for (let i = 0; i < run.rate; i++) sim.step(dt, G.clock += dt)
     if (due()) genes.open()
+    const hurt = sim.health < G.hale
+    Object.assign(G, { hale: sim.health, cut: G.cut + dt, lit: G.lit + dt })
+    if (G.cast >= 0 && (hurt || sim.away)) [G.part, G.cast, G.cut] = [G.cast / RECALL.time, -1, sim.away ? 9 : 0]
+    else if (G.cast >= 0 && (G.cast += dt * run.rate) >= RECALL.time) [G.cast, G.lit] = [-1, 0], flee()
     if (first && h && Object.keys(save.caught).length) teach(h.x, h.y - h.h * .7, save.blood - was)
     age(dt)
     if (sim.jolt) [sim.jolt, G.halt] = [false, LUNGE.freeze], sound('thump'), progress('lunge')

@@ -46,11 +46,12 @@ export const opts = settings(leave, () => {
   G.frozen = run.paused = false
 })
 export const layers = [ask, evos, card, self, genes, opts], top = () => layers.find(l => l.shown())
-const flee = () => run.sim.away || (sound('feast'), progress('feast'), run.sim.feast())
+export const flee = () => run.sim.away || (sound('feast'), progress('feast'), run.sim.feast())
+const call = () => void (run.sim.away || (G.cast = G.cast < 0 ? 0 : -1))
 const FIRST = 'You can enhance your Dragonfly at the Lair with lifeblood, but it will reset the run. Continue?'
 export const ui = hud(() => {
   run.paused = !run.paused
-}, () => opts.open(true), () => save.fed || run.sim.away ? flee() : ask.open([FIRST], [["Let's go!", flee], ["I'll stay a bit longer", () => {}]]), () => {
+}, () => opts.open(true), () => save.fed || G.cast >= 0 || run.sim.away ? call() : ask.open([FIRST], [["Let's go!", call], ["I'll stay a bit longer", () => {}]]), () => {
   const w = run.sim.away ? undefined : unlock()
   if (w?.kind) progress('buy')
   if (w?.kind && PREY[w.kind].stage === where.stage) run.sim.prey.join(w.kind)

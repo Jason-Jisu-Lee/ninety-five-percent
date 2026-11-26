@@ -1,5 +1,4 @@
 import type { Ctx } from '../../core/screen/canvas'
-import { UI } from '../../data/look/palette'
 
 export function panel(g: Ctx, x: number, y: number, w: number, h: number, border: string, fill: string) {
   g.fillStyle = border
@@ -9,12 +8,6 @@ export function panel(g: Ctx, x: number, y: number, w: number, h: number, border
   g.fillStyle = fill
   g.fillRect(x + 3, y + 2, w - 6, h - 4)
   g.fillRect(x + 2, y + 3, w - 4, h - 6)
-}
-
-export function soft(g: Ctx, x: number, y: number, w: number, h: number, border: string) {
-  g.globalAlpha = .84
-  panel(g, x, y, w, h, border, UI.panel)
-  g.globalAlpha = 1
 }
 
 export function box(g: Ctx, x: number, y: number, w: number, h: number, border: string, fill: string) {

@@ -1,44 +1,40 @@
 import { sound } from '../../audio/player/sound'
-import { offered } from '../../core/save/mutate'
 import { save } from '../../core/save/save'
 import { pack } from '../../core/save/wild'
 import type { Ctx } from '../../core/screen/canvas'
-import { UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
 import { WILD, type Wild } from '../../data/shop/wild'
 import { foe } from '../enemy/card'
 import { details, DW } from '../parts/details'
 import { width } from '../text/text'
-import { slot, tag, TALL } from './slot'
+import { card, GAP, PEEK, RISE, tall } from './card'
 
-const DROP = 26, LIFT = 6, ROW = 19, HIDE = '?????'
-const label = (w: Wild) => w.kind ? w.name : 'Expansion: ' + w.name
-const WIDE = Math.max(...WILD.map(w => width(label(w)) + width(String(w.cost)))) + 30, X = W - 8 - WIDE, Y = H - 38
+const label = (w: Wild) => w.kind ? [w.name] : ['Expansion:', w.name]
 
-export const SLOTS = [X, Y, WIDE, 30]
+export const CW = Math.max(62, ...WILD.flatMap(w => label(w).map(l => width(l) + 10))), X = W - 8 - CW * 2 - GAP
+export const SLOTS = [X, H - PEEK, CW * 2 + GAP, PEEK - 4]
 
 export function nextWild(buy: () => void) {
   let hot = false
   const now = () => save.fed ? WILD[pack.got] : undefined, can = () => save.blood >= (now()?.cost ?? Infinity)
-  const on = (x: number, y: number, rows: number) => x >= X && x < X + WIDE && y >= Y && y < Y + (rows > 1 ? 30 : TALL)
+  const on = (x: number, y: number, wide: number) => !!now() && x >= X && x < X + wide && y >= H - tall(label(now()!)) - RISE
   return {
     hover(x: number, y: number) {
       const was = hot
-      hot = !!now() && on(x, y, 1)
+      hot = on(x, y, CW)
       if (hot && !was) sound('tap')
       return hot && can()
     },
     click(x: number, y: number) {
-      if (!now()) return false
-      if (on(x, y, 1)) buy()
-      return on(x, y, WILD[pack.got + 1] ? 2 : 1)
+      if (on(x, y, CW)) buy()
+      return on(x, y, WILD[pack.got + 1] ? CW * 2 + GAP : CW)
     },
     draw(g: Ctx) {
       const w = now(), after = WILD[pack.got + 1]
       if (!w) return
-      slot(g, label(w), w.cost, X, Y, WIDE, can(), hot)
-      if (after) tag(g, HIDE, after.cost, X, Y + DROP, WIDE, UI.dim, UI.dim, UI.panel)
-      if (hot && w.kind) details(g, foe(w.kind), t => [W - 8 - DW, Y - LIFT - +offered() * ROW - t])
+      if (after) card(g, X + CW + GAP, CW, [], after.cost, false, false)
+      const y = card(g, X, CW, label(w), w.cost, can(), hot)
+      if (hot && w.kind) details(g, foe(w.kind), t => [W - 8 - DW, y - 6 - t])
     },
   }
 }
