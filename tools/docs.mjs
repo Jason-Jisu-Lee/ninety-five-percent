@@ -29,24 +29,33 @@ function enemies(file) {
 }
 
 function shop(file) {
-  const tabs = []
-  let shop = '', tab = null, fresh = false, tier = 0
+  const tabs = [], none = /^\(?placeholder\)?$/, bad = (line, why) => Error(`docs/Lair.md: "${line}" ${why}`)
+  let shop = '', tab = null, fresh = false, tier = 0, rows = 0
+  const prices = (line, cell) => {
+    const cost = cell.split(',').map(n => +n)
+    if (cost.some(n => !(n > 0))) throw bad(line, 'needs its prices as numbers with commas between them')
+    return cost
+  }
+  const add = (line, name, text = '', price = '') => {
+    if (!tab || !name) throw bad(line, 'must sit under a category and start with the name of the upgrade')
+    tab.items.push({ name, text: text.replace(/ *\(placeholder\)$/, ''), off: none.test(price) || text.endsWith('(placeholder)'), tier, cost: price && !none.test(price) ? prices(line, price) : [] })
+    fresh = false
+  }
   for (const raw of readFileSync(file, 'utf8').split(/\r?\n/)) {
-    const line = raw.replace(/^[#-]+ +/, '').trim(), at = line.indexOf(':')
+    const line = raw.replace(/^[#>-]+ +/, '').trim(), at = line.indexOf(':'), cells = line.split('|').slice(1, -1).map(c => c.trim())
+    rows = line[0] === '|' ? rows + 1 : 0
     if (!line || /^\(.*\)$/.test(line)) continue
     if (/^(Lair|Evolution|Blood shop|Evolution shop)$/.test(line)) [shop, tab] = [line[0] === 'E' ? 'Evolution shop' : 'Blood shop', null]
+    else if (line === 'Notes') shop = ''
     else if (!shop) continue
+    else if (rows) rows > 1 && cells.some(c => /[^-: ]/.test(c)) && add(line, ...cells)
     else if (tab && /^Tier \d$/.test(line)) tier = +line.slice(5)
     else if (/^Cost:/.test(line)) {
-      const last = tab?.items.at(-1), cost = line.slice(5).split(',').map(n => +n)
-      if (!last || fresh || cost.some(n => !(n > 0))) throw Error(`docs/Lair.md: "${line}" must sit under an upgrade and hold its prices as numbers with commas between them`)
-      last.cost = cost
+      const last = tab?.items.at(-1)
+      if (!last || fresh) throw bad(line, 'must sit under an upgrade')
+      last.cost = prices(line, line.slice(5))
     }
-    else if (at > 0 && tab) {
-      const text = line.slice(at + 1).trim(), off = text.endsWith('(placeholder)')
-      tab.items.push({ name: line.slice(0, at).trim(), text: text.replace(/ *\(placeholder\)$/, ''), off, tier, cost: [] })
-      fresh = false
-    }
+    else if (at > 0 && tab) add(line, line.slice(0, at).trim(), line.slice(at + 1).trim())
     else if (fresh) [tab.note, fresh] = [line, false]
     else tabs.push(tab = { shop, name: line, note: '', items: [] }), [fresh, tier] = [true, 0]
   }
