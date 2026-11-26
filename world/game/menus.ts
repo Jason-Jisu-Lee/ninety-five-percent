@@ -4,6 +4,7 @@ import { mutate } from '../../core/save/mutate'
 import { fall, progress, save, wipe } from '../../core/save/save'
 import { unlock } from '../../core/save/wild'
 import { PREY } from '../../data/enemies/enemies'
+import { RECALL } from '../../data/game/map'
 import { front } from '../../ui/front/front'
 import { intro } from '../../ui/front/intro'
 import { hud } from '../../ui/hud/hud'
@@ -47,7 +48,7 @@ export const opts = settings(leave, () => {
 })
 export const layers = [ask, evos, card, self, genes, opts], top = () => layers.find(l => l.shown())
 export const flee = () => run.sim.away || (sound('feast'), progress('feast'), run.sim.feast())
-const call = () => void (run.sim.away || (G.cast = G.cast < 0 ? 0 : -1))
+const call = () => void (run.sim.away || (G.cast = G.cast < 0 ? 0 : G.cast < RECALL.guard ? G.cast : -1))
 const FIRST = 'You can enhance your Dragonfly at the Lair with lifeblood, but it will reset the run. Continue?'
 export const ui = hud(() => {
   run.paused = !run.paused
