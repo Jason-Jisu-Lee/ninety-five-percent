@@ -7,7 +7,7 @@ import { note } from '../parts/note'
 import { SLOTS } from '../wild/next'
 import { slot, TALL } from '../wild/slot'
 
-const [X, , WIDE] = SLOTS, Y = SLOTS[1] - 38
+const [X, , WIDE] = SLOTS, Y = SLOTS[1] - 19
 
 export function offer(buy: () => void) {
   let hot = false

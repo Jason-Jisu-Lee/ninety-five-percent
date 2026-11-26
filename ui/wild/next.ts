@@ -11,7 +11,7 @@ import { details, DW } from '../parts/details'
 import { width } from '../text/text'
 import { slot, tag, TALL } from './slot'
 
-const DROP = 26, LIFT = 25, ROW = 19, HIDE = '?????'
+const DROP = 26, LIFT = 6, ROW = 19, HIDE = '?????'
 const label = (w: Wild) => w.kind ? w.name : 'Expansion: ' + w.name
 const WIDE = Math.max(...WILD.map(w => width(label(w)) + width(String(w.cost)))) + 30, X = W - 8 - WIDE, Y = H - 38
 

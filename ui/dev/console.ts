@@ -11,7 +11,7 @@ const COLS = 4, CW = 44, CH = 13, GAP = 2, PAD = 3, BAR = 9, FOLD = 11, SMALL = 
 
 export function devConsole(tools: Tool[]) {
   const full = [COLS * (CW + GAP) - GAP + PAD * 2, BAR + Math.ceil(tools.length / COLS) * (CH + GAP) + PAD - GAP + 1]
-  const s = { x: 8, y: H - 8 - full[1], small: false }
+  const s = { x: 110, y: H - 8 - full[1], small: false }
   let hot = -1, grip = false, fold = false, held: number[] | undefined
   try {
     Object.assign(s, JSON.parse(localStorage.getItem(KEY) ?? '{}'))
