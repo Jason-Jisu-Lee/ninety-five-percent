@@ -4,7 +4,7 @@ import { blades, heads, pool, STAND } from './reeds'
 
 const COLONY = [[0, 0, 22], [31, -7, 14], [-28, 9, 14], [9, 23, 12], [-16, -19, 8], [36, 11, 7], [-7, 27, 6], [-40, -4, 6]]
 
-export function water({ R, b, k, S, sprite, queue, wet, sites, rafts, perches, swarms, zone }: Base, scale: number) {
+export function water({ R, b, k, S, sprite, queue, wet, sites, rafts, perches, flowers, swarms, zone }: Base, scale: number) {
   return {
     pads(x: number, y: number, n: number, lily = true) {
       const flip = R() < .5 ? -1 : 1, turn = R() * 8 | 0
@@ -14,6 +14,7 @@ export function water({ R, b, k, S, sprite, queue, wet, sites, rafts, perches, s
         if (!wet(cx, cy, rx)) return
         sprite(rows, px, py, false, k, rx > 10 ? 3 : 2)
         if (rx > 7) sites.push([cx, cy]), rafts.push([cx, cy])
+        if (bloom) flowers.push([cx + (i ? 0 : 5 * flip), cy - 3])
         if (bloom) queue(py + rows.length + 1, () => {
           const [lx, ly] = [cx - 7 + (i ? 0 : 5 * flip), cy - 9]
           b.cast(LILY, lx, ly, 2, 3)

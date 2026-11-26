@@ -17,7 +17,7 @@ export function sim() {
   const s = {
     fly, roam: brain(fly), prey: swarm(roster(where.stage)), fx: effects(), held: null as Prey | null, mark: null as Prey | null, stamina: 100,
     health: own('health'), cap: own('health'), rest: null as Perch | null, bite: 0, extra: 0, plus: 0, hold: 0, strike: 0, hurt: 0, fell: false, away: false, onward: false,
-    aim: null as Prey | null, used: false, primed: false, jolt: false, lunged: false, spent: false, miss: 9, boost: 0, chain: 0, since: 99,
+    aim: null as Prey | null, used: false, primed: false, jolt: false, lunged: false, spent: false, miss: 9, boost: 0, tight: 0, chain: 0, since: 99,
   }
   const gap = (o: Perch) => Math.hypot(o.x - fly.x, o.y - fly.y), ahead = (d: number) => [fly.x + Math.cos(fly.ang) * d * DF.scale, fly.y + Math.sin(fly.ang) * d * DF.scale]
   const span = () => s.mark ? Math.hypot(s.mark.x - ahead(DF.headAt)[0], s.mark.y - ahead(DF.headAt)[1]) : 0
@@ -36,7 +36,7 @@ export function sim() {
     dart() {
       if (!own('lunge') || !s.mark || s.held || s.rest || s.primed) return
       if (s.used || !fit()) return void ([s.used, s.miss] = [true, 0])
-      ;[s.used, s.primed, s.boost] = [true, true, LUNGE.time]
+      ;[s.used, s.primed, s.boost, s.tight] = [true, true, LUNGE.time, span()]
       fly.speed = fly.top() * LUNGE.speed
     },
     feast() {

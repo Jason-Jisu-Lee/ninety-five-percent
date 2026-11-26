@@ -1,4 +1,5 @@
 import { rng } from '../../core/math/rng'
+import { EDGE, HUD } from '../../data/game/map'
 import { H, W } from '../../data/look/screen'
 import { key, ramps, type Look } from '../../data/place/looks'
 import { board, type Key } from './board'
@@ -35,7 +36,8 @@ function base(seed: number, L: Look, scale: number) {
     },
     done(): Place {
       later.sort((p, q) => p[0] - q[0]).forEach(([, draw]) => draw())
-      return { art: b.done(), look: L, zones, perches, flowers, sites, swarms, cover, rafts, sparks: sparks(b, R, L), wet }
+      const seen = ([x, y]: number[]) => x >= EDGE && x < W - EDGE && y >= EDGE && y < H - EDGE && !HUD.some(([l, t, r, d]) => x >= l && x < r && y >= t && y < d)
+      return { art: b.done(), look: L, zones, perches, flowers: flowers.filter(seen), sites, swarms, cover, rafts, sparks: sparks(b, R, L), wet }
     },
   }
 }

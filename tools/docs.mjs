@@ -33,19 +33,24 @@ function shop(file) {
   let shop = '', tab = null, fresh = false, tier = 0
   for (const raw of readFileSync(file, 'utf8').split(/\r?\n/)) {
     const line = raw.replace(/^[#-]+ +/, '').trim(), at = line.indexOf(':')
-    if (!line) continue
-    if (/^(Blood|Evolution) shop$/.test(line)) [shop, tab] = [line, null]
+    if (!line || /^\(.*\)$/.test(line)) continue
+    if (/^(Lair|Evolution|Blood shop|Evolution shop)$/.test(line)) [shop, tab] = [line[0] === 'E' ? 'Evolution shop' : 'Blood shop', null]
     else if (!shop) continue
     else if (tab && /^Tier \d$/.test(line)) tier = +line.slice(5)
+    else if (/^Cost:/.test(line)) {
+      const last = tab?.items.at(-1), cost = line.slice(5).split(',').map(n => +n)
+      if (!last || fresh || cost.some(n => !(n > 0))) throw Error(`docs/Lair.md: "${line}" must sit under an upgrade and hold its prices as numbers with commas between them`)
+      last.cost = cost
+    }
     else if (at > 0 && tab) {
       const text = line.slice(at + 1).trim(), off = text.endsWith('(placeholder)')
-      tab.items.push({ name: line.slice(0, at).trim(), text: text.replace(/ *\(placeholder\)$/, ''), off, tier })
+      tab.items.push({ name: line.slice(0, at).trim(), text: text.replace(/ *\(placeholder\)$/, ''), off, tier, cost: [] })
       fresh = false
     }
     else if (fresh) [tab.note, fresh] = [line, false]
     else tabs.push(tab = { shop, name: line, note: '', items: [] }), [fresh, tier] = [true, 0]
   }
-  if (!tabs.length) throw Error('docs/shop.md: no shop found. A shop starts with a line reading "Blood shop" or "Evolution shop"')
+  if (!tabs.length) throw Error('docs/Lair.md: no shop found. A shop starts with a line reading "Lair" or "Evolution"')
   return tabs
 }
 
@@ -53,7 +58,7 @@ const rows = v => Array.isArray(v) ? '[\n' + v.map(x => '  ' + JSON.stringify(x)
   : '{\n' + Object.entries(v).map(([k, x]) => `  ${JSON.stringify(k)}: ${JSON.stringify(x)}`).join(',\n') + '\n}\n'
 
 export function sync(root) {
-  for (const [doc, out, read] of [['enemies', 'data/enemies/list.json', enemies], ['shop', 'data/shop/list.json', shop]]) {
+  for (const [doc, out, read] of [['enemies', 'data/enemies/list.json', enemies], ['Lair', 'data/shop/list.json', shop]]) {
     const from = join(root, 'docs', doc + '.md'), to = join(root, out)
     if (!existsSync(from)) continue
     const made = rows(read(from))

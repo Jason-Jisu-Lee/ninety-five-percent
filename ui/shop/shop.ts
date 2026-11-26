@@ -1,5 +1,5 @@
 import { sound } from '../../audio/player/sound'
-import { buy, level, price, save } from '../../core/save/save'
+import { buy, level, price, progress, save } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { FOREST, UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
@@ -64,7 +64,7 @@ export function shop(peek = DEV) {
     click() {
       if (over >= 0) [tab, tier, hot] = [over, 0, -1]
       else if (rung >= 0) [tier, hot] = [rung, -1]
-      else if (hot >= 0) can(hot) && (buy(items()[hot].name), sound('buy'))
+      else if (hot >= 0) can(hot) && (buy(items()[hot].name), sound('buy'), body() && progress('anatomy', true))
       else if (go) shut()
       else if (must()) miss = clock()
     },

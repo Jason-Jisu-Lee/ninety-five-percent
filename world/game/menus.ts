@@ -53,7 +53,7 @@ export const ui = hud(() => {
   run.paused = !run.paused
 }, () => opts.open(true), () => void (run.sim.away || (G.cast = 0)), () => void (G.cast = -1), () => {
   const w = run.sim.away ? undefined : unlock()
-  if (w?.kind) progress('buy')
+  if (w?.kind) progress('buy ' + w.kind)
   if (w?.kind && PREY[w.kind].stage === where.stage) run.sim.prey.join(w.kind)
   else if (w && !w.kind) flee(), run.sim.onward = true
 }, () => run.sim.away || mutate(), tools)

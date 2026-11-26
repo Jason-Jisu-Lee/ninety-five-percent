@@ -56,10 +56,16 @@ export function adopt(kept: Partial<typeof save> = {}) {
 
 export const wipe = () => adopt()
 
-export function progress(kind: string) {
+export function claim() {
   const q = QUESTS[save.quest]
-  if (q?.kind !== kind || ++save.count < q.n) return
-  Object.assign(save, { quest: save.quest + 1, count: 0, blood: save.blood + q.blood, earned: save.earned + q.blood })
+  if (q && save.count >= q.n) Object.assign(save, { quest: save.quest + 1, count: 0, blood: save.blood + q.blood, earned: save.earned + q.blood })
+}
+
+export function progress(kind: string, wait = false) {
+  const q = QUESTS[save.quest]
+  if (q?.kind !== kind) return
+  save.count = Math.min(q.n, save.count + 1)
+  if (!wait) claim()
 }
 
 export function fall(death = true) {

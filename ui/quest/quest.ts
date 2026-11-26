@@ -35,7 +35,7 @@ export function owed() {
   return done ? done.blood * (1 - landed() / drops()) : 0
 }
 
-export const since = () => now() - at - HOLD - SLIDE * 2
+export const since = () => (sync(), now() - at - HOLD - SLIDE * 2)
 export const lit = () => !!done && landed() > 0 && now() - at - WAIT - FLY - (landed() - 1) * GAP < GLOW
 
 function track(g: Ctx, q: Quest, got: number, col: string, dx: number, tick = false, dy = 0) {

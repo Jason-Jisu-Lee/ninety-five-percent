@@ -3,7 +3,8 @@ import { sound } from '../../audio/player/sound'
 import { shade, veil } from '../../core/draw/dissolve'
 import type { Scene } from '../../core/loop/scene'
 import { due, shed } from '../../core/save/mutate'
-import { save, store } from '../../core/save/save'
+import { progress, save, store } from '../../core/save/save'
+import { owns } from '../../core/save/wild'
 import { QUESTS } from '../../data/game/quests'
 import { LUNGE, STREAK } from '../../data/dragonfly/fight'
 import { FLY } from '../../data/dragonfly/flight'
@@ -11,6 +12,7 @@ import { NEWS } from '../../data/game/hints'
 import { DUSK, RECALL } from '../../data/game/map'
 import { age, teach } from '../../ui/hint/life'
 import { unlocked } from '../../ui/hint/unlock'
+import { since } from '../../ui/quest/quest'
 import { glow, tick } from '../../ui/track/track'
 import { input } from './input'
 import { depart, layers, story, title, top, ui } from './menus'
@@ -38,6 +40,8 @@ export const stage1: Scene = {
     const first = !Object.keys(save.caught).length, was = save.blood, h = sim.held
     for (let i = 0; i < run.rate; i++) sim.step(dt, G.clock += dt)
     if (due()) genes.open()
+    const want = QUESTS[save.quest]?.kind ?? ''
+    if (want.startsWith('buy ') && since() > 1 && owns(want.slice(4))) progress(want)
     const hurt = sim.health < G.hale
     Object.assign(G, { hale: sim.health, cut: G.cut + dt, lit: G.lit + dt })
     if (G.cast >= 0 && (hurt || sim.away)) [G.part, G.cast, G.cut] = [G.cast / RECALL.time, -1, sim.away ? 9 : 0]
