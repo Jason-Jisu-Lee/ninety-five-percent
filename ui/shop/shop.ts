@@ -38,6 +38,7 @@ export function shop(peek = DEV) {
     if (early()) for (const [where, name] of LESSON) if (!level(name) && save.blood >= (price(name) ?? Infinity))
       return tabs()[tab].name === where ? [...cell(items().findIndex(it => it.name === name)), CW, CH] : slot(tabs().findIndex(t => t.name === where))
   }
+  const spent = () => early() && !Object.values(FIRST).flat().some(name => save.blood >= (price(name) ?? Infinity))
   const shut = () => {
     shown = false
     then?.()
@@ -114,11 +115,12 @@ export function shop(peek = DEV) {
       if (pick) about(g, pick, SIDE, R - SIDE)
       if (body()) table.tip(g)
       if (tabs().some(t => veiled(t.name))) text(g, SECRET, L, BY + 14, FOREST.pink)
-      const m = must(), t = clock()
-      if (m) brackets(g, m, 2 + Math.round(7 * (1 - Math.min(1, t % 1.2 / .4)) ** 2), t - miss < .24 ? Math.round(Math.sin((t - miss) / .24 * Math.PI * 6) * 2) : 0)
+      const m = must(), t = clock(), near = 2 + Math.round(7 * (1 - Math.min(1, t % 1.2 / .4)) ** 2), back = [R - BW, BY, BW, BH]
+      if (m) brackets(g, m, near, t - miss < .24 ? Math.round(Math.sin((t - miss) / .24 * Math.PI * 6) * 2) : 0)
       else if (led) freed = t
       led = !!m
-      if (t - freed < .9 && (t - freed) % .3 < .18) for (const r of [slot(tabs().findIndex((c, i) => i !== tab && !veiled(c.name))), [R - BW, BY, BW, BH]]) brackets(g, r, 2)
+      if (spent()) brackets(g, back, near)
+      else if (t - freed < .9 && (t - freed) % .3 < .18) for (const r of [slot(tabs().findIndex((c, i) => i !== tab && !veiled(c.name))), back]) brackets(g, r, 2)
       frame(g, R - BW, BY, BW, BH, go)
       text(g, side ? 'Continue' : 'Return', R - BW / 2, BY + 14, go ? UI.gold : UI.text, 'c')
     },
