@@ -46,6 +46,7 @@ export function eat(s: Sim, h: Prey, dt: number, t: number) {
   save.caught[h.kind] = (save.caught[h.kind] ?? 0) + 1
   fx.hit(mx, my - fly.h * .7 - 20, '+' + pay, ORB['#'])
   progress(h.kind)
+  if (s.lunged) progress('lunge')
   s.prey.kill(h, t)
   s.held = null
   if (s.mark === h) s.mark = null

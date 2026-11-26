@@ -9,7 +9,7 @@ import { details, DW } from '../parts/details'
 import { width } from '../text/text'
 import { card, GAP, PEEK, RISE, tall } from './card'
 
-const label = (w: Wild) => w.kind ? [w.name] : ['Expansion:', w.name]
+const label = (w: Wild) => w.kind ? [w.name] : ['Expansion:', w.name], REACH = 6, GRACE = 280
 
 export const CW = Math.max(62, ...WILD.flatMap(w => label(w).map(l => width(l) + 10))), X = W - 8 - CW * 2 - GAP
 export const SLOTS = [X, H - PEEK, CW * 2 + GAP, PEEK - 4]
@@ -17,27 +17,31 @@ const after = () => WILD[pack.got]?.kind ? WILD[pack.got + 1] : undefined
 export const spot = () => X + +!after() * (CW + GAP)
 
 export function nextWild(buy: () => void) {
-  let hot = false
+  let hot = false, open = false, left = 0, mx = -1, my = -1, box = [0, 0, 0]
   const now = () => save.fed ? WILD[pack.got] : undefined, can = () => save.blood >= (now()?.cost ?? Infinity)
   const on = (x: number, y: number, wide: number) => !!now() && x >= spot() && x < spot() + wide && y >= H - tall(label(now()!)) - RISE
+  const inside = (x: number, y: number) => open && x >= box[0] - REACH && x < box[0] + DW + REACH && y >= box[1] - REACH && y < box[1] + box[2] + REACH
   return {
     hover(x: number, y: number) {
       const was = hot
-      hot = on(x, y, CW)
+      ;[mx, my, hot] = [x, y, on(x, y, CW)]
       if (hot && !was) sound('tap')
-      return hot && can()
+      if (hot || inside(x, y)) [open, left] = [!!now()?.kind, 0]
+      else if (open) left ||= performance.now()
+      return hot && can() || inside(x, y)
     },
     click(x: number, y: number) {
-      const hit = on(x, y, after() ? CW * 2 + GAP : CW)
+      const hit = on(x, y, after() ? CW * 2 + GAP : CW) || inside(x, y)
       if (on(x, y, CW)) buy()
       return hit
     },
     draw(g: Ctx) {
       const w = now(), next = after()
+      if (left && performance.now() - left > GRACE) open = false
       if (!w) return
       if (next) card(g, X + CW + GAP, CW, [], next.cost, false, false)
-      const y = card(g, spot(), CW, label(w), w.cost, can(), hot)
-      if (hot && w.kind) details(g, foe(w.kind), t => [W - 8 - DW, y - 6 - t])
+      const y = card(g, spot(), CW, label(w), w.cost, can(), hot || open)
+      if (open && w.kind) box = details(g, foe(w.kind), t => [W - 8 - DW, y - 6 - t], mx, my)
     },
   }
 }

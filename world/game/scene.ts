@@ -3,7 +3,7 @@ import { sound } from '../../audio/player/sound'
 import { shade, veil } from '../../core/draw/dissolve'
 import type { Scene } from '../../core/loop/scene'
 import { due, shed } from '../../core/save/mutate'
-import { progress, save, store } from '../../core/save/save'
+import { save, store } from '../../core/save/save'
 import { QUESTS } from '../../data/game/quests'
 import { LUNGE, STREAK } from '../../data/dragonfly/fight'
 import { FLY } from '../../data/dragonfly/flight'
@@ -44,7 +44,7 @@ export const stage1: Scene = {
     else if (G.cast >= 0 && (G.cast += dt * run.rate) >= RECALL.time) [G.cast, G.lit] = [-1, 0], depart()
     if (first && h && Object.keys(save.caught).length) teach(h.x, h.y - h.h * .7, save.blood - was)
     age(dt)
-    if (sim.jolt) [sim.jolt, G.halt] = [false, LUNGE.freeze], sound('thump'), progress('lunge')
+    if (sim.jolt) [sim.jolt, G.halt] = [false, LUNGE.freeze], sound('thump')
     if (sim.spent) {
       sim.spent = false
       sound('tired')

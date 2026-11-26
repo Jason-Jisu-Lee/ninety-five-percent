@@ -8,6 +8,4 @@ export const traits = (k: Enemy) => ([
   [k.dodge, 'Sidestep', 'Darts sideways when approached'],
   [k.fast && !k.dodge, 'Burst', `Flees at ${num(k.fast / CM)} cm/s for a moment`],
   [k.cover, 'Hides', 'Slips into the grass when chased'],
-  [k.land, 'Sits', 'Lands to rest and is slower to notice danger'],
-  [k.stay, 'Visitor', 'Crosses the stage, then leaves'],
 ] as const).filter(t => t[0]).map(([, name, text]) => [name, text] as [string, string])
