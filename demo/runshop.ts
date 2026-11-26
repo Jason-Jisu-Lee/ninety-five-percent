@@ -4,133 +4,106 @@ import { offered } from '../core/save/mutate'
 import { save } from '../core/save/save'
 import { pack } from '../core/save/wild'
 import type { Ctx } from '../core/screen/canvas'
-import type { Kind } from '../data/enemies/enemies'
+import { DF } from '../data/dragonfly/body'
+import { FLY } from '../data/dragonfly/flight'
+import { PREY, type Kind } from '../data/enemies/enemies'
 import { MUTATE as M } from '../data/game/mutations'
-import { ORB, UI } from '../data/look/palette'
+import { UI } from '../data/look/palette'
 import { H, W } from '../data/look/screen'
 import { WILD, type Wild } from '../data/shop/wild'
 import { foe } from '../ui/enemy/card'
 import { details, DW } from '../ui/parts/details'
-import { disc } from '../ui/parts/disc'
-import { orb } from '../ui/parts/icons'
+import { icon, orb } from '../ui/parts/icons'
 import { note } from '../ui/parts/note'
-import { panel, soft } from '../ui/parts/panel'
+import { panel } from '../ui/parts/panel'
 import { text, width } from '../ui/text/text'
+import { drawPrey } from '../world/creatures/draw'
+import type { Prey } from '../world/creatures/prey'
+import { wear } from '../world/dragonfly/sprite/sheet'
+import { place } from '../world/place/place'
 import { figure } from './base'
 
 type Hit = [x: number, y: number, w: number, h: number]
-type Hot = [what: 'foe' | 'gene', hit: Hit] | undefined
-const STEPS = [[0, 6], [0, 15], [2, 60], [2, 230]], HIDE = '?????', R = W - 8, B = H - 8
-const HOME: Partial<Record<Kind, number[]>> = { moth: [50, 106], mayfly: [300, 150], ladybird: [411, 112], bumblebee: [585, 98], wasp: [320, 200] }, DEN = [470, 270], BEAD = ['.###.', '#o###', '#####', '###d#', '.###.']
-let step = 0, open = false
+type What = 'foe' | 'gene'
+type Hot = [what: What, hit: Hit] | undefined
+type Card = [name: string, cost: number, what?: What]
+const STEPS = [[0, 6], [0, 15], [2, 60], [2, 230]], HIDE = '?????', R = W - 8, CW = 62, PEEK = 28, GAP = 4
+const HOME: Partial<Record<Kind, number[]>> = { moth: [50, 106], mayfly: [300, 150], ladybird: [411, 112], bumblebee: [585, 98], wasp: [320, 200] }
+let step = 0, shown = -1
 const now = () => WILD[pack.got], next = () => WILD[pack.got + 1], can = (n: number) => save.blood >= n
 const label = (w: Wild) => w.kind ? w.name : 'Expansion: ' + w.name
 const inside = (mx: number, my: number, [x, y, w, h]: Hit) => mx >= x && mx < x + w && my >= y && my < y + h
-const pay = (g: Ctx, n: number, r: number, y: number, col: string, edge?: string) => {
+const hand = (): Card[] => [[HIDE, next().cost], [label(now()), now().cost, 'foe'], ...(offered() ? [[M.name, M.cost, 'gene'] as Card] : [])]
+const lit = (ok: boolean, on: boolean) => ok ? on ? UI.text : UI.gold : on ? UI.border : UI.line
+const pay = (g: Ctx, n: number, r: number, y: number, col: string) => {
   const p = String(n)
-  text(g, p, r, y, col, 'r', edge)
-  orb(g, r - width(p) - 5, y - 4, col === UI.text ? '' : col, edge)
+  text(g, p, r, y, col, 'r')
+  orb(g, r - width(p) - 5, y - 4, col === UI.text ? '' : col)
 }
-const mid = (g: Ctx, n: number, cx: number, y: number, col: string, edge?: string) => pay(g, n, cx + (width(String(n)) + 8 >> 1), y, col, edge)
-const lit = (ok: boolean, on: boolean) => ok ? on ? UI.text : UI.gold : UI.line
+const mid = (g: Ctx, n: number, cx: number, y: number, col: string) => pay(g, n, cx + (width(String(n)) + 8 >> 1), y, col)
 
-function tag(g: Ctx, mx: number, my: number, name: string, cost: number, cx: number, y: number, live = true): Hit | undefined {
-  const w = width(name) + width(String(cost)) + 26, x = clamp(Math.round(cx - w / 2), 4, W - 4 - w), ok = live && can(cost), on = live && inside(mx, my, [x, y, w, 15])
-  soft(g, x, y, w, 15, lit(ok, on))
-  text(g, name, x + 6, y + 11, !live ? UI.dim : ok ? UI.gold : UI.text)
-  pay(g, cost, x + w - 6, y + 11, ok ? UI.text : UI.dim)
-  return on ? [x, y, w, 15] : undefined
+function face(g: Ctx, [name, cost, what]: Card, x: number, y: number, on: boolean, lock = false) {
+  const ok = !!what && can(cost)
+  panel(g, x, y, CW, 80, what ? lit(ok, on) : UI.line, UI.night)
+  if (lock && !what) icon(g, 'lock', x + CW / 2 - 3, y + 5, UI.faint)
+  else text(g, name, x + CW / 2, y + 12, !what ? UI.dim : ok ? UI.gold : UI.text, 'c')
+  mid(g, cost, x + CW / 2, y + 24, ok ? UI.text : UI.dim)
 }
 
-const WAYS: [string, string, (g: Ctx, mx: number, my: number) => Hot][] = [
-  ['Price badges', 'Round badges like the Return to Lair one, bottom right: the price inside, the name under it. Gold ring when you can pay', (g, mx, my) => {
+function picture(g: Ctx, x: number, y: number, w: number, h: number, t: number, kind?: Kind) {
+  const [hx, hy] = kind && HOME[kind] || [W / 2, H / 2], px = x + w / 2 + Math.sin(t * 1.1) * 16, py = y + h / 2 + Math.sin(t * 2.2) * 4, k = kind && PREY[kind]
+  const [fly] = wear(save.color)(8, Math.floor(t * FLY.beat * DF.flapFrames) % DF.flapFrames)
+  g.save()
+  g.beginPath()
+  g.rect(x, y, w, h)
+  g.clip()
+  g.drawImage(place().art, clamp(hx - w / 2, 0, W - w), clamp(hy - h / 2, 0, H - h), w, h, x, y, w, h)
+  if (k) drawPrey(g, { kind, x: px, y: py + k.h * .7, h: k.h, ang: Math.atan2(Math.cos(t * 2.2) * 8.8, Math.cos(t * 1.1) * 17.6), hp: k.hp, wings: true, flash: 0, seed: .3 } as Prey, t)
+  else g.drawImage(fly, x + w / 2 - (fly.width >> 1), y + h / 2 - (fly.height >> 1))
+  g.restore()
+}
+
+function row(g: Ctx, mx: number, my: number, slot: (n: number) => number, lock = false, rise = 10) {
+  let hot: Hot
+  hand().forEach((c, n) => {
+    const x = slot(n), on = !!c[2] && inside(mx, my, [x, H - PEEK - rise, CW, PEEK + rise]), y = H - PEEK - +on * rise
+    face(g, c, x, y, on, lock)
+    if (on) hot = [c[2]!, [x, y, CW, PEEK]]
+  })
+  return hot
+}
+
+const WAYS: [string, string, (g: Ctx, mx: number, my: number, t: number) => Hot][] = [
+  ['Hand', 'The cards you liked, bottom right. The one after next is a dim card that reads ????? with its price, the way the game writes it now. No dots', (g, mx, my) => row(g, mx, my, n => R - CW - n * (CW + GAP))],
+  ['Locked card', 'The same hand, but the one after next carries the padlock from the Lair instead of question marks', (g, mx, my) => row(g, mx, my, n => R - CW - n * (CW + GAP), true)],
+  ['Picture cards', 'At rest the same hand. Point at a card and it rises all the way to show a picture: the enemy flying where it lives, or your dragonfly for Mutations', (g, mx, my, t) => {
     let hot: Hot
-    const badge = (name: string, cost: number, n: number, what?: 'foe' | 'gene') => {
-      const cx = R - 26 - n * 58, cy = B - 28, hit: Hit = [cx - 16, cy - 16, 33, 44], ok = !!what && can(cost), on = !!what && inside(mx, my, hit)
-      disc(g, cx, cy, 16, lit(ok, on))
-      orb(g, cx, cy - 6, ok ? '' : UI.dim)
-      text(g, String(cost), cx, cy + 9, ok ? UI.text : UI.dim, 'c')
-      text(g, name, cx, B - 1, !what ? UI.dim : ok ? UI.gold : UI.text, 'c', UI.panel)
-      if (on) hot = [what!, hit]
-    }
-    badge(HIDE, next().cost, 0)
-    badge(label(now()), now().cost, 1, 'foe')
-    if (offered()) badge(M.name, M.cost, 2, 'gene')
-    return hot
-  }],
-  ['One badge that opens', 'A single lifeblood badge, bottom right. Point at it and the list opens above it, the way the sound box opens from the music icon. A gold ring and a number say how many things you can pay for', (g, mx, my) => {
-    const rows: [string, number, ('foe' | 'gene')?][] = [...(offered() ? [[M.name, M.cost, 'gene'] as [string, number, 'gene']] : []), [label(now()), now().cost, 'foe'], [HIDE, next().cost]]
-    const cx = R - 16, cy = B - 16, w = 132, x = R - w, tall = rows.length * 16 + 4, top = cy - 20 - tall, ready = rows.filter(r => r[2] && can(r[1])).length
-    let hot: Hot
-    open = inside(mx, my, [cx - 17, cy - 17, 35, 35]) || open && inside(mx, my, [x - 2, top - 2, w + 4, tall + 6])
-    disc(g, cx, cy, 16, open ? UI.text : ready ? UI.gold : UI.line)
-    BEAD.forEach((row, j) => [...row].forEach((ch, i) => {
-      g.fillStyle = ORB[ch]
-      if (ch !== '.') g.fillRect(cx - 7 + i * 3, cy - 7 + j * 3, 3, 3)
-    }))
-    if (ready) disc(g, cx + 12, cy - 12, 5, UI.gold), text(g, String(ready), cx + 12, cy - 8, UI.gold, 'c')
-    if (!open) return
-    soft(g, x, top, w, tall, UI.line)
-    rows.forEach(([name, cost, what], i) => {
-      const y = top + 2 + i * 16, ok = !!what && can(cost), on = !!what && inside(mx, my, [x, y, w, 16])
-      g.fillStyle = UI.line
-      if (on) g.fillRect(x + 3, y, w - 6, 15)
-      text(g, name, x + 7, y + 12, !what ? UI.dim : on || ok ? UI.gold : UI.text)
-      pay(g, cost, R - 7, y + 12, ok ? UI.text : UI.dim)
-      if (on) hot = [what!, [x, top, w, tall]]
+    const cards = hand(), was = shown
+    shown = cards.findIndex((c, n) => !!c[2] && inside(mx, my, [R - CW - n * (CW + GAP), H - (n === was ? 66 : PEEK), CW, 66]))
+    cards.forEach((c, n) => {
+      const x = R - CW - n * (CW + GAP), on = n === shown, y = H - (on ? 66 : PEEK)
+      face(g, c, x, y, on)
+      if (!on) return
+      picture(g, x + 3, y + 30, CW - 6, 33, t, c[2] === 'foe' ? now().kind : undefined)
+      hot = [c[2]!, [x, y, CW, 66]]
     })
     return hot
   }],
-  ['Cards', 'Cards held at the bottom edge like a hand: the next enemy face up, the one after it face down. The card under the pointer lifts. Gold edge when you can pay', (g, mx, my) => {
-    let hot: Hot
-    const card = (name: string, cost: number, n: number, what?: 'foe' | 'gene') => {
-      const w = 62, x = R - w - n * (w + 4), ok = !!what && can(cost), on = !!what && inside(mx, my, [x, H - 34, w, 34]), y = H - (on ? 38 : 28)
-      panel(g, x, y, w, 60, lit(ok, on), UI.night)
-      if (what) text(g, name, x + w / 2, y + 12, ok ? UI.gold : UI.text, 'c')
-      else for (let i = 4; i < w - 4; i += 4) for (let j = 4; j < 14; j += 4) g.fillStyle = UI.line, g.fillRect(x + i + (j & 4 ? 2 : 0), y + j, 2, 2)
-      mid(g, cost, x + w / 2, y + 24, ok ? UI.text : UI.dim)
-      if (on) hot = [what!, [x, y, w, 38]]
-    }
-    card(HIDE, next().cost, 0)
-    card(label(now()), now().cost, 1, 'foe')
-    if (offered()) card(M.name, M.cost, 2, 'gene')
-    return hot
+  ['Hand in the middle', 'The hand held at the bottom centre of the screen like in a card game, the cards overlapping a little. The card under the pointer comes to the front and lifts', (g, mx, my) => {
+    const cards = hand(), slot = (n: number) => W / 2 - 87 + (2 - n) * 56, on = cards.findIndex((c, n) => !!c[2] && inside(mx, my, [slot(n), H - PEEK - 10, 56, PEEK + 10]))
+    for (let n = cards.length; n--;) if (n !== on) face(g, cards[n], slot(n), H - PEEK, false)
+    if (on < 0) return
+    face(g, cards[on], slot(on), H - PEEK - 10, true)
+    return [cards[on][2]!, [slot(on), H - PEEK - 10, CW, PEEK]]
   }],
-  ['Road ahead', 'The whole ladder of this place as a row of dots, bottom right: gold ones are bought, the big one is next and carries its name and price, the diamond is the next place. Mutations hangs off the Mayfly as a side branch', (g, mx, my) => {
-    const stage = now().stage, row = WILD.filter(v => v.stage === stage || v.stage === stage + 1 && !v.kind), y = B - 22, at = (i: number) => R - 8 - (row.length - 1 - i) * 22
-    let hot: Hot
-    row.forEach((v, i) => {
-      const n = WILD.indexOf(v), x = at(i), r = n === pack.got ? 3 : 2, col = n < pack.got ? UI.gold : n === pack.got ? can(v.cost) ? UI.gold : UI.text : UI.dim
-      for (const [ink, o] of [[UI.panel, 1], [n <= pack.got ? UI.gold : UI.dim, 0]] as const) if (i) g.fillStyle = ink, g.fillRect(at(i - 1) + 4 - o, y - o, 14 + o * 2, 1 + o * 2)
-      for (const [ink, o] of [[UI.panel, 1], [col, 0]] as const) {
-        g.fillStyle = ink
-        if (v.kind) g.fillRect(x - r - o, y - r - o, r * 2 + 1 + o * 2, r * 2 + 1 + o * 2)
-        else for (let j = -r - o; j <= r + o; j++) g.fillRect(x - (r + o - Math.abs(j)), y + j, (r + o - Math.abs(j)) * 2 + 1, 1)
-      }
-      if (n === pack.got + 1) mid(g, v.cost, x, y + 15, UI.dim, UI.panel)
-    })
-    const here = row.indexOf(now()), hit = tag(g, mx, my, label(now()), now().cost, at(here), y - 24)
-    g.fillStyle = UI.panel
-    g.fillRect(at(here) - 1, y - 9, 3, 5)
-    g.fillStyle = can(now().cost) ? UI.gold : UI.text
-    g.fillRect(at(here), y - 9, 1, 5)
-    if (hit) hot = ['foe', hit]
-    if (!offered()) return hot
-    const bx = at(1), side = tag(g, mx, my, M.name, M.cost, bx - 62, y + 7)
-    for (const [ink, o] of [[UI.panel, 1], [UI.gold, 0]] as const) g.fillStyle = ink, g.fillRect(bx - o, y + 3 - o, 1 + o * 2, 12 + o * 2), g.fillRect(bx - 14 - o, y + 14 - o, 15 + o * 2, 1 + o * 2)
-    return side ? ['gene', side] : hot
-  }],
-  ['Tags on the map', 'No shop corner at all. Each thing to buy is a tag on the map where it lives: the Moth at the flowers, the Ladybird on the lily pads, Mutations by the old log. The next one after shows as a dim tag where it will live', (g, mx, my) => {
-    let hot: Hot
-    const pin = (name: string, cost: number, [x, y]: number[], what?: 'foe' | 'gene') => {
-      const hit = tag(g, mx, my, name, cost, x, y - 24, !!what)
-      for (const [ink, o] of [[UI.panel, 1], [!what ? UI.dim : can(cost) ? UI.gold : UI.text, 0]] as const) g.fillStyle = ink, g.fillRect(x - o, y - 9 - o, 1 + o * 2, 6 + o * 2), g.fillRect(x - 1 - o, y - 3 - o, 3 + o * 2, 3 + o * 2)
-      if (hit) hot = [what!, hit]
-    }
-    pin(HIDE, next().cost, HOME[next().kind!] ?? [W / 2, 60])
-    pin(label(now()), now().cost, HOME[now().kind!] ?? [W / 2, 60], 'foe')
-    if (offered()) pin(M.name, M.cost, DEN, 'gene')
-    return hot
+  ['Deck', 'The one after next sits behind the next card and peeks out above it, like the next card of a deck. Mutations is a card of its own beside them', (g, mx, my) => {
+    const [after, front, gene] = hand(), x = R - CW, on = inside(mx, my, [x, H - PEEK, CW, PEEK]), gx = x - CW - GAP, onGene = !!gene && inside(mx, my, [gx, H - PEEK - 10, CW, PEEK + 10])
+    panel(g, x, H - PEEK - 14, CW, 40, UI.line, UI.night)
+    text(g, after[0], x + 5, H - PEEK - 3, UI.dim)
+    pay(g, after[1], x + CW - 5, H - PEEK - 3, UI.dim)
+    face(g, front, x, H - PEEK, on)
+    if (gene) face(g, gene, gx, H - PEEK - +onGene * 10, onGene)
+    return on ? ['foe', [x, H - PEEK - 14, CW, PEEK]] : onGene ? ['gene', [gx, H - PEEK - 10, CW, PEEK]] : undefined
   }],
 ]
 
@@ -139,10 +112,10 @@ const host = document.querySelector('section')!, click = () => {
   ;[pack.got, save.blood] = STEPS[step]
 }
 ;[pack.got, save.blood] = STEPS[0]
-WAYS.forEach(([name, say, draw], i) => figure(host, i + 1, name, say, (g, mx, my) => {
-  const hot = draw(g, mx, my), kind = now().kind
+WAYS.forEach(([name, say, draw], i) => figure(host, i + 1, name, say, (g, mx, my, t) => {
+  const hot = draw(g, mx, my, t), kind = now().kind
   if (!hot) return
-  const [x, y, w, h] = hot[1], up = y > H / 2
-  if (hot[0] === 'foe') kind && details(g, foe(kind), tall => [clamp(x + w - DW, 8, W - 8 - DW), up ? y - 6 - tall : y + h + 6])
-  else note(g, [M.say], clamp(x, 4, W - 140), up ? y - 4 : y + h + 4, false, up)
-}, { shop: false, click }))
+  const [x, y, w] = hot[1]
+  if (hot[0] === 'foe') kind && details(g, foe(kind), tall => [clamp(x + w - DW, 8, W - 8 - DW), y - 6 - tall])
+  else note(g, [M.say], clamp(x, 4, W - 140), y - 4, false, true)
+}, { shop: false, click, view: [i === 3 ? 120 : 240, 60, 400, 300] }))
