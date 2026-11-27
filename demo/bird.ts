@@ -1,33 +1,28 @@
-import { save } from '../core/save/save'
-import { pack } from '../core/save/wild'
+import './seed'
 import { ctx, mk, type Ctx } from '../core/screen/canvas'
 import { H, W } from '../data/look/screen'
 import { PREY } from '../data/enemies/enemies'
 import { UI } from '../data/look/palette'
 import { hud } from '../ui/hud/hud'
-import { box } from '../ui/parts/panel'
 import { text, width } from '../ui/text/text'
 import { render } from '../world/game/render'
 import { hunt } from '../world/hunt/hunt'
 
 type Look = { name: string; say: string; draw: (g: Ctx, u: number) => void }
 
-const LOOP = 13, CRY = 1, SAY = 1.8, START = 3, PASS = 4.8, SPAN = 300, ALPHA = .32, INK = '#0b1a14', LINE = 'Something big is coming', HOLD = 3.6, TYPE = 1.2, Y = H - 22
+const LOOP = 9, CRY = .4, SAY = 1, START = 2, PASS = 4.8, SPAN = 300, ALPHA = .32, INK = '#0b1a14', LINE = 'Something big is out there', HOLD = 6.8, TYPE = 1.2, Y = H - 22
 const WING = [[.4, 0], [.33, .045], [.22, .07], [.2, .3], [.14, .62], [.08, .86], [.07, .98], [.03, .93], [.02, 1], [-.02, .94], [-.04, .99], [-.08, .92], [-.1, .95], [-.13, .86], [-.18, .62], [-.16, .3], [-.12, .1], [-.2, .09], [-.4, .17], [-.43, .06], [-.44, 0]]
 const OUTLINE = [...WING, ...WING.slice(1, -1).reverse().map(([x, y]) => [x, -y])]
 const SOUNDS = [
-  ['Far cry', 'the one you picked, unchanged'],
-  ['Lower', 'the same cry, deeper and a little longer'],
-  ['Shorter', 'a quicker cry, less tail'],
-  ['Farther', 'softer and darker, a longer echo'],
-  ['Closer', 'drier and a bit rougher, short echo'],
-  ['Long fall', 'a longer cry that drops further at the end'],
+  ['Lower', 'number 2 as you heard it'],
+  ['A little', 'a little softer, darker and echoier'],
+  ['More', 'softer, darker, a longer echo, like Farther'],
+  ['Most', 'the softest and darkest, the longest echo'],
 ]
 const half = ctx(mk(W / 2, H / 2)), scene = ctx(mk(W, H)), from: [number, number] = [-200, 290], to: [number, number] = [840, 50], heading = Math.atan2(to[1] - from[1], to[0] - from[0])
 const LEFT = Math.round(W / 2 - width(LINE) / 2), FULL = width(LINE)
 const alpha = (u: number) => u < 0 ? 0 : Math.max(0, Math.min(1, (HOLD - u) / 1))
 const typed = (u: number) => Math.max(0, Math.min(LINE.length, Math.floor(u / TYPE * LINE.length)))
-const at = (i: number) => LEFT + (i ? width(LINE.slice(0, i)) + 1 : 0)
 
 function cast(x: number, y: number, t: number) {
   const s = SPAN / 4, flex = 1 - .05 * Math.sin(t * 1.6)
@@ -64,92 +59,48 @@ function shade(g: Ctx, u: number, x: number, y: number, w: number, h: number, fi
   g.globalAlpha = 1
 }
 
+const film = (g: Ctx, u: number, h: number, top: boolean, k = 1) => {
+  const a = alpha(u), n = Math.round(h * Math.min(1, Math.max(0, u / .4)) * Math.min(1, a * 1.5))
+  if (n <= 0) return false
+  g.globalAlpha = k
+  g.fillStyle = '#000'
+  if (top) g.fillRect(0, 0, W, n)
+  g.fillRect(0, H - n, W, n)
+  g.globalAlpha = 1
+  return true
+}
+const gray = (g: Ctx, u: number, pad: number, h: number, fill: string, k: number, w = FULL + pad * 2) => (shade(g, u, W / 2 - w / 2 | 0, Y - 4 - (h >> 1), w, h, fill, k), plain(g, u, Y, undefined))
+
 const LOOKS: Look[] = [
+  { name: 'Gray box', say: 'As shown before: see-through gray, sized to the whole line', draw: (g, u) => gray(g, u, 6, 15, '#2a2e2d', .7) },
+  { name: 'Dark box', say: 'Almost black, see-through, more room around the words', draw: (g, u) => gray(g, u, 10, 19, '#0d1110', .6) },
+  { name: 'Wide box', say: 'See-through gray, a fixed wider box so the words sit well inside it', draw: (g, u) => gray(g, u, 0, 17, '#2a2e2d', .65, FULL + 60) },
   {
-    name: 'Gray box', say: 'A see-through gray box sized to the whole line, the standard subtitle box',
-    draw: (g, u) => (shade(g, u, LEFT - 6, Y - 11, FULL + 12, 15, '#2a2e2d', .7), plain(g, u, Y, undefined)),
-  },
-  {
-    name: 'Gray band', say: 'A wider see-through gray band whose ends fade out in steps',
+    name: 'Soft corners', say: "See-through gray with its corners cut by one pixel, like the game's other boxes",
     draw: (g, u) => {
-      const w = FULL + 80, x = W / 2 - w / 2
-      for (let i = 0; i < 4; i++) shade(g, u, x + i * 8, Y - 12, w - i * 16, 17, '#2a2e2d', .22)
+      const w = FULL + 16, x = W / 2 - w / 2 | 0, y = Y - 12
+      shade(g, u, x + 1, y, w - 2, 17, '#2a2e2d', .7)
+      shade(g, u, x, y + 1, 1, 15, '#2a2e2d', .7)
+      shade(g, u, x + w - 1, y + 1, 1, 15, '#2a2e2d', .7)
       plain(g, u, Y, undefined)
     },
   },
-  { name: 'Plain', say: 'Text with its dark edge and nothing behind it, as typed before', draw: (g, u) => plain(g, u) },
-  {
-    name: 'Cursor', say: 'A small block cursor leads the letters and blinks twice after the last one',
-    draw: (g, u) => {
-      const a = plain(g, u), n = typed(u)
-      if (!a || u > TYPE + 1.2 || u > TYPE && (u - TYPE) % .6 > .3) return
-      g.globalAlpha = a
-      g.fillStyle = UI.text
-      g.fillRect(at(n) + (n ? 1 : 0), Y - 7, 4, 7)
-      g.globalAlpha = 1
-    },
-  },
-  {
-    name: 'Film bars', say: 'Black bars slide in at the top and bottom like a film; the line sits in the bottom bar',
-    draw: (g, u) => {
-      const a = alpha(u), k = Math.min(1, Math.max(0, u / .4)), h = Math.round(20 * k * Math.min(1, a * 1.5))
-      if (h <= 0) return
-      g.fillStyle = '#000'
-      g.fillRect(0, 0, W, h)
-      g.fillRect(0, H - h, W, h)
-      plain(g, u, H - 7, undefined)
-    },
-  },
-  {
-    name: 'Game box', say: 'The game\'s own box, the one the hover notes use, sized to the whole line',
-    draw: (g, u) => {
-      const a = alpha(u) * Math.min(1, u / .15)
-      if (a <= 0) return
-      g.globalAlpha = a
-      box(g, LEFT - 6, Y - 12, FULL + 12, 17, UI.border, UI.panel)
-      g.globalAlpha = 1
-      plain(g, u, Y, undefined)
-    },
-  },
-  {
-    name: 'Word by word', say: 'Whole words appear one at a time instead of letters',
-    draw: (g, u) => {
-      const a = alpha(u), words = LINE.split(' '), n = Math.min(words.length, Math.floor(u / TYPE * words.length) + 1)
-      if (a <= 0) return
-      g.globalAlpha = a
-      text(g, words.slice(0, n).join(' '), LEFT, Y, UI.text, undefined, UI.panel)
-      g.globalAlpha = 1
-    },
-  },
-  {
-    name: 'Soft letters', say: 'Each letter fades in over a quarter second instead of popping in',
-    draw: (g, u) => {
-      const a = alpha(u)
-      if (a <= 0) return
-      for (let i = 0; i < LINE.length; i++) {
-        const k = Math.max(0, Math.min(1, (u - i / LINE.length * TYPE) / .25))
-        if (!k) break
-        g.globalAlpha = a * k
-        text(g, LINE[i], at(i), Y, UI.text, undefined, UI.panel)
-      }
-      g.globalAlpha = 1
-    },
-  },
+  { name: 'Film bars', say: 'As shown before: black bars top and bottom, the line in the bottom bar', draw: (g, u) => film(g, u, 20, true) && plain(g, u, H - 7, undefined) },
+  { name: 'Thin bars', say: 'Thinner black bars, 14 pixels instead of 20', draw: (g, u) => film(g, u, 14, true) && plain(g, u, H - 4, undefined) },
+  { name: 'Bottom bar only', say: 'Only the bottom bar slides in; the top of the screen stays clear', draw: (g, u) => film(g, u, 20, false) && plain(g, u, H - 7, undefined) },
+  { name: 'See-through bars', say: 'Film bars at 70%, so the Lair badge and the cards still show through', draw: (g, u) => film(g, u, 20, true, .7) && plain(g, u, H - 7, undefined) },
 ]
 
-Object.assign(save, { quest: 9, count: 1, fed: true, told: true, tired: true, warned: true, blood: 140, caught: { fruitfly: 9, moth: 4, mayfly: 2, ladybug: 1 } })
-pack.got = 3
-
-const audio = SOUNDS.map((_, i) => new Audio(`./sounds/cry${i + 1}.wav`))
+const audio = SOUNDS.map((_, i) => new Audio(`./sounds/low${i + 1}.wav`))
 let pick = 0
 const buttons = SOUNDS.map(([name, say], i) => {
   const b = document.querySelector('nav')!.appendChild(document.createElement('button'))
   b.innerHTML = `<b>${i + 1}</b> ${name}<i>${say}</i>`
   b.onclick = () => {
     pick = i
+    clock = 0
+    audio.forEach(a => a.pause())
     buttons.forEach((x, j) => x.classList.toggle('on', j === i))
-    audio[i].currentTime = 0
-    audio[i].play().catch(() => {})
   }
   return b
 })
