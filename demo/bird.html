@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bird pass</title>
+<link rel="icon" href="data:,">
+<style>
+html,body{margin:0;background:#0a1312;color:#e9e2d4;font:15px/1.4 ui-monospace,Consolas,monospace}
+h2{font:inherit;color:#8f877b;margin:10px auto 0;padding:0 16px;max-width:1600px;text-align:center}
+nav{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:12px 16px 0}
+nav button{background:#100d0b;color:#e9e2d4;border:2px solid #33403c;font:inherit;padding:6px 12px;cursor:pointer;text-align:left}
+nav button b{font-size:18px}
+nav button.on{border-color:#c9a45c}
+nav button i{font-style:normal;color:#8f877b;display:block;font-size:13px}
+section{display:grid;grid-template-columns:repeat(auto-fit,804px);gap:18px;padding:14px 16px 40px;justify-content:center}
+figure{margin:0}
+canvas{display:block;width:800px;border:2px solid #33403c;image-rendering:pixelated}
+figcaption{padding:2px 2px 0;max-width:800px}
+b{font-size:20px;color:#c9a45c;margin-right:10px}
+i{font-style:normal;color:#8f877b;display:block}
+</style>
+<h2>The bird pass as picked: #2 Prey scatter, the shadow now 4.8 s instead of 3.6 s. Every 13 s: the sound, then the line, then the shadow<br>
+Sounds: click one to hear it now; the one with the gold border plays in every loop. Lines: five places for the narration, all with the words "Something big is coming"<br>
+Nothing pauses. The quest is "Kill 3 ladybirds" with one killed, as it will be when this happens</h2>
+<nav></nav>
+<section></section>
+<script>Storage.prototype.setItem = () => {}</script>
+<script type="module" src="./bird.ts"></script>
