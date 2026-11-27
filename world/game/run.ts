@@ -1,8 +1,8 @@
 import { shed } from '../../core/save/mutate'
-import { claim } from '../../core/save/save'
+import { claim, progress } from '../../core/save/save'
 import { pack } from '../../core/save/wild'
 import { hunt } from '../hunt/hunt'
-import { rotate, settle } from '../place/place'
+import { rotate, settle, where } from '../place/place'
 import { G } from './state'
 
 export const run = { sim: hunt(), rate: 1, paused: false }
@@ -19,6 +19,7 @@ export function restart(edge = false, keep = false) {
 export function onward() {
   const { health, stamina } = run.sim
   settle()
+  if (where.stage > 1) progress('marsh')
   restart(true, true)
   Object.assign(run.sim, { health, stamina })
 }
