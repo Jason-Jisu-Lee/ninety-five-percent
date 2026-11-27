@@ -7,8 +7,9 @@ import { H } from '../../data/look/screen'
 import { G } from '../../world/game/state'
 import { disc, sweep } from '../parts/disc'
 import { note } from '../parts/note'
+import { width } from '../text/text'
 
-const R = 16, CX = 8 + R, CY = H - 8 - R, LIFT = 11, TIP = ['Return to Lair', 'End this run']
+const TIP = ['Return to Lair'], BOX = width(TIP[0]) + 10 | 1, R = 16, CX = 8 + (BOX >> 1), CY = H - 8 - R, LIFT = 11
 const INK: Record<string, string[]> = { '#': [UI.text, UI.gold], o: [UI.text, UI.gold], s: ['#a8a294', '#8f7642'] }
 
 export const SPOT = [CX, CY, R + 2, R + 2]
@@ -36,7 +37,7 @@ export function feastButton(press: () => void, drop: () => void) {
         g.fillStyle = INK[ch][+hot]
         for (const x of i ? [CX - i, CX + i] : [CX]) g.fillRect(x, CY + dy - LIFT + j, 1, 1)
       }))
-      if (hot) note(g, TIP, CX - R, CY - R - 4, false, true)
+      if (hot) note(g, TIP, 8, CY - R - 4, false, true, BOX)
     },
   }
 }

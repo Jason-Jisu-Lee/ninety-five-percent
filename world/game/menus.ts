@@ -47,7 +47,7 @@ export const opts = settings(leave, () => {
 })
 export const layers = [ask, evos, card, self, genes, opts], top = () => layers.find(l => l.shown())
 export const flee = () => run.sim.away || (sound('feast'), progress('feast'), run.sim.feast())
-const FIRST = 'You can enhance your Dragonfly at the Lair with lifeblood, but it will reset the run. Continue?'
+const FIRST = 'This will reset the run. Continue?'
 export const depart = () => save.fed ? flee() : ask.open([FIRST], [["Let's go!", flee], ["I'll stay a bit longer", () => {}]])
 export const ui = hud(() => {
   run.paused = !run.paused
