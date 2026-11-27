@@ -5,7 +5,8 @@ import { FOREST, UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
 import { UPGRADES } from '../../data/shop/upgrades'
 import { SHOP } from '../../data/shop/shop'
-import { FIRST, FREE, HIDDEN, LESSON, NEEDS, OPEN, RIPE } from '../../data/shop/open'
+import { AFTER, FIRST, FREE, HIDDEN, LESSON, NEEDS, OPEN, RIPE } from '../../data/shop/open'
+import { QUESTS } from '../../data/game/quests'
 import { brackets } from '../parts/brackets'
 import { frame } from '../parts/frame'
 import { icon, orb } from '../parts/icons'
@@ -25,7 +26,7 @@ export function shop(peek = DEV) {
   const table = stats(432, 110, true), body = () => tabs()[tab].name === 'Anatomy', born = () => tabs()[tab].name === 'Instinct'
   const early = () => !side && !save.fed, veiled = (name: string) => HIDDEN.includes(name) || early() && !FIRST[name]
   const tabs = () => [...SHOPS[side].filter(t => !veiled(t.name)), ...SHOPS[side].filter(t => peek && veiled(t.name))]
-  const known = (name = '') => !veiled(tabs()[tab].name) && tier < FREE && (!early() || !!FIRST[tabs()[tab].name]?.includes(name)) && (!NEEDS[name] || level(NEEDS[name]) >= RIPE)
+  const known = (name = '') => !veiled(tabs()[tab].name) && tier < FREE && (!early() || !!FIRST[tabs()[tab].name]?.includes(name)) && (!NEEDS[name] || level(NEEDS[name]) >= RIPE) && !(save.quest <= QUESTS.findIndex(q => q.kind === AFTER[name]))
   const tiers = () => Math.max(...tabs()[tab].items.map(it => it.tier)), split = () => tiers() > 0 && (peek || !early())
   const all = () => tabs()[tab].items.filter(it => !it.tier || it.tier === tier + 1).slice(0, ROWS * 2), spots = () => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L))
   const items = () => [...all().filter(it => known(it.name)), ...all().filter(it => peek && !known(it.name))]
