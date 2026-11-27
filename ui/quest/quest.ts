@@ -13,7 +13,7 @@ import { shine } from './shine'
 type Quest = typeof QUESTS[number]
 
 const R = W - 8, BAR = 64, WAIT = .35, FLY = .45, GAP = .09, HOLD = 3, SLIDE = .3, FAR = 270, MAX = 8, GLOW = .12, LINE = 12, GLINT = [.4, .5], EVERY = 30, DONE = 'Objective Complete'
-let seen = save.quest, done: Quest | undefined, at = 0, come = -9, rung = true, shone = 0
+let seen = save.quest, done: Quest | undefined, at = 0, come = -9, rung = true, shone = 0, counted = save.count
 
 const now = () => performance.now() / 1000, ease = (u: number) => Math.max(0, Math.min(1, u)) ** 2
 const drops = () => Math.min(done!.blood, MAX), landed = () => Math.max(0, Math.min(drops(), Math.floor((now() - at - WAIT - FLY) / GAP) + 1))
@@ -70,7 +70,7 @@ export function quest(g: Ctx, born = 9) {
     if (!rung) sound('cork')
     pop(g, u, draw, [R - w / 2 - 1.5, 45 + l / 2, w / 2 + 7.5, 17 + l / 2])
     const v = (u - GLINT[0]) / GLINT[1]
-    if (v < 1) shone = now()
+    if (v < 1 || save.count !== counted) [shone, counted] = [now(), save.count]
     shine(g, v < 1 ? v : (now() - shone + GLINT[1]) % EVERY / GLINT[1], draw, R - w, w, 30, 30 + l)
   }
   rung ||= now() >= come

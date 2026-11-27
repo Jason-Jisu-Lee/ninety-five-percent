@@ -35,7 +35,7 @@ export function hunt() {
       s.bite -= dt
       s.hurt -= dt
       s.boost -= dt
-      if (s.boost <= 0) s.primed = false
+      if (s.boost <= 0 && s.primed) [s.primed, s.used] = [false, false]
       if (s.primed) s.tight = Math.min(s.tight, s.span())
       s.miss += dt
       s.since += dt
