@@ -7,6 +7,7 @@ import { FIRST, FREE, LESSON } from '../../data/shop/open'
 import { brackets } from '../parts/brackets'
 import { frame } from '../parts/frame'
 import { icon } from '../parts/icons'
+import { side as turn } from '../parts/side'
 import { text, width } from '../text/text'
 import { about } from './about'
 import { emblem } from './emblem'
@@ -21,12 +22,16 @@ const DEV = import.meta.env.DEV, SECRET = 'Pink: hidden from players', TITLES = 
 const TIER = (i: number) => 'Tier ' + (i + 1), STEP = width(TIER(0)) + GAP, PIN = 14
 
 export function shop(peek = DEV) {
-  let shown = false, side = 0, tab = 0, tier = 0, hot = -1, over = -1, rung = -1, go = false, led = false, freed = -9, miss = -9, then: (() => void) | undefined
+  let shown = false, side = 0, tab = 0, tier = 0, hot = -1, over = -1, rung = -1, go = false, led = false, freed = -9, miss = -9, pass = 0, then: (() => void) | undefined
+  const kept = <T>(make: () => T) => {
+    let at = -1, v: T
+    return () => at === pass ? v : (at = pass, v = make())
+  }
   const table = stats(432, 110, true), body = () => tabs()[tab].name === 'Anatomy', born = () => tabs()[tab].name === 'Instinct'
-  const early = () => fresh(side), veiled = (name: string) => hid(side, name), tabs = () => listed(side, peek), known = (name = '') => seen(side, tabs()[tab].name, tier, name)
-  const tiers = () => Math.max(...tabs()[tab].items.map(it => it.tier)), split = () => tiers() > 0 && (peek || !early())
-  const all = () => tabs()[tab].items.filter(it => !it.tier || it.tier === tier + 1).slice(0, ROWS * 2), spots = () => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L))
-  const items = () => [...all().filter(it => known(it.name)), ...all().filter(it => peek && !known(it.name))]
+  const early = () => fresh(side), veiled = (name: string) => hid(side, name), tabs = kept(() => listed(side, peek)), known = (name = '') => seen(side, tabs()[tab].name, tier, name)
+  const tiers = kept(() => Math.max(...tabs()[tab].items.map(it => it.tier))), split = () => tiers() > 0 && (peek || !early())
+  const all = () => tabs()[tab].items.filter(it => !it.tier || it.tier === tier + 1).slice(0, ROWS * 2), spots = kept(() => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L)))
+  const items = kept(() => [...all().filter(it => known(it.name)), ...all().filter(it => peek && !known(it.name))])
   const cell = (i: number, d = +(tiers() > 0)) => [L + (i / (ROWS - d) | 0) * PX, TOP + (i % (ROWS - d) + d) * PY]
   const closed = (i: number) => !known(items()[i]?.name) || !sold(tabs()[tab].name, items()[i]?.name)
   const cost = (i: number) => closed(i) ? undefined : price(items()[i]?.name), can = (i: number) => save.blood >= (cost(i) ?? Infinity)
@@ -47,6 +52,7 @@ export function shop(peek = DEV) {
       ;[shown, side, tab, tier, hot, led, freed, miss, then] = [true, s, 0, 0, -1, false, -9, -9, done]
     },
     hover(x: number, y: number) {
+      pass++
       const was = hot, m = must()
       if (m && !inside(x, y, m[0], m[1], m[2], m[3])) x = y = -1
       hot = items().findIndex((_, i) => inside(x, y, cell(i)[0], cell(i)[1], CW, CH))
@@ -60,6 +66,7 @@ export function shop(peek = DEV) {
       return go || over >= 0 || rung >= 0 || can(hot)
     },
     click() {
+      pass++
       if (over >= 0) [tab, tier, hot] = [over, 0, -1]
       else if (rung >= 0) [tier, hot] = [rung, -1]
       else if (hot >= 0) can(hot) && (buy(items()[hot].name), sound('buy'), body() && progress('anatomy', true))
@@ -67,14 +74,16 @@ export function shop(peek = DEV) {
       else if (must()) miss = clock()
     },
     key(k: string) {
+      pass++
       if (must()) return true
-      const d = k === 'ArrowRight' || k === 'd' ? 1 : k === 'ArrowLeft' || k === 'a' ? -1 : 0
+      const d = turn(k)
       if (d) [tab, tier, hot] = [(tab + d + tabs().length) % tabs().length, 0, -1]
       else if (k === 'Escape' || k === 'Enter' || k === ' ') shut()
       return true
     },
     draw(g: Ctx) {
       if (!shown) return
+      pass++
       const pick = items()[hot], mark = emblem()
       g.fillStyle = UI.night
       g.fillRect(0, 0, W, H)

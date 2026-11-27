@@ -12,7 +12,7 @@ export function restart(edge = false, keep = false) {
   rotate()
   run.sim = hunt()
   claim()
-  Object.assign(G, { cast: -1, hale: run.sim.health })
+  Object.assign(G, { cast: -1, hale: run.sim.health, bird: -99 })
   if (edge) Object.assign(run.sim.fly, { x: 10, ang: 0 })
 }
 

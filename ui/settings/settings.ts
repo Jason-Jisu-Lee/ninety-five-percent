@@ -8,6 +8,7 @@ import { save } from '../../core/save/save'
 import { menu } from '../parts/menu'
 import { mixer } from '../parts/mixer'
 import { box, panel } from '../parts/panel'
+import { side } from '../parts/side'
 import { text } from '../text/text'
 import { wrap } from '../text/wrap'
 import { ROWS, statistics } from './statistics'
@@ -67,7 +68,7 @@ export function settings(toMenu: () => void, reset: () => void) {
       point(x, y)
     },
     key(k: string) {
-      const d = k === 'ArrowRight' || k === 'd' ? 1 : k === 'ArrowLeft' || k === 'a' ? -1 : 0
+      const d = side(k)
       if (k === 'Escape') {
         if (sure) sure = undefined
         else if (stats) stats = false

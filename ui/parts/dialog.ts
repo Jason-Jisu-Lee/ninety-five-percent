@@ -5,6 +5,7 @@ import { W } from '../../data/look/screen'
 import { text, width } from '../text/text'
 import { wrap } from '../text/wrap'
 import { box } from './panel'
+import { side } from './side'
 
 const MIN = 54, BH = 15, GAP = 8, TOP = 240, WIDE = 230, GUARD = 300
 
@@ -37,7 +38,7 @@ export function dialog() {
       if (i >= 0 && performance.now() - since > GUARD) run(i)
     },
     key(k: string) {
-      const d = k === 'ArrowRight' || k === 'd' ? 1 : k === 'ArrowLeft' || k === 'a' ? -1 : 0
+      const d = side(k)
       if (d) light(sel < 0 ? d > 0 ? 0 : acts.length - 1 : (sel + d + acts.length) % acts.length)
       else if (k === 'Escape') run(acts.length - 1)
       else if ((k === 'Enter' || k === ' ') && sel >= 0) run(sel)

@@ -1,9 +1,11 @@
 import { sound } from '../../audio/player/sound'
+import { clamp } from '../../core/math/clamp'
 import type { Ctx } from '../../core/screen/canvas'
 import { save } from '../../core/save/save'
 import { UI } from '../../data/look/palette'
 import { QUESTS } from '../../data/game/quests'
 import { W } from '../../data/look/screen'
+import { banner } from '../parts/banner'
 import { gauge } from '../parts/bar'
 import { icon, orb } from '../parts/icons'
 import { text, width } from '../text/text'
@@ -15,7 +17,7 @@ type Quest = typeof QUESTS[number]
 const R = W - 8, BAR = 64, WAIT = .35, FLY = .45, GAP = .09, HOLD = 3, SLIDE = .3, FAR = 270, MAX = 8, GLOW = .12, LINE = 12, GLINT = [.4, .5], EVERY = 30, DONE = 'Objective Complete'
 let seen = save.quest, done: Quest | undefined, at = 0, come = -9, rung = true, shone = 0, counted = save.count
 
-const now = () => performance.now() / 1000, ease = (u: number) => Math.max(0, Math.min(1, u)) ** 2
+const now = () => performance.now() / 1000, ease = (u: number) => clamp(u) ** 2
 const drops = () => Math.min(done!.blood, MAX), landed = () => Math.max(0, Math.min(drops(), Math.floor((now() - at - WAIT - FLY) / GAP) + 1))
 const pay = (q: Quest) => q.gives ?? (q.blood ? '+' + q.blood : ''), lead = (q: Quest) => q.blood ? 14 : 6, low = (q: Quest) => q.hint ? LINE : 0
 const wide = (q: Quest) => Math.max(width(q.text), width(q.hint ?? ''), (pay(q) ? width(pay(q)) + (q.n > 1 ? lead(q) : 8) : 0) + (q.n > 1 ? BAR + 6 + width(`0 / ${q.n}`) : 0))
@@ -48,24 +50,12 @@ function track(g: Ctx, q: Quest, got: number, col: string, dx: number, tick = fa
   if (tick) icon(g, 'tick', r - width(q.text) - 11, 35, UI.accent, UI.panel)
 }
 
-function title(g: Ctx, name: string, t: number) {
-  const half = width(DONE) + 8
-  g.globalAlpha = Math.max(0, Math.min(1, t / .25, (HOLD - t) / .4))
-  text(g, DONE, W / 2, 72, UI.gold, 'c', UI.panel, 2)
-  text(g, name, W / 2, 88, UI.text, 'c', UI.panel)
-  for (const s of [-1, 1]) for (const [col, y] of [[UI.panel, 66], [UI.gold, 65]] as const) {
-    g.fillStyle = col
-    g.fillRect(W / 2 + s * half + (s < 0 ? -36 : 0), y, 36, 1)
-  }
-  g.globalAlpha = 1
-}
-
 export function quest(g: Ctx, born = 9) {
   sync()
   const q = QUESTS[save.quest], t = now() - at
   if (done && t < HOLD + SLIDE) {
     track(g, done, done.n, UI.gold, ease((t - HOLD) / SLIDE) * FAR, true)
-    title(g, done.text, t)
+    banner(g, DONE, [done.text], t, HOLD)
   } else if (q && born >= 0) {
     const u = Math.min(born, now() - come), w = wide(q), l = low(q), draw = (to: Ctx, dy = 0) => track(to, q, save.count, UI.text, 0, false, dy)
     if (!rung) sound('cork')

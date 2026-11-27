@@ -1,13 +1,14 @@
 import { ctx, mk, type Ctx } from '../../core/screen/canvas'
 import { FONT } from '../../data/look/font'
 
-const cache = new Map<string, HTMLCanvasElement>()
+const cache = new Map<string, HTMLCanvasElement>(), rows: Record<string, number[]> = {}, spans: Record<string, number> = {}
 
-export const glyph = (ch: string) => [...FONT[ch] ?? ''].map(c => parseInt(c, 32))
+export const glyph = (ch: string) => rows[ch] ??= [...FONT[ch] ?? ''].map(c => parseInt(c, 32))
 
 function span(ch: string) {
+  if (spans[ch]) return spans[ch]
   const m = glyph(ch).reduce((a, b) => a | b, 0)
-  return m ? 5 - Math.log2(m & -m) : 3
+  return spans[ch] = m ? 5 - Math.log2(m & -m) : 3
 }
 
 export const width = (str: string) => [...str].reduce((w, ch) => w + span(ch) + 1, -1)

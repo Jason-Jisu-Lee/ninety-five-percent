@@ -38,12 +38,9 @@ for (const file of readdirSync(songs)) {
 rmSync(tmp, { force: true })
 
 if (!only || only === 'fx') {
-  const made = Object.entries(effects).map(([name, { ring, send, tone, peak, wave, ...fx }]) => {
-    if (wave) return { name, mono: wave(), peak: wave().reduce((a, v) => Math.max(a, Math.abs(v)), 0), want: peak }
-    const mix = render({ bpm: 150, ring, send, ...(tone ? { tone } : {}) }, fx)
-    return { name, mono: mix.l.map((v, i) => (v + mix.r[i]) / 2), peak: mix.peak, want: peak }
-  })
-  const gain = .35 / Math.max(...made.filter(m => !m.want).map(m => m.peak))
-  for (const m of made) writeFileSync(join(out, 'effects', m.name + '.wav'), wav([m.mono], m.want ? m.want / m.peak : gain))
-  console.log(made.length, 'effects')
+  for (const [name, { ring, send, tone, peak, wave, ...fx }] of Object.entries(effects)) {
+    const mix = wave ? null : render({ bpm: 150, ring, send, ...(tone ? { tone } : {}) }, fx), mono = mix ? mix.l.map((v, i) => (v + mix.r[i]) / 2) : wave()
+    writeFileSync(join(out, 'effects', name + '.wav'), wav([mono], peak / (mix ? mix.peak : mono.reduce((a, v) => Math.max(a, Math.abs(v)), 0))))
+  }
+  console.log(Object.keys(effects).length, 'effects')
 }

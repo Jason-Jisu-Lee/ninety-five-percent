@@ -5,6 +5,7 @@ import type { Mutation } from '../../data/game/mutations'
 import { UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
 import { panel } from '../parts/panel'
+import { side } from '../parts/side'
 import { text } from '../text/text'
 import { wrap } from '../text/wrap'
 
@@ -31,7 +32,7 @@ export function mutationPick() {
     hover: (x: number, y: number) => light(at(x, y)),
     click: (x: number, y: number) => pick(at(x, y)),
     key(k: string) {
-      const d = k === 'ArrowRight' || k === 'd' ? 1 : k === 'ArrowLeft' || k === 'a' ? -1 : 0
+      const d = side(k)
       if (d) light(sel < 0 ? d > 0 ? 0 : cards.length - 1 : (sel + d + cards.length) % cards.length)
       else if (k === 'Enter' || k === ' ') pick(sel)
       return true
