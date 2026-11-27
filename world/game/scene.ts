@@ -20,12 +20,13 @@ import { evos, fate, genes, herald, mourn, omen } from './notices'
 import { render } from './render'
 import { advance, asleep, born, bound, reveal } from './opening'
 import { onward, restart, run } from './run'
+import { settle } from '../place/place'
 import { G } from './state'
 
 const lunging = () => QUESTS[save.quest]?.kind === 'lunge'
 
 export const stage1: Scene = {
-  enter: restart,
+  enter: () => (settle(), restart(false, true)),
   update(dt) {
     tick(dt)
     story.update(dt)
