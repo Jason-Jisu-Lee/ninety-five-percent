@@ -1,4 +1,4 @@
-import { rgb, type Ctx } from '../../core/screen/canvas'
+import { exact, rgb, type Ctx } from '../../core/screen/canvas'
 import { FOREST as C } from '../../data/look/palette'
 import { PREY } from '../../data/enemies/enemies'
 import { frog } from './frog'
@@ -13,18 +13,31 @@ const gilt = (col: string) => gilded[col] ??= rgb(col).reduce((a, b) => a + b) <
 
 export const cells = (p: Prey) => Math.max(1, Math.ceil(PREY[p.kind].len * p.hp / PREY[p.kind].hp))
 
-function plot(g: Ctx, p: Pose, shadow: boolean) {
+const dots = new Map<number, string>(), hues = new Map<string, number[]>()
+
+function flush(g: Ctx) {
+  for (const [at, col] of dots) hues.get(col)?.push(at) ?? hues.set(col, [at])
+  for (const [col, list] of hues) {
+    g.fillStyle = col
+    for (const at of list) g.fillRect((at >> 14) - 4096, (at & 16383) - 4096, 1, 1)
+  }
+  dots.clear()
+  hues.clear()
+}
+
+function plot(g: Ctx, p: Pose, shadow: boolean, batch: boolean) {
   const c = Math.cos(p.ang), s = Math.sin(p.ang), x0 = p.x + (shadow ? p.h * .45 : 0), y0 = p.y - (shadow ? 0 : p.h * .7)
   return (along: number, across: number, col: string, thin = false) => {
-    const x = Math.round(x0 + c * along - s * across), y = Math.round(y0 + s * along + c * across)
+    const x = Math.round(x0 + c * along - s * across), y = Math.round(y0 + s * along + c * across), fill = shadow ? C.deep : p.flash > 0 ? C.white : p.gold && !thin ? gilt(col) : col
     if (shadow && thin && x + y & 1) return
-    g.fillStyle = shadow ? C.deep : p.flash > 0 ? C.white : p.gold && !thin ? gilt(col) : col
+    if (batch && x > -4096 && x < 4096 && y > -4096 && y < 4096) return void dots.set(x + 4096 << 14 | y + 4096, fill)
+    g.fillStyle = fill
     g.fillRect(x, y, 1, 1)
   }
 }
 
-function drawBug(g: Ctx, k: Bug, p: Pose, n: number, t: number, shadow = false) {
-  const dot = plot(g, p, shadow), edge = (k.wide - 1) / 2, fold = p.h < 6 || (t * k.beat + p.seed * 7) % 1 >= .5 ? .45 : 1, make = SHAPES[k.shape]
+function drawBug(g: Ctx, k: Bug, p: Pose, n: number, t: number, shadow: boolean, batch: boolean) {
+  const dot = plot(g, p, shadow, batch), edge = (k.wide - 1) / 2, fold = p.h < 6 || (t * k.beat + p.seed * 7) % 1 >= .5 ? .45 : 1, make = SHAPES[k.shape]
   if (k.shape === 'frog') return frog(dot, k, t + p.seed * 9)
   if (make) return make(n < k.len ? (a, c, col, thin) => a >= k.len / 2 - n && dot(a - (k.len - n) / 2, c, col, thin) : dot, !p.wings ? 0 : p.h < 6 ? .3 : fold, t + p.seed * 9)
   if (p.wings) for (const side of [-1, 1]) for (let i = 1; i <= k.wing; i += .5) {
@@ -36,7 +49,9 @@ function drawBug(g: Ctx, k: Bug, p: Pose, n: number, t: number, shadow = false) 
 }
 
 export function drawPrey(g: Ctx, p: Prey, t: number, shadow = false) {
-  drawBug(g, PREY[p.kind], p, cells(p), t, shadow)
+  const batch = exact(g)
+  drawBug(g, PREY[p.kind], p, cells(p), t, shadow, batch)
+  if (batch) flush(g)
   if (!p.gold || shadow) return
   const k = (t * 2 + p.seed * 9) % 2 | 0, r = PREY[p.kind].len / 2 + 3
   g.fillStyle = C.white

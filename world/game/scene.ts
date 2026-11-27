@@ -8,7 +8,6 @@ import { owns } from '../../core/save/wild'
 import { QUESTS } from '../../data/game/quests'
 import { LUNGE, STREAK } from '../../data/dragonfly/fight'
 import { FLY } from '../../data/dragonfly/flight'
-import { BIRD } from '../../data/game/bird'
 import { NEWS } from '../../data/game/hints'
 import { narrate } from '../../ui/hint/narrate'
 import { DUSK, RECALL } from '../../data/game/map'
@@ -16,7 +15,7 @@ import { age, teach } from '../../ui/hint/life'
 import { unlocked } from '../../ui/hint/unlock'
 import { since } from '../../ui/quest/quest'
 import { glow, tick } from '../../ui/track/track'
-import { over, scatter, shadow } from './bird'
+import { shadow, watch } from './bird'
 import { input } from './input'
 import { depart, layers, story, title, top, ui } from './menus'
 import { evos, fate, genes, herald, mourn, omen } from './notices'
@@ -44,13 +43,7 @@ export const stage1: Scene = {
     const first = !Object.keys(save.caught).length, was = save.blood, h = sim.held
     for (let i = 0; i < run.rate; i++) sim.step(dt, G.clock += dt)
     const want = QUESTS[save.quest]?.kind ?? ''
-    if (!save.bird && G.bird < -9 && want === 'ladybug' && save.count) G.bird = -BIRD.wait
-    if (sim.away) G.bird = -99
-    else if (G.bird > -9) {
-      if (G.bird < 0 && G.bird + dt * run.rate >= 0) save.bird = true, sound('cry')
-      scatter(sim, G.bird += dt * run.rate, dt * run.rate)
-      if (over(G.bird)) G.bird = -99
-    }
+    watch(sim, want, dt * run.rate)
     if (due()) genes.open()
     if (want.startsWith('buy ') && since() > 1 && owns(want.slice(4))) progress(want)
     const hurt = sim.health < G.hale

@@ -9,6 +9,11 @@ export const mk = (w: number, h: number) => {
 
 export const ctx = (c: HTMLCanvasElement, o?: CanvasRenderingContext2DSettings) => c.getContext('2d', o)!
 
+export const exact = (g: Ctx) => {
+  const m = g.getTransform()
+  return g.globalAlpha === 1 && g.globalCompositeOperation === 'source-over' && m.a === 1 && m.d === 1 && !m.b && !m.c && Number.isInteger(m.e) && Number.isInteger(m.f)
+}
+
 export const rgb = (h: string) => {
   const n = parseInt(h.slice(1), 16)
   return [n >> 16 & 255, n >> 8 & 255, n & 255]

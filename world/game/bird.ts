@@ -1,8 +1,11 @@
+import { sound } from '../../audio/player/sound'
+import { save } from '../../core/save/save'
 import { ctx, mk, type Ctx } from '../../core/screen/canvas'
 import { PREY } from '../../data/enemies/enemies'
 import { BIRD as B, WING } from '../../data/game/bird'
 import { H, W } from '../../data/look/screen'
 import type { hunt } from '../hunt/hunt'
+import { G } from './state'
 
 const half = ctx(mk(W / 2, H / 2)), OUTLINE = [...WING, ...WING.slice(1, -1).reverse().map(([x, y]) => [x, -y])]
 const [fx, fy] = B.from, [tx, ty] = B.to, heading = Math.atan2(ty - fy, tx - fx)
@@ -11,9 +14,16 @@ const at = (t: number) => {
   return u > 0 && u < 1 ? [fx + (tx - fx) * u, fy + (ty - fy) * u] : null
 }
 
-export const over = (t: number) => t > B.shadow + B.pass + B.fade
+export function watch(sim: ReturnType<typeof hunt>, want: string, dt: number) {
+  if (!save.bird && G.bird < -9 && want === 'ladybug' && save.count) G.bird = -B.wait
+  if (sim.away) return void (G.bird = -99)
+  if (G.bird <= -9) return
+  if (G.bird < 0 && G.bird + dt >= 0) save.bird = true, sound('cry')
+  scatter(sim, G.bird += dt, dt)
+  if (G.bird > B.shadow + B.pass + B.fade) G.bird = -99
+}
 
-export function scatter(sim: ReturnType<typeof hunt>, t: number, dt: number) {
+function scatter(sim: ReturnType<typeof hunt>, t: number, dt: number) {
   const s = at(t)
   if (s) for (const p of sim.prey.list) {
     const d = Math.hypot(p.x - s[0], p.y - s[1])

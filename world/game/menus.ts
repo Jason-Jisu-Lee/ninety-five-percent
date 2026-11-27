@@ -46,7 +46,7 @@ export const opts = settings(leave, () => {
   G.frozen = run.paused = false
 })
 export const layers = [ask, evos, card, self, genes, opts], top = () => layers.find(l => l.shown())
-export const flee = () => run.sim.away || (sound('feast'), progress('feast'), run.sim.feast())
+const flee = () => run.sim.away || (sound('feast'), progress('feast'), run.sim.feast())
 const FIRST = 'This will reset the run. Continue?'
 export const depart = () => save.fed ? flee() : ask.open([FIRST], [["Let's go!", flee], ["I'll stay a bit longer", () => {}]])
 export const ui = hud(() => {

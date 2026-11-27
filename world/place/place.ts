@@ -8,7 +8,7 @@ const BUILD = [pond, marsh], SEED = [12, 5], made: Place[] = []
 let turn = 0
 
 export const where = { stage: reach() }
-export const scene = (stage: number) => made[stage] ??= BUILD[stage - 1](SEED[stage - 1])
+const scene = (stage: number) => made[stage] ??= BUILD[stage - 1](SEED[stage - 1])
 export const place = () => scene(where.stage)
 export const settle = () => where.stage = reach()
 export function rotate() {

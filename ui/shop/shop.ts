@@ -3,35 +3,32 @@ import { buy, level, price, progress, save } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { FOREST, UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
-import { UPGRADES } from '../../data/shop/upgrades'
-import { SHOP } from '../../data/shop/shop'
-import { AFTER, FIRST, FREE, HIDDEN, LESSON, NEEDS, OPEN, RIPE } from '../../data/shop/open'
-import { QUESTS } from '../../data/game/quests'
+import { FIRST, FREE, LESSON } from '../../data/shop/open'
 import { brackets } from '../parts/brackets'
 import { frame } from '../parts/frame'
-import { icon, orb } from '../parts/icons'
+import { icon } from '../parts/icons'
 import { text, width } from '../text/text'
 import { about } from './about'
 import { emblem } from './emblem'
 import { head } from './head'
+import { CH, CW, row } from './row'
+import { early as fresh, listed, seen, sold, veiled as hid } from './rules'
 import { skill } from './skill'
 import { stats } from './stats'
 
-const L = 32, R = W - L, CW = 184, CH = 17, PX = CW + 12, PY = 20, TOP = 98, ROWS = 10, SIDE = L + PX * 2 + 8, GAP = 26, BW = 96, BH = 20, BY = H - 40
-const DEV = import.meta.env.DEV, SECRET = 'Pink: hidden from players', NAMES = ['Blood shop', 'Evolution shop'], TITLES = ['Lair', 'Evolution'], SHOPS = NAMES.map(n => SHOP.filter(t => t.shop === n))
+const L = 32, R = W - L, PX = CW + 12, PY = 20, TOP = 98, ROWS = 10, SIDE = L + PX * 2 + 8, GAP = 26, BW = 96, BH = 20, BY = H - 40
+const DEV = import.meta.env.DEV, SECRET = 'Pink: hidden from players', TITLES = ['Lair', 'Evolution']
 const TIER = (i: number) => 'Tier ' + (i + 1), STEP = width(TIER(0)) + GAP, PIN = 14
 
 export function shop(peek = DEV) {
   let shown = false, side = 0, tab = 0, tier = 0, hot = -1, over = -1, rung = -1, go = false, led = false, freed = -9, miss = -9, then: (() => void) | undefined
   const table = stats(432, 110, true), body = () => tabs()[tab].name === 'Anatomy', born = () => tabs()[tab].name === 'Instinct'
-  const early = () => !side && !save.fed, veiled = (name: string) => HIDDEN.includes(name) || early() && !FIRST[name]
-  const tabs = () => [...SHOPS[side].filter(t => !veiled(t.name)), ...SHOPS[side].filter(t => peek && veiled(t.name))]
-  const known = (name = '') => !veiled(tabs()[tab].name) && tier < FREE && (!early() || !!FIRST[tabs()[tab].name]?.includes(name)) && (!NEEDS[name] || level(NEEDS[name]) >= RIPE) && !(save.quest <= QUESTS.findIndex(q => q.kind === AFTER[name]))
+  const early = () => fresh(side), veiled = (name: string) => hid(side, name), tabs = () => listed(side, peek), known = (name = '') => seen(side, tabs()[tab].name, tier, name)
   const tiers = () => Math.max(...tabs()[tab].items.map(it => it.tier)), split = () => tiers() > 0 && (peek || !early())
   const all = () => tabs()[tab].items.filter(it => !it.tier || it.tier === tier + 1).slice(0, ROWS * 2), spots = () => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L))
   const items = () => [...all().filter(it => known(it.name)), ...all().filter(it => peek && !known(it.name))]
   const cell = (i: number, d = +(tiers() > 0)) => [L + (i / (ROWS - d) | 0) * PX, TOP + (i % (ROWS - d) + d) * PY]
-  const closed = (i: number) => !known(items()[i]?.name) || !!OPEN[tabs()[tab].name] && !OPEN[tabs()[tab].name].includes(items()[i]?.name)
+  const closed = (i: number) => !known(items()[i]?.name) || !sold(tabs()[tab].name, items()[i]?.name)
   const cost = (i: number) => closed(i) ? undefined : price(items()[i]?.name), can = (i: number) => save.blood >= (cost(i) ?? Infinity)
   const inside = (x: number, y: number, bx: number, by: number, w: number, h: number) => x >= bx && x < bx + w && y >= by && y < by + h
   const clock = () => performance.now() / 1000, slot = (i: number) => [spots()[i] - 6, 54, width(tabs()[i].name) + 12, 22]
@@ -100,19 +97,7 @@ export function shop(peek = DEV) {
         if (shut && !early()) icon(g, 'lock', x + width(TIER(i)) + 4, TOP + 5, UI.faint)
       }
       if (early()) for (let i = FREE; i < tiers(); i++) icon(g, 'lock', L + (i - FREE) * PIN + +split() * tiers() * STEP, TOP + 5, UI.faint)
-      items().forEach((it, i) => {
-        const [x, y] = cell(i)
-        const c = cost(i), p = String(c), ok = can(i)
-        frame(g, x, y, CW, CH, i === hot)
-        g.fillStyle = FOREST.pink
-        if (!known(it.name)) g.fillRect(x, y, 2, CH)
-        text(g, it.name, x + 7, y + 12, !known(it.name) ? FOREST.pink : it.off || UPGRADES[it.name] && !c ? UI.dim : i === hot ? UI.gold : UI.text)
-        const n = level(it.name), of = UPGRADES[it.name]?.[2].length ?? 0
-        if (n && of > 1) text(g, `${n}/${of}`, x + 12 + width(it.name), y + 12, UI.dim)
-        if (!c) return
-        text(g, p, x + CW - 7, y + 12, ok ? UI.text : UI.dim, 'r')
-        orb(g, x + CW - 12 - width(p), y + 8, ok ? '' : UI.dim)
-      })
+      items().forEach((it, i) => row(g, it, ...cell(i) as [number, number], i === hot, known(it.name), cost(i), can(i)))
       if (pick) about(g, pick, SIDE, R - SIDE)
       if (body()) table.tip(g)
       if (tabs().some(t => veiled(t.name))) text(g, SECRET, L, BY + 14, FOREST.pink)
