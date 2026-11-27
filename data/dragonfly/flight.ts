@@ -1,5 +1,5 @@
 export const CM = 3.8
-export const FLY = { top: 76, cruise: .55, turn: 1.309, accel: 2.303, brake: 3, arrive: 4, tight: .35, hover: [10, 30], keep: .4, clear: 1.3, bank: .9, height: 15, bob: 1.2, beat: 4, catch: 7, lead: .8, dash: 3, flee: 480, swing: 3, gone: 24 }
+export const FLY = { top: 76, cruise: .55, turn: 1.309, accel: 2.303, brake: 3, arrive: 4, tight: .35, hover: [10, 30], keep: .4, clear: 1.3, bank: .9, height: 15, pivot: 6, edge: .35, bob: 1.2, beat: 4, catch: 7, lead: .8, dash: 3, flee: 480, swing: 3, gone: 24 }
 export const STAMINA = { drain: 4, regen: 12, tired: 10, wake: 100, spent: .6 }
 export const ROAM = { hop: [40, 220], pause: [0, 1.5], near: 8, pad: 24, top: 40 }
 export const REST = { every: [3, 8], flick: .32, droop: [1, 2.5], tilt: .3 }

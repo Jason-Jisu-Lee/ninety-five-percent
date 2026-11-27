@@ -14,7 +14,7 @@ export const ROWS: [label: string, stat: Stat, base: (v: number) => string, now:
   ['Health', 'health', num, num, 'Hit points'],
   ['Armor', 'armor', num, num, 'Damage blocked per attack'],
   ['Speed', 'speed', v => num(FLY.top * v / CM), v => num(FLY.top * v / CM) + ' cm/s', 'Flying speed'],
-  ['Turning', 'turn', v => num(75 * v), (v, speed) => num(75 * v * speed) + ' deg/s', 'How fast it turns'],
+  ['Turning', 'turn', v => num(75 * v), (v, speed) => num(Math.min(75 * v * speed ** 2, FLY.top * speed / FLY.pivot * 180 / Math.PI)) + ' deg/s', 'How fast it turns'],
   ['Stamina', 'stamina', v => num(100 / STAMINA.drain * v), v => num(100 / STAMINA.drain * v) + ' s', 'How long it can fly'],
   ['Rest', 'rest', v => num(STAMINA.regen * v) + '%', v => num(STAMINA.regen * v) + '%/s', 'Stamina regained per second of rest'],
   ['Mend in flight', 'mend', v => num(v) + '%', v => num(v) + '%/s', 'Health regained per second of flight'],

@@ -3,4 +3,4 @@ export const NEEDS: Record<string, string> = { 'Sharper Mandibles': 'Sharp Mandi
 export const AFTER: Record<string, string> = { 'Warm Blood': 'anatomy', 'Slow Mend': 'anatomy' }
 export const OPEN: Record<string, string[]> = { Instinct: ['Lunge', 'Ambush', 'Dive Strike'] }
 export const LESSON = [['Anatomy', 'Sharp Mandibles'], ['Instinct', 'Lunge']]
-export const FIRST: Record<string, string[]> = { Anatomy: ['Sharp Mandibles', 'Long Wings', 'Split Wingbeat', 'Wide Spiracles'], Instinct: ['Lunge'] }
+export const FIRST: Record<string, string[]> = { Anatomy: ['Sharp Mandibles', 'Long Wings', 'Wide Spiracles'], Instinct: ['Lunge'] }

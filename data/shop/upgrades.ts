@@ -9,7 +9,6 @@ const GIVES: Record<string, [stat: Stat, each: number]> = {
   'Hard Shell': ['armor', 1],
   'Long Wings': ['speed', .1],
   'Longer Wings': ['speed', .2],
-  'Split Wingbeat': ['turn', 1 / 3],
   'Wide Spiracles': ['stamina', .12],
   'Wider Spiracles': ['stamina', .25],
   'Warm Blood': ['rest', .1],
