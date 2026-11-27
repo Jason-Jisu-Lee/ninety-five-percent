@@ -12,8 +12,8 @@ import { shine } from './shine'
 
 type Quest = typeof QUESTS[number]
 
-const R = W - 8, BAR = 64, WAIT = .35, FLY = .45, GAP = .09, HOLD = 3, SLIDE = .3, FAR = 270, MAX = 8, GLOW = .12, LINE = 12, GLINT = [.4, .5], DONE = 'Objective Complete'
-let seen = save.quest, done: Quest | undefined, at = 0, come = -9, rung = true
+const R = W - 8, BAR = 64, WAIT = .35, FLY = .45, GAP = .09, HOLD = 3, SLIDE = .3, FAR = 270, MAX = 8, GLOW = .12, LINE = 12, GLINT = [.4, .5], EVERY = 30, DONE = 'Objective Complete'
+let seen = save.quest, done: Quest | undefined, at = 0, come = -9, rung = true, shone = 0
 
 const now = () => performance.now() / 1000, ease = (u: number) => Math.max(0, Math.min(1, u)) ** 2
 const drops = () => Math.min(done!.blood, MAX), landed = () => Math.max(0, Math.min(drops(), Math.floor((now() - at - WAIT - FLY) / GAP) + 1))
@@ -69,7 +69,9 @@ export function quest(g: Ctx, born = 9) {
     const u = Math.min(born, now() - come), w = wide(q), l = low(q), draw = (to: Ctx, dy = 0) => track(to, q, save.count, UI.text, 0, false, dy)
     if (!rung) sound('cork')
     pop(g, u, draw, [R - w / 2 - 1.5, 45 + l / 2, w / 2 + 7.5, 17 + l / 2])
-    shine(g, (u - GLINT[0]) / GLINT[1], draw, R - w, w, 30, 30 + l)
+    const v = (u - GLINT[0]) / GLINT[1]
+    if (v < 1) shone = now()
+    shine(g, v < 1 ? v : (now() - shone + GLINT[1]) % EVERY / GLINT[1], draw, R - w, w, 30, 30 + l)
   }
   rung ||= now() >= come
   if (!done) return
