@@ -17,12 +17,12 @@ let seen = save.quest, done: Quest | undefined, at = 0, come = -9, rung = true, 
 
 const now = () => performance.now() / 1000, ease = (u: number) => Math.max(0, Math.min(1, u)) ** 2
 const drops = () => Math.min(done!.blood, MAX), landed = () => Math.max(0, Math.min(drops(), Math.floor((now() - at - WAIT - FLY) / GAP) + 1))
-const pay = (q: Quest) => q.blood ? '+' + q.blood : '', low = (q: Quest) => q.hint ? LINE : 0
-const wide = (q: Quest) => Math.max(width(q.text), width(q.hint ?? ''), (q.blood ? width(pay(q)) + (q.n > 1 ? 14 : 8) : 0) + (q.n > 1 ? BAR + 6 + width(`0 / ${q.n}`) : 0))
+const pay = (q: Quest) => q.gives ?? (q.blood ? '+' + q.blood : ''), lead = (q: Quest) => q.blood ? 14 : 6, low = (q: Quest) => q.hint ? LINE : 0
+const wide = (q: Quest) => Math.max(width(q.text), width(q.hint ?? ''), (pay(q) ? width(pay(q)) + (q.n > 1 ? lead(q) : 8) : 0) + (q.n > 1 ? BAR + 6 + width(`0 / ${q.n}`) : 0))
 
 function sync() {
   if (save.quest !== seen) {
-    done = save.quest > seen && QUESTS[seen].blood ? QUESTS[seen] : undefined
+    done = save.quest > seen && pay(QUESTS[seen]) ? QUESTS[seen] : undefined
     ;[seen, at] = [save.quest, now()]
     ;[come, rung] = done ? [at + HOLD + SLIDE, false] : [-9, true]
     if (done) sound('quest')
@@ -32,18 +32,19 @@ function sync() {
 
 export function owed() {
   sync()
-  return done ? done.blood * (1 - landed() / drops()) : 0
+  return done?.blood ? done.blood * (1 - landed() / drops()) : 0
 }
 
 export const since = () => (sync(), now() - at - HOLD - SLIDE * 2)
 export const lit = () => !!done && landed() > 0 && now() - at - WAIT - FLY - (landed() - 1) * GAP < GLOW
 
 function track(g: Ctx, q: Quest, got: number, col: string, dx: number, tick = false, dy = 0) {
-  const r = R + dx, p = pay(q), y = dy + low(q), x = r - (p ? width(p) + 14 : 0) - BAR
+  const r = R + dx, p = pay(q), y = dy + low(q), x = r - (p ? width(p) + lead(q) : 0) - BAR
   text(g, q.text, r, 41 + dy, col, 'r', UI.panel)
   if (q.hint) text(g, q.hint, r, 41 + LINE + dy, UI.text, 'r', UI.panel)
   if (q.n > 1) gauge(g, x, 48 + y, BAR, got / q.n, UI.accent), text(g, `${got} / ${q.n}`, x - 6, 54 + y, UI.accent, 'r', UI.panel)
-  if (p) text(g, p, r, 54 + y, UI.gold, 'r', UI.panel), orb(g, r - width(p) - 6, 50 + y, '', UI.panel)
+  if (p) text(g, p, r, 54 + y, UI.gold, 'r', UI.panel)
+  if (q.blood) orb(g, r - width(p) - 6, 50 + y, '', UI.panel)
   if (tick) icon(g, 'tick', r - width(q.text) - 11, 35, UI.accent, UI.panel)
 }
 
