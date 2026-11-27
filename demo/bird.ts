@@ -5,24 +5,29 @@ import { H, W } from '../data/look/screen'
 import { PREY } from '../data/enemies/enemies'
 import { UI } from '../data/look/palette'
 import { hud } from '../ui/hud/hud'
+import { box } from '../ui/parts/panel'
 import { text, width } from '../ui/text/text'
 import { render } from '../world/game/render'
 import { hunt } from '../world/hunt/hunt'
 
-type Look = { name: string; say: string; draw: (g: Ctx, u: number, sx: number, sy: number) => void }
+type Look = { name: string; say: string; draw: (g: Ctx, u: number) => void }
 
-const LOOP = 13, CRY = 1, SAY = 1.8, START = 3, PASS = 4.8, SPAN = 300, ALPHA = .32, INK = '#0b1a14', LINE = 'Something big is coming', HOLD = 3.6
+const LOOP = 13, CRY = 1, SAY = 1.8, START = 3, PASS = 4.8, SPAN = 300, ALPHA = .32, INK = '#0b1a14', LINE = 'Something big is coming', HOLD = 3.6, TYPE = 1.2, Y = H - 22
 const WING = [[.4, 0], [.33, .045], [.22, .07], [.2, .3], [.14, .62], [.08, .86], [.07, .98], [.03, .93], [.02, 1], [-.02, .94], [-.04, .99], [-.08, .92], [-.1, .95], [-.13, .86], [-.18, .62], [-.16, .3], [-.12, .1], [-.2, .09], [-.4, .17], [-.43, .06], [-.44, 0]]
 const OUTLINE = [...WING, ...WING.slice(1, -1).reverse().map(([x, y]) => [x, -y])]
 const SOUNDS = [
-  ['Far cry', 'one distant raptor scream with a little echo, 1.3 s'],
-  ['Two calls', 'a short call, then a longer one, far off'],
-  ['Wingbeats', 'three slow, heavy wingbeats from far away'],
-  ['Air rush', 'wind swelling and fading as something big goes over'],
-  ['Cry and air', 'the far cry, then the air rush under it'],
+  ['Far cry', 'the one you picked, unchanged'],
+  ['Lower', 'the same cry, deeper and a little longer'],
+  ['Shorter', 'a quicker cry, less tail'],
+  ['Farther', 'softer and darker, a longer echo'],
+  ['Closer', 'drier and a bit rougher, short echo'],
+  ['Long fall', 'a longer cry that drops further at the end'],
 ]
-const half = ctx(mk(W / 2, H / 2)), from: [number, number] = [-200, 290], to: [number, number] = [840, 50], heading = Math.atan2(to[1] - from[1], to[0] - from[0])
-const fade = (u: number) => Math.max(0, Math.min(1, u / .6, (HOLD - u) / 1))
+const half = ctx(mk(W / 2, H / 2)), scene = ctx(mk(W, H)), from: [number, number] = [-200, 290], to: [number, number] = [840, 50], heading = Math.atan2(to[1] - from[1], to[0] - from[0])
+const LEFT = Math.round(W / 2 - width(LINE) / 2), FULL = width(LINE)
+const alpha = (u: number) => u < 0 ? 0 : Math.max(0, Math.min(1, (HOLD - u) / 1))
+const typed = (u: number) => Math.max(0, Math.min(LINE.length, Math.floor(u / TYPE * LINE.length)))
+const at = (i: number) => LEFT + (i ? width(LINE.slice(0, i)) + 1 : 0)
 
 function cast(x: number, y: number, t: number) {
   const s = SPAN / 4, flex = 1 - .05 * Math.sin(t * 1.6)
@@ -41,48 +46,101 @@ function cast(x: number, y: number, t: number) {
   half.putImageData(img, 0, 0)
 }
 
-function shadow(g: Ctx) {
-  g.save()
-  g.imageSmoothingEnabled = false
-  g.globalAlpha = ALPHA
-  g.drawImage(half.canvas, 0, 0, W, H)
-  g.restore()
+function plain(g: Ctx, u: number, y = Y, edge: string | undefined = UI.panel) {
+  const a = alpha(u)
+  if (a <= 0) return 0
+  g.globalAlpha = a
+  text(g, LINE.slice(0, typed(u)), LEFT, y, UI.text, undefined, edge)
+  g.globalAlpha = 1
+  return a
 }
 
-function line(g: Ctx, u: number, x: number, y: number, align?: 'c' | 'r', shown = LINE) {
-  const a = fade(u)
+function shade(g: Ctx, u: number, x: number, y: number, w: number, h: number, fill: string, k = 1) {
+  const a = alpha(u) * Math.min(1, u / .15)
   if (a <= 0) return
-  g.globalAlpha = a
-  text(g, shown, x, y, UI.text, align, UI.panel)
+  g.globalAlpha = a * k
+  g.fillStyle = fill
+  g.fillRect(x, y, w, h)
   g.globalAlpha = 1
 }
 
 const LOOKS: Look[] = [
-  { name: 'Bottom centre', say: 'Like a subtitle, low in the middle, clear of the cards and the Lair button', draw: (g, u) => line(g, u, W / 2, H - 22, 'c') },
-  { name: 'Middle, small', say: 'In the middle of the pond at normal text size, over the water', draw: (g, u) => line(g, u, W / 2, H / 2 - 36, 'c') },
-  { name: 'Under the counter', say: 'Top left, just under the lifeblood counter, where the eye checks often', draw: (g, u) => line(g, u, 10, 40) },
   {
-    name: 'With the shadow', say: 'Appears where the shadow will come in and drifts across with it',
-    draw: (g, u, sx, sy) => {
-      const k = Math.max(0, Math.min(1, (u - (START - SAY)) / PASS)), x = 120 + k * 360, y = 250 - k * 110
-      line(g, u, Math.round(x), Math.round(y), 'c')
-      void sx
-      void sy
+    name: 'Gray box', say: 'A see-through gray box sized to the whole line, the standard subtitle box',
+    draw: (g, u) => (shade(g, u, LEFT - 6, Y - 11, FULL + 12, 15, '#2a2e2d', .7), plain(g, u, Y, undefined)),
+  },
+  {
+    name: 'Gray band', say: 'A wider see-through gray band whose ends fade out in steps',
+    draw: (g, u) => {
+      const w = FULL + 80, x = W / 2 - w / 2
+      for (let i = 0; i < 4; i++) shade(g, u, x + i * 8, Y - 12, w - i * 16, 17, '#2a2e2d', .22)
+      plain(g, u, Y, undefined)
+    },
+  },
+  { name: 'Plain', say: 'Text with its dark edge and nothing behind it, as typed before', draw: (g, u) => plain(g, u) },
+  {
+    name: 'Cursor', say: 'A small block cursor leads the letters and blinks twice after the last one',
+    draw: (g, u) => {
+      const a = plain(g, u), n = typed(u)
+      if (!a || u > TYPE + 1.2 || u > TYPE && (u - TYPE) % .6 > .3) return
+      g.globalAlpha = a
+      g.fillStyle = UI.text
+      g.fillRect(at(n) + (n ? 1 : 0), Y - 7, 4, 7)
+      g.globalAlpha = 1
     },
   },
   {
-    name: 'Typed, bottom centre', say: 'Low in the middle, the letters appear one by one over 1.2 s, then it fades',
+    name: 'Film bars', say: 'Black bars slide in at the top and bottom like a film; the line sits in the bottom bar',
     draw: (g, u) => {
-      const n = Math.min(LINE.length, Math.floor(u / 1.2 * LINE.length)), left = Math.round(W / 2 - width(LINE) / 2)
-      line(g, Math.max(u, .6), left, H - 22, undefined, LINE.slice(0, n))
+      const a = alpha(u), k = Math.min(1, Math.max(0, u / .4)), h = Math.round(20 * k * Math.min(1, a * 1.5))
+      if (h <= 0) return
+      g.fillStyle = '#000'
+      g.fillRect(0, 0, W, h)
+      g.fillRect(0, H - h, W, h)
+      plain(g, u, H - 7, undefined)
+    },
+  },
+  {
+    name: 'Game box', say: 'The game\'s own box, the one the hover notes use, sized to the whole line',
+    draw: (g, u) => {
+      const a = alpha(u) * Math.min(1, u / .15)
+      if (a <= 0) return
+      g.globalAlpha = a
+      box(g, LEFT - 6, Y - 12, FULL + 12, 17, UI.border, UI.panel)
+      g.globalAlpha = 1
+      plain(g, u, Y, undefined)
+    },
+  },
+  {
+    name: 'Word by word', say: 'Whole words appear one at a time instead of letters',
+    draw: (g, u) => {
+      const a = alpha(u), words = LINE.split(' '), n = Math.min(words.length, Math.floor(u / TYPE * words.length) + 1)
+      if (a <= 0) return
+      g.globalAlpha = a
+      text(g, words.slice(0, n).join(' '), LEFT, Y, UI.text, undefined, UI.panel)
+      g.globalAlpha = 1
+    },
+  },
+  {
+    name: 'Soft letters', say: 'Each letter fades in over a quarter second instead of popping in',
+    draw: (g, u) => {
+      const a = alpha(u)
+      if (a <= 0) return
+      for (let i = 0; i < LINE.length; i++) {
+        const k = Math.max(0, Math.min(1, (u - i / LINE.length * TYPE) / .25))
+        if (!k) break
+        g.globalAlpha = a * k
+        text(g, LINE[i], at(i), Y, UI.text, undefined, UI.panel)
+      }
+      g.globalAlpha = 1
     },
   },
 ]
 
-Object.assign(save, { quest: 9, count: 1, fed: true, told: true, tired: true, warned: true, blood: 140, caught: { fruitfly: 9, moth: 4, mayfly: 2, ladybird: 1 } })
+Object.assign(save, { quest: 9, count: 1, fed: true, told: true, tired: true, warned: true, blood: 140, caught: { fruitfly: 9, moth: 4, mayfly: 2, ladybug: 1 } })
 pack.got = 3
 
-const audio = SOUNDS.map((_, i) => new Audio(`./sounds/bird${i + 1}.wav`))
+const audio = SOUNDS.map((_, i) => new Audio(`./sounds/cry${i + 1}.wav`))
 let pick = 0
 const buttons = SOUNDS.map(([name, say], i) => {
   const b = document.querySelector('nav')!.appendChild(document.createElement('button'))
@@ -97,16 +155,30 @@ const buttons = SOUNDS.map(([name, say], i) => {
 })
 buttons[0].classList.add('on')
 
-const none = () => {}
+const none = () => {}, sim = hunt(), { fly, prey } = sim, ui = hud(none, none, none, none, none, none, [])
+const figs = LOOKS.map((look, i) => {
+  const fig = document.querySelector('section')!.appendChild(document.createElement('figure')), out = ctx(fig.appendChild(mk(W, H)))
+  fig.insertAdjacentHTML('beforeend', `<figcaption><b>${i + 1}</b>${look.name}<i>${look.say}</i></figcaption>`)
+  return (u: number) => {
+    out.drawImage(scene.canvas, 0, 0)
+    look.draw(out, u)
+  }
+})
+let clock = 0, last = performance.now()
 
-function figure(host: HTMLElement, n: number, look: Look) {
-  const fig = host.appendChild(document.createElement('figure')), out = ctx(fig.appendChild(mk(W, H))), sim = hunt(), { fly, prey } = sim, ui = hud(none, none, none, none, none, none, [])
-  fig.insertAdjacentHTML('beforeend', `<figcaption><b>${n}</b>${look.name}<i>${look.say}</i></figcaption>`)
-  return (t: number, dt: number) => {
-    const c = t % LOOP, u = (c - START) / PASS, on = u > 0 && u < 1, sx = from[0] + (to[0] - from[0]) * u, sy = from[1] + (to[1] - from[1]) * u
-    sim.stamina = 100
-    prey.step(dt, t, fly.x, fly.y, null)
-    if (on) for (const p of prey.list) {
+function tick(dt: number) {
+  const was = clock % LOOP
+  clock += dt
+  const c = clock % LOOP, u = (c - START) / PASS, on = u > 0 && u < 1, sx = from[0] + (to[0] - from[0]) * u, sy = from[1] + (to[1] - from[1]) * u
+  if (was < CRY && c >= CRY && !location.search) {
+    audio[pick].currentTime = 0
+    audio[pick].play().catch(() => {})
+  }
+  sim.stamina = 100
+  prey.step(dt, clock, fly.x, fly.y, null)
+  if (on) {
+    cast(sx, sy, clock)
+    for (const p of prey.list) {
       const d = Math.hypot(p.x - sx, p.y - sy)
       if (PREY[p.kind].zone === 'swarm' || d > SPAN * .45) continue
       p.wait = 0
@@ -114,29 +186,20 @@ function figure(host: HTMLElement, n: number, look: Look) {
       p.y += (p.y - sy) / d * 70 * dt
       p.ang = Math.atan2(p.y - sy, p.x - sx)
     }
-    sim.roam(dt)
-    fly.step(dt, t)
-    sim.fx.step(dt)
-    render(out, sim, t, false, null, false)
-    if (on) shadow(out)
-    ui.draw(out, false)
-    look.draw(out, c - SAY, sx, sy)
   }
-}
-
-const figs = LOOKS.map((look, i) => figure(document.querySelector('section')!, i + 1, look))
-let clock = 0, last = performance.now()
-
-function tick(dt: number) {
-  const was = clock % LOOP
-  clock += dt
-  const u = (clock % LOOP - START) / PASS
-  if (u > 0 && u < 1) cast(from[0] + (to[0] - from[0]) * u, from[1] + (to[1] - from[1]) * u, clock)
-  if (was < CRY && clock % LOOP >= CRY && !location.search) {
-    audio[pick].currentTime = 0
-    audio[pick].play().catch(() => {})
+  sim.roam(dt)
+  fly.step(dt, clock)
+  sim.fx.step(dt)
+  render(scene, sim, clock, false, null, false)
+  if (on) {
+    scene.save()
+    scene.imageSmoothingEnabled = false
+    scene.globalAlpha = ALPHA
+    scene.drawImage(half.canvas, 0, 0, W, H)
+    scene.restore()
   }
-  figs.forEach(f => f(clock, dt))
+  ui.draw(scene, false)
+  figs.forEach(f => f(c - SAY))
 }
 
 const loop = () => {

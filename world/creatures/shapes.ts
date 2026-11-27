@@ -10,7 +10,7 @@ export const SHAPES: Record<string, (dot: Dot, f: number, t: number) => void> = 
     oval(dot, 0, 0, 3.5, .8, '#e8dc8a')
     dot(3.5, 0, INK)
   },
-  ladybird(dot, f) {
+  ladybug(dot, f) {
     if (f > .35) pair(s => oval(dot, -1, s * (2 + 2.5 * f), 1.6, 2.5 * f, WING.fill, true))
     oval(dot, 0, 0, 2.6, 2.4, C.red)
     oval(dot, 2.4, 0, .8, 1.5, INK)

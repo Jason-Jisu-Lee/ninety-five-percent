@@ -6,7 +6,7 @@ const LINES = {
   'On screen': 'count', 'Returns after': 'back', 'Stays': 'stay', 'Lives': 'zone', 'Height': 'h', 'Speed': 'speed', 'Flee speed': 'fast', 'Flees within': 'flee',
   'Burst lasts': 'wind', 'Tires for': 'tire', 'Dodge distance': 'dodge', 'Turn rate': 'turn', 'Wobble': 'jink', 'Sits for': 'sit', 'Lands': 'land',
   'Cover range': 'cover', 'Breaks free after': 'grip', 'Shape': 'shape', 'Length': 'len', 'Width': 'wide', 'Wing length': 'wing', 'Wing width': 'chord',
-  'Wing beat': 'beat', 'Body colour': 'body', 'Band colour': 'band', 'Eye colour': 'eye', 'Wing colour': 'tint', 'Wing edge colour': 'rim',
+  'Wing beat': 'beat', 'Body color': 'body', 'Band color': 'band', 'Eye color': 'eye', 'Wing color': 'tint', 'Wing edge color': 'rim',
 }
 const WORDS = ['tier', 'many', 'text', 'zone', 'shape', 'body', 'band', 'eye', 'tint', 'rim'], NEEDED = ['Stage', 'Tier', 'Health', 'Blood', 'Lives']
 
