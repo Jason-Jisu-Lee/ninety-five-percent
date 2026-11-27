@@ -10,5 +10,5 @@ export const QUESTS: { kind: Kind | 'look' | 'self' | 'feast' | 'lunge' | 'anato
   { kind: 'buy moth', n: 1, blood: 15, text: 'Buy a Moth' },
   { kind: 'moth', n: 3, blood: 20, text: 'Kill 3 moths' },
   { kind: 'buy mayfly', n: 1, blood: 50, text: 'Buy Mayfly' },
-  { kind: 'anatomy', n: 5, blood: 0, gives: 'Lair expanded', text: 'Purchase at least 5 more anatomy upgrades at the Lair' },
+  { kind: 'anatomy', n: 4, blood: 0, gives: 'Lair expanded', text: 'Purchase at least 4 more anatomy upgrades at the Lair' },
 ]
