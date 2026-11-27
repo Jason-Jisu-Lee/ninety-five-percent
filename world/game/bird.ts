@@ -14,8 +14,8 @@ const at = (t: number) => {
   return u > 0 && u < 1 ? [fx + (tx - fx) * u, fy + (ty - fy) * u] : null
 }
 
-export function watch(sim: ReturnType<typeof hunt>, want: string, dt: number) {
-  if (!save.bird && G.bird < -9 && want === 'ladybug' && save.count) G.bird = -B.wait
+export function watch(sim: ReturnType<typeof hunt>, dt: number) {
+  if (!save.bird && G.bird < -9 && save.caught.ladybug) G.bird = -B.wait
   if (sim.away) return void (G.bird = -99)
   if (G.bird <= -9) return
   if (G.bird < 0 && G.bird + dt >= 0) save.bird = true, sound('cry')

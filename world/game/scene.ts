@@ -43,7 +43,7 @@ export const stage1: Scene = {
     const first = !Object.keys(save.caught).length, was = save.blood, h = sim.held
     for (let i = 0; i < run.rate; i++) sim.step(dt, G.clock += dt)
     const want = QUESTS[save.quest]?.kind ?? ''
-    watch(sim, want, dt * run.rate)
+    watch(sim, dt * run.rate)
     if (due()) genes.open()
     if (want.startsWith('buy ') && since() > 1 && owns(want.slice(4))) progress(want)
     const hurt = sim.health < G.hale

@@ -11,10 +11,7 @@ export const QUESTS: { kind: Kind | 'look' | 'self' | 'feast' | 'lunge' | 'anato
   { kind: 'moth', n: 3, blood: 20, text: 'Kill 3 moths' },
   { kind: 'buy mayfly', n: 1, blood: 50, text: 'Buy Mayfly' },
   { kind: 'anatomy', n: 4, blood: 0, gives: 'Lair expanded', text: 'Purchase at least 4 more anatomy upgrades at the Lair' },
-  { kind: 'ladybug', n: 3, blood: 25, text: 'Kill 3 ladybugs' },
   { kind: 'mutate', n: 1, blood: 30, text: 'Buy Mutations' },
   { kind: 'pick', n: 1, blood: 30, text: 'Pick a mutation' },
-  { kind: 'bumblebee', n: 1, blood: 40, text: 'Kill a bumblebee' },
-  { kind: 'wasp', n: 1, blood: 60, text: 'Kill a wasp' },
   { kind: 'marsh', n: 1, blood: 100, text: 'Reach the Marsh' },
 ]
