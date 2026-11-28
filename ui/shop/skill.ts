@@ -16,6 +16,7 @@ import { wear } from '../../world/dragonfly/sprite/sheet'
 import { place, where } from '../../world/place/place'
 import { key } from '../parts/key'
 import { marks } from '../parts/marks'
+import { rear } from '../parts/rear'
 import { squeeze } from '../parts/squeeze'
 import { text } from '../text/text'
 
@@ -27,8 +28,7 @@ const ACTS: Record<string, Act> = {
   'Ambush': {
     hit: 1.4, bonus: 2, slide: 10, foe: t => [84 + 30 * Math.min(1, t / 1.4), 0],
     mark(g, x, y, ang, since) {
-      g.fillStyle = since < 0 ? UI.foe : UI.text
-      if (since > -.6 && since < .15) for (const d of [7, 11]) for (let j = -2; j < 3; j++) g.fillRect(Math.round(x - Math.cos(ang) * (d + Math.abs(j)) - Math.sin(ang) * j), Math.round(y - Math.sin(ang) * (d + Math.abs(j)) + Math.cos(ang) * j), 1, 1)
+      if (since > -.6 && since < .15) rear(g, x, y, ang, since < 0 ? UI.foe : UI.text)
     },
   },
   'Dive Strike': { hit: .8, bonus: 2, slide: 26, rush: true, foe: () => [112, Math.PI] },

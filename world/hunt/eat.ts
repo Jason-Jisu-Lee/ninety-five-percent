@@ -6,7 +6,7 @@ import { DF } from '../../data/dragonfly/body'
 import { FIGHT, STREAK } from '../../data/dragonfly/fight'
 import { STAMINA } from '../../data/dragonfly/flight'
 import { PREY } from '../../data/enemies/enemies'
-import { FOREST as C, ORB } from '../../data/look/palette'
+import { FOREST as C, ORB, UI } from '../../data/look/palette'
 import { cells } from '../creatures/draw'
 import type { Prey } from '../creatures/prey'
 import type { Sim } from './sim'
@@ -29,10 +29,11 @@ export function eat(s: Sim, h: Prey, dt: number, t: number) {
   }
   if (s.bite > 0) return
   s.bite += FIGHT.bite / own('bite')
+  const bonus = s.extra > 0 || s.plus > 0
   s.extra = s.plus = 0
   h.hp -= bite
   h.flash = .1
-  fx.hit(mx, my - fly.h * .7 - 10, num(bite))
+  fx.hit(mx, my - fly.h * .7 - 10, num(bite), bonus ? UI.gold : UI.text)
   if (h.wings && h.hp <= 0) {
     fx.shed(mx, my, fly.h, k.wing)
     h.wings = false

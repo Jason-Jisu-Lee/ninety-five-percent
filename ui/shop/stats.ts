@@ -1,4 +1,4 @@
-import { num } from '../../core/math/num'
+import { num, whole } from '../../core/math/num'
 import { gain, level } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { FIGHT } from '../../data/dragonfly/fight'
@@ -15,7 +15,7 @@ const ALL: [label: string, stat: Stat, value: (v: number, speed: number) => numb
   ['Attack speed', 'bite', v => v / FIGHT.bite, '/s', 'Attacks per second'],
   ['Health', 'health', v => v, '', 'Hit points'],
   ['Armor', 'armor', v => v, '', 'Damage blocked per attack'],
-  ['Speed', 'speed', v => up(FLY.top * v / CM), ' cm/s', 'Flying speed'],
+  ['Speed', 'speed', v => whole(FLY.top * v / CM), ' cm/s', 'Flying speed'],
   ['Turning', 'turn', (v, speed) => Math.round(Math.min(75 * v, FLY.top * speed / FLY.pivot * 180 / Math.PI)), ' deg/s', 'How fast it turns'],
   ['Stamina', 'stamina', v => up(100 / STAMINA.drain * v), ' s', 'How long it can fly'],
   ['Rest', 'rest', v => up(STAMINA.regen * v), '%/s', 'Stamina regained per second of rest'],

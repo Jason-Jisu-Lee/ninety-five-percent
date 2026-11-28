@@ -1,6 +1,6 @@
 import type { Ctx } from '../../core/screen/canvas'
 import { own, save } from '../../core/save/save'
-import { FIGHT, LUNGE } from '../../data/dragonfly/fight'
+import { AMBUSH, FIGHT, LUNGE } from '../../data/dragonfly/fight'
 import { STAMINA } from '../../data/dragonfly/flight'
 import { PREY } from '../../data/enemies/enemies'
 import { FOREST as C, UI } from '../../data/look/palette'
@@ -9,6 +9,7 @@ import { hint } from '../../ui/hint/hint'
 import { tired } from '../../ui/hint/tired'
 import { bar, LIFE } from '../../ui/parts/bar'
 import { key } from '../../ui/parts/key'
+import { rear } from '../../ui/parts/rear'
 import { marks } from '../../ui/parts/marks'
 import { squeeze } from '../../ui/parts/squeeze'
 import { drawPrey } from '../creatures/draw'
@@ -36,6 +37,9 @@ export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live
     if (held !== hot) bar(g, Math.round(held.x), Math.round(held.y - held.h * .7) + (Math.sin(fly.ang) > .35 ? 7 : -9), Math.max(0, held.hp) / PREY[held.kind].hp, LIFE, UI.foe)
   }
   if (live) for (const p of hot === sim.mark ? [hot] : [sim.mark, hot]) if (p) marks(g, Math.round(p.x) + (p === sim.mark ? jig : 0), Math.round(p.y - p.h * .7), p === sim.mark && (ready || sim.primed) ? squeeze(span(p), sim.primed ? sim.tight : sim.span()) : span(p), UI.foe)
+  const m = sim.mark
+  if (live && own('ambush') && m && !held && sim.span() <= AMBUSH.near && sim.behind(m)) rear(g, Math.round(m.x), Math.round(m.y - m.h * .7), m.ang, UI.foe)
+  if (live && held && sim.rear < AMBUSH.flash) rear(g, Math.round(held.x), Math.round(held.y - held.h * .7), held.ang, UI.text)
   if (live && me) marks(g, x, y, 13, UI.accent)
   if (live && drill && own('lunge') && sim.mark && !held && !sim.rest && !sim.used && !sim.primed && sim.span() <= LUNGE.far) key(g, x - 5, y - 42, 'S', !!ready)
   if (live && teach) hint(g, sim, hot, clock)

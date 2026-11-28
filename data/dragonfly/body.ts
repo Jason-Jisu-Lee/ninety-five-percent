@@ -1,5 +1,5 @@
 export const DF = {
-  scale: 2.19,
+  scale: 1.971,
   headings: 32,
   flapFrames: 8,
   amp: 1,
