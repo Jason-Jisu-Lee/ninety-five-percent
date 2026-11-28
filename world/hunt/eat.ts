@@ -4,6 +4,7 @@ import { feed } from '../../core/save/mutate'
 import { own, progress, save } from '../../core/save/save'
 import { DF } from '../../data/dragonfly/body'
 import { FIGHT, STREAK } from '../../data/dragonfly/fight'
+import { STAMINA } from '../../data/dragonfly/flight'
 import { PREY } from '../../data/enemies/enemies'
 import { FOREST as C, ORB } from '../../data/look/palette'
 import { cells } from '../creatures/draw'
@@ -39,7 +40,8 @@ export function eat(s: Sim, h: Prey, dt: number, t: number) {
   if (h.hp > 0) return
   s.chain = own('streak') && s.since < STREAK.time ? Math.min(STREAK.step * (own('streak') + 1), s.chain + STREAK.step) : 0
   s.since = 0
-  const pay = +(k.blood * (h.gold ? own('rich') : 1) * (1 + s.chain)).toFixed(2)
+  const pay = +(k.blood * (h.gold ? own('rich') : 1) * (1 + s.chain) + own('bounty')).toFixed(2)
+  s.stamina = Math.min(100, s.stamina + own('fuel') * STAMINA.drain / own('stamina'))
   save.blood += pay
   feed(pay)
   save.earned += pay

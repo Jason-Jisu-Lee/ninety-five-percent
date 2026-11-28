@@ -45,6 +45,7 @@ export function hunt() {
       if (!s.mark) s.hand = false
       if (own('auto') && !s.hand && !s.away && !s.rest && !s.primed) s.mark = scout(s)
       if (s.mark !== s.aim) [s.aim, s.used, s.primed] = [s.mark, false, false]
+      if (own('autolunge') && !s.away && !s.used && s.fit()) s.dart()
       if (s.away) {
         fly.ang = turn(fly.ang, Math.PI, FLY.swing * dt)
         fly.seek(-99, fly.y, Math.min(top * FLY.dash, FLY.flee), dt)

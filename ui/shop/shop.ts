@@ -69,7 +69,7 @@ export function shop(peek = DEV) {
       pass++
       if (over >= 0) [tab, tier, hot] = [over, 0, -1]
       else if (rung >= 0) [tier, hot] = [rung, -1]
-      else if (hot >= 0) can(hot) && (buy(items()[hot].name), sound('buy'), body() && progress('anatomy', true))
+      else if (hot >= 0) can(hot) && (buy(items()[hot].name), sound('buy'), progress(body() ? 'anatomy' : items()[hot].name === 'Auto Target' ? 'auto' : '', true))
       else if (go) shut()
       else if (must()) miss = clock()
     },
