@@ -7,6 +7,7 @@ import { FIGHT, LUNGE } from '../../data/dragonfly/fight'
 import { CM, FLY, STAMINA } from '../../data/dragonfly/flight'
 import { PREY } from '../../data/enemies/enemies'
 import { HOME } from '../../data/game/map'
+import { scout } from './auto'
 import { eat } from './eat'
 import { perch } from './perch'
 import { sim } from './sim'
@@ -39,9 +40,11 @@ export function hunt() {
       if (s.primed) s.tight = Math.min(s.tight, s.span())
       s.miss += dt
       s.since += dt
-      if (s.mark !== s.aim) [s.aim, s.used, s.primed] = [s.mark, false, false]
       ;[s.health, s.cap] = [s.health + cap - s.cap, cap]
       if (s.mark && !prey.list.includes(s.mark)) s.mark = null
+      if (!s.mark) s.hand = false
+      if (own('auto') && !s.hand && !s.away && !s.rest && !s.primed) s.mark = scout(s)
+      if (s.mark !== s.aim) [s.aim, s.used, s.primed] = [s.mark, false, false]
       if (s.away) {
         fly.ang = turn(fly.ang, Math.PI, FLY.swing * dt)
         fly.seek(-99, fly.y, Math.min(top * FLY.dash, FLY.flee), dt)

@@ -30,7 +30,8 @@ export function move(p: Prey, dt: number, t: number, tx: number, ty: number) {
     p.wait = 0
     if (k.dodge) [p.gx, p.gy, p.ang] = [clamp(p.x + Math.cos(a) * k.dodge, 12, W - 12), clamp(p.y + Math.sin(a) * k.dodge, 24, H - 8), a]
   }
-  let want = Math.atan2(p.gy - p.y, p.gx - p.x), sp = k.speed * (k.sit ? Math.min(1, .25 + gd / 24) : 1), low = false
+  const sit = p.stray ? 0 : k.sit, land = !!k.land && !p.stray
+  let want = Math.atan2(p.gy - p.y, p.gx - p.x), sp = k.speed * (sit ? Math.min(1, .25 + gd / 24) : 1), low = false
   if (!k.dodge && (p.fear > 0 || near < k.flee * 1.5)) {
     let reach = k.cover
     want = Math.atan2(dy, dx)
@@ -43,12 +44,12 @@ export function move(p: Prey, dt: number, t: number, tx: number, ty: number) {
   } else if (p.fear > 0) sp = k.fast
   else if (sat) {
     sp = 0
-    low = !!k.land
+    low = land
     if ((p.wait -= dt) <= 0) errand(p)
-  } else if (gd < (k.sit ? 4 : 16)) {
-    if (k.sit) p.wait = k.sit * (.5 + R())
+  } else if (gd < (sit ? 4 : 16)) {
+    if (sit) p.wait = sit * (.5 + R())
     else errand(p)
-  } else low = !!k.land && gd < 16
+  } else low = land && gd < 16
   if (sp) {
     p.ang = turn(p.ang, want + (vnoise(t * 3, p.seed * 99, 3) - .5) * 2 * k.jink, k.turn * dt)
     sp *= (.75 + .5 * vnoise(t * 2, p.seed * 31, 4)) * dt

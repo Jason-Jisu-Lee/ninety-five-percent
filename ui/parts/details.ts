@@ -11,9 +11,9 @@ export const DW = 200
 const IN = 12, SEE = .84, GAP = 12, sheet = ctx(mk(DW, H))
 
 function tip(g: Ctx, lines: string[], x: number, y: number) {
-  const w = Math.max(...lines.map(l => width(l))) + 10, left = Math.min(x, W - w - 2)
-  box(g, left, y, w, lines.length * 11 + 7, UI.border, UI.panel)
-  lines.forEach((l, i) => text(g, l, left + 5, y + 12 + i * 11, UI.text))
+  const w = Math.max(...lines.map(l => width(l))) + 10, left = Math.round(Math.min(x, W - w - 2)), top = Math.round(y)
+  box(g, left, top, w, lines.length * 11 + 7, UI.border, UI.panel)
+  lines.forEach((l, i) => text(g, l, left + 5, top + 12 + i * 11, UI.text))
 }
 
 export function details(g: Ctx, d: Details, at: (tall: number) => number[], mx = -1, my = -1) {

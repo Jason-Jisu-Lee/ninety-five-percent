@@ -11,7 +11,12 @@ export function foe(kind: Kind, hp = PREY[kind].hp): Details {
   const k = PREY[kind], whole = Math.round
   return {
     name: k.name, col: tone(kind), about: k.text, skills: traits(k),
-    rows: [['Damage', num(k.power)], ['Health', hp < k.hp ? `${Math.ceil(hp)} / ${whole(k.hp)}` : String(whole(k.hp))], ['Speed', num(k.speed / CM) + ' cm/s'], ['Lifeblood', String(whole(k.blood))]],
+    rows: [
+      ['Damage', k.power ? num(k.power / k.strike) + '/s' : '0', 'Damage per second while held'],
+      ['Health', hp < k.hp ? `${Math.ceil(hp)} / ${whole(k.hp)}` : String(whole(k.hp)), 'Hit points'],
+      ['Speed', num(k.speed / CM) + ' cm/s', 'Flying speed'],
+      ['Lifeblood', String(whole(k.blood)), 'Lifeblood paid for a kill'],
+    ],
   }
 }
 

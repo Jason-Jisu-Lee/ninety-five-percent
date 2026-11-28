@@ -42,10 +42,11 @@ export function mourn() {
 
 export function attack(p: Prey | null) {
   if (!p || run.paused || run.sim.away) return
-  if (!PREY[p.kind].power || save.warned) return void (run.sim.mark = p)
+  const lock = () => void Object.assign(run.sim, { mark: p, hand: true })
+  if (!PREY[p.kind].power || save.warned) return lock()
   ask.open(['There is less than 95% chance you will catch this enemy successfully.'], [['Attack', () => {
     save.warned = true
-    run.sim.mark = p
+    lock()
   }], ['Cancel', none]])
 }
 

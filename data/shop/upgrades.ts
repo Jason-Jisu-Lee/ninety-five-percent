@@ -16,6 +16,7 @@ const GIVES: Record<string, [stat: Stat, each: number]> = {
   'Lunge': ['lunge', 1],
   'Ambush': ['ambush', 1],
   'Dive Strike': ['dive', 1],
+  'Auto Target': ['auto', 1],
   'Killing Streak': ['streak', 1],
   'Golden Luck': ['gold', .02],
   'Golden Blood': ['rich', .2],

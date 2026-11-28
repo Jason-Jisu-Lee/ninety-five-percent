@@ -32,6 +32,7 @@ export function flight(x: number, y: number) {
   }
   return Object.assign(f, {
     top,
+    veer,
     seek,
     reach,
     aim,
