@@ -4,3 +4,4 @@ export const STAT = { ...BASE }
 export type Stat = keyof typeof BASE
 
 export const SHARE: Stat[] = ['power', 'health', 'speed', 'stamina', 'rest']
+export const QUIET: Stat[] = ['armor', 'mend']

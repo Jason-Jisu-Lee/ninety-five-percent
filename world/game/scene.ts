@@ -76,7 +76,7 @@ export const stage1: Scene = {
     store()
   },
   draw(g) {
-    if (!evos.shown()) render(g, run.sim, G.clock, G.fade <= 0 && !asleep(), top() ? null : G.hot, G.me && !top(), !save.caught.fruitfly && !bound(), G.weary, alone())
+    if (!evos.shown()) render(g, run.sim, G.clock, G.fade <= 0 && !asleep(), top() ? null : G.hot, G.me && !top(), !save.caught.fruitfly && !bound(), G.weary, alone(), lunging())
     if (G.fade > 0) title.draw(g, G.fade)
     else {
       if (G.bird > 0) shadow(g, G.bird)

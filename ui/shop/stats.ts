@@ -3,14 +3,14 @@ import { gain, level } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { FIGHT } from '../../data/dragonfly/fight'
 import { CM, FLY, STAMINA } from '../../data/dragonfly/flight'
-import { BASE, STAT, type Stat } from '../../data/dragonfly/stats'
+import { BASE, QUIET, STAT, type Stat } from '../../data/dragonfly/stats'
 import { UI } from '../../data/look/palette'
 import { ALSO, UPGRADES } from '../../data/shop/upgrades'
 import { note } from '../parts/note'
 import { text, width } from '../text/text'
 
 const WIDE = 176, up = (v: number) => Math.ceil(v - 1e-9)
-export const ROWS: [label: string, stat: Stat, value: (v: number, speed: number) => number, unit: string, hint: string][] = [
+const ALL: [label: string, stat: Stat, value: (v: number, speed: number) => number, unit: string, hint: string][] = [
   ['Damage', 'power', v => v, '', 'Damage per attack'],
   ['Attack speed', 'bite', v => v / FIGHT.bite, '/s', 'Attacks per second'],
   ['Health', 'health', v => v, '', 'Hit points'],
@@ -19,8 +19,9 @@ export const ROWS: [label: string, stat: Stat, value: (v: number, speed: number)
   ['Turning', 'turn', (v, speed) => Math.round(Math.min(75 * v, FLY.top * speed / FLY.pivot * 180 / Math.PI)), ' deg/s', 'How fast it turns'],
   ['Stamina', 'stamina', v => up(100 / STAMINA.drain * v), ' s', 'How long it can fly'],
   ['Rest', 'rest', v => up(STAMINA.regen * v), '%/s', 'Stamina regained per second of rest'],
-  ['Mend in flight', 'mend', v => v, '/s', 'Health regained per second of flight'],
+  ['Mend', 'mend', v => v, '/s', 'Health regained per second of flight'],
 ]
+export const ROWS = ALL.filter(r => !QUIET.includes(r[1]))
 export const shown = (i: number, v: number, speed: number) => num(ROWS[i][2](v, speed)) + ROWS[i][3]
 
 export function stats(x: number, y: number) {

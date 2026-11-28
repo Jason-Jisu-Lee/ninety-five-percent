@@ -5,4 +5,4 @@ export const BEFORE: Record<string, string[]> = { Instinct: ['Lunge', 'Ambush'] 
 export const OPEN: Record<string, string[]> = { Instinct: ['Lunge', 'Ambush', 'Dive Strike', 'Auto Target'] }
 export const LESSON = [['Anatomy', 'Sharp Mandibles'], ['Instinct', 'Lunge']]
 export const FIRST: Record<string, string[]> = { Anatomy: ['Sharp Mandibles', 'Long Wings', 'Wide Spiracles'], Instinct: ['Lunge', 'Ambush'] }
-export const LATER = ['Slow Mend']
+export const LATER = ['Hard Shell', 'Slow Mend']
