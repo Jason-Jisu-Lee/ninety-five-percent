@@ -32,7 +32,7 @@ export function eat(s: Sim, h: Prey, dt: number, t: number) {
   h.hp -= bite
   h.flash = .1
   fx.hit(mx, my - fly.h * .7 - 10, num(bite))
-  if (h.wings && (!k.grip || h.hp <= 0)) {
+  if (h.wings && h.hp <= 0) {
     fx.shed(mx, my, fly.h, k.wing)
     h.wings = false
   }
