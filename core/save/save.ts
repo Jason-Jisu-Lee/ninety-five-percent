@@ -1,7 +1,7 @@
 import { FIGHT } from '../../data/dragonfly/fight'
 import { COLOR, type Color } from '../../data/dragonfly/colors'
 import { BASE, SHARE, STAT, type Stat } from '../../data/dragonfly/stats'
-import { UPGRADES } from '../../data/shop/upgrades'
+import { ALSO, UPGRADES } from '../../data/shop/upgrades'
 import { QUESTS } from '../../data/game/quests'
 
 const KEY = 'ninety-five-percent'
@@ -21,6 +21,9 @@ function read() {
 const { morph: was, strain: kin, ...kept } = read()
 export const save = { ...fresh(), ...kept, ...import.meta.env.DEV && { vol: 0 } } as ReturnType<typeof fresh>
 export const own = (s: Stat) => STAT[s]
+export const purse = () => Math.round(save.blood)
+export const afford = (cost = Infinity) => purse() >= cost
+export const spend = (cost: number) => Object.assign(save, { blood: Math.max(0, save.blood - cost), bought: save.bought + 1 })
 export const level = (name: string) => save.levels[name] ?? 0
 export const price = (name = '') => UPGRADES[name]?.[2][level(name)]
 export const gain = (name: string) => UPGRADES[name] ? UPGRADES[name][1] * (SHARE.includes(UPGRADES[name][0]) ? BASE[UPGRADES[name][0]] : 1) : 0
@@ -31,14 +34,15 @@ export const morph = { on: false, fed: 0, n: 0, ...was }
 export function grow() {
   Object.assign(STAT, BASE)
   for (const [name, [stat]] of Object.entries(UPGRADES)) STAT[stat] += gain(name) * level(name)
+  for (const [name, [stat, each]] of Object.entries(ALSO)) STAT[stat] += each * level(name)
   for (const [stat, add] of Object.entries(strain)) STAT[stat as Stat] += add
 }
 grow()
 
 export function buy(name: string) {
   const cost = price(name)
-  if (!cost || save.blood < cost) return
-  Object.assign(save, { blood: save.blood - cost, bought: save.bought + 1 })
+  if (!cost || !afford(cost)) return
+  spend(cost)
   save.levels[name] = level(name) + 1
   grow()
   store()

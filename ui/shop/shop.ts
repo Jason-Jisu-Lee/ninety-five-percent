@@ -1,5 +1,5 @@
 import { sound } from '../../audio/player/sound'
-import { buy, level, price, progress, save } from '../../core/save/save'
+import { afford, buy, level, price, progress } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { FOREST, UI } from '../../data/look/palette'
 import { H, W } from '../../data/look/screen'
@@ -27,21 +27,21 @@ export function shop(peek = DEV) {
     let at = -1, v: T
     return () => at === pass ? v : (at = pass, v = make())
   }
-  const table = stats(432, 110, true), body = () => tabs()[tab].name === 'Anatomy', born = () => tabs()[tab].name === 'Instinct'
+  const table = stats(432, 110), body = () => tabs()[tab].name === 'Anatomy', born = () => tabs()[tab].name === 'Instinct'
   const early = () => fresh(side), veiled = (name: string) => hid(side, name), tabs = kept(() => listed(side, peek)), known = (name = '') => seen(side, tabs()[tab].name, tier, name)
   const tiers = kept(() => Math.max(...tabs()[tab].items.map(it => it.tier))), split = () => tiers() > 0 && (peek || !early())
   const all = () => tabs()[tab].items.filter(it => !it.tier || it.tier === tier + 1).slice(0, ROWS * 2), spots = kept(() => tabs().map((_, i) => tabs().slice(0, i).reduce((x, c) => x + width(c.name) + GAP, L)))
   const items = kept(() => [...all().filter(it => known(it.name)), ...all().filter(it => peek && !known(it.name))])
   const cell = (i: number, d = +(tiers() > 0)) => [L + (i / (ROWS - d) | 0) * PX, TOP + (i % (ROWS - d) + d) * PY]
   const closed = (i: number) => !known(items()[i]?.name) || !sold(tabs()[tab].name, items()[i]?.name)
-  const cost = (i: number) => closed(i) ? undefined : price(items()[i]?.name), can = (i: number) => save.blood >= (cost(i) ?? Infinity)
+  const cost = (i: number) => closed(i) ? undefined : price(items()[i]?.name), can = (i: number) => afford(cost(i))
   const inside = (x: number, y: number, bx: number, by: number, w: number, h: number) => x >= bx && x < bx + w && y >= by && y < by + h
   const clock = () => performance.now() / 1000, slot = (i: number) => [spots()[i] - 6, 54, width(tabs()[i].name) + 12, 22]
   const must = () => {
-    if (early()) for (const [where, name] of LESSON) if (!level(name) && save.blood >= (price(name) ?? Infinity))
+    if (early()) for (const [where, name] of LESSON) if (!level(name) && afford(price(name)))
       return tabs()[tab].name === where ? [...cell(items().findIndex(it => it.name === name)), CW, CH] : slot(tabs().findIndex(t => t.name === where))
   }
-  const spent = () => early() && !Object.values(FIRST).flat().some(name => save.blood >= (price(name) ?? Infinity))
+  const spent = () => early() && !Object.values(FIRST).flat().some(name => afford(price(name)))
   const shut = () => {
     shown = false
     then?.()

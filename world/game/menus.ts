@@ -11,7 +11,6 @@ import { settings } from '../../ui/settings/settings'
 import { where } from '../place/place'
 import { tools } from './dev'
 import { ask, card, evos, genes, herald, self } from './notices'
-import { alone } from './opening'
 import { restart, run } from './run'
 import { G } from './state'
 
@@ -27,7 +26,6 @@ const begin = () => {
 export const story = intro(() => {
   enter()
   G.start = 0
-  alone()
 }, () => mood(true))
 export const title = front(() => {
   if (save.started) herald(begin, true)

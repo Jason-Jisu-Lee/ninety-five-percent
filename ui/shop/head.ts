@@ -9,7 +9,7 @@ import { text, width } from '../text/text'
 const change = gain()
 
 export function head(g: Ctx, name: string, side: number, L: number, R: number) {
-  const n = String(Math.floor(side ? save.points : save.blood))
+  const n = String(Math.round(side ? save.points : save.blood))
   text(g, name, L, 38, UI.text, undefined, undefined, 2)
   text(g, n, R, 38, side ? UI.gold : UI.text, 'r', undefined, 2)
   if (side) gem(g, R - width(n) * 2 - 9, 31, UI.gold)

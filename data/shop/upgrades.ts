@@ -23,4 +23,5 @@ const GIVES: Record<string, [stat: Stat, each: number]> = {
 }
 const COST: Record<string, number[]> = Object.fromEntries(SHOP.flatMap(t => t.items).map(i => [i.name, i.cost]))
 
+export const ALSO: Record<string, [stat: Stat, each: number]> = { 'Long Wings': ['turn', 20 / 75], 'Longer Wings': ['turn', 50 / 75] }
 export const UPGRADES: Record<string, [stat: Stat, each: number, cost: number[]]> = Object.fromEntries(Object.entries(GIVES).map(([name, give]) => [name, [...give, COST[name] ?? []]]))

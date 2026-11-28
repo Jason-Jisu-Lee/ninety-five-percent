@@ -62,7 +62,7 @@ export function hunt() {
         s.held.free = FIGHT.free
         s.held = null
       }
-      s.health = Math.min(cap, s.health + cap * own('mend') / 100 * dt)
+      s.health = Math.min(cap, s.health + own('mend') * dt)
       if (s.rest) return
       if (s.stamina <= 0) [s.mark, s.rest, s.spent] = [null, s.near(), true]
       else grab(t)

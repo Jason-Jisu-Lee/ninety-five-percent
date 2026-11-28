@@ -12,7 +12,7 @@ export function flight(x: number, y: number) {
   const n = DF.flapFrames, [close, open] = FLY.hover, rest = fidget(f)
   const top = () => FLY.top * own('speed')
   let spin = 0, glide = between(VARY.glide), wall = false, away = false
-  const veer = () => Math.min(FLY.turn * own('turn') * own('speed') ** 2, top() / FLY.pivot)
+  const veer = () => Math.min(FLY.turn * own('turn'), top() / FLY.pivot)
   const reach = (tx: number, ty: number) => veer() * Math.hypot(tx - f.x, ty - f.y) / (2 * Math.abs(Math.sin(wrap(Math.atan2(ty - f.y, tx - f.x) - f.ang))) + 1e-6)
   const aim = (p: { x: number; y: number; vx: number; vy: number }) => {
     const lead = Math.min(FLY.lead, Math.hypot(p.x - f.x, p.y - f.y) / top())

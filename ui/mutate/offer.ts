@@ -1,6 +1,6 @@
 import { sound } from '../../audio/player/sound'
 import { offered } from '../../core/save/mutate'
-import { save } from '../../core/save/save'
+import { afford } from '../../core/save/save'
 import type { Ctx } from '../../core/screen/canvas'
 import { MUTATE as M } from '../../data/game/mutations'
 import { H } from '../../data/look/screen'
@@ -10,7 +10,7 @@ import { CW, spot } from '../wild/next'
 
 export function offer(buy: () => void) {
   let hot = false
-  const left = () => spot() - CW - GAP, on = (x: number, y: number) => offered() && x >= left() && x < left() + CW && y >= H - PEEK - RISE, can = () => save.blood >= M.cost
+  const left = () => spot() - CW - GAP, on = (x: number, y: number) => offered() && x >= left() && x < left() + CW && y >= H - PEEK - RISE, can = () => afford(M.cost)
   return {
     hover(x: number, y: number) {
       const was = hot

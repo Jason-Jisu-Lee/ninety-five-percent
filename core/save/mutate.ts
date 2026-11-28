@@ -1,6 +1,6 @@
 import { MUTATE, MUTATIONS, type Mutation } from '../../data/game/mutations'
 import { WILD } from '../../data/shop/wild'
-import { grow, level, morph, progress, save, store, strain } from './save'
+import { afford, grow, level, morph, progress, save, spend, store, strain } from './save'
 import { pack } from './wild'
 
 const AFTER = WILD.findIndex(w => w.kind === MUTATE.after)
@@ -12,10 +12,10 @@ export const due = () => morph.on && morph.fed >= need()
 export const feed = (n: number) => void (morph.fed += +morph.on * n)
 
 export function mutate() {
-  if (!offered() || save.blood < MUTATE.cost) return
+  if (!offered() || !afford(MUTATE.cost)) return
   morph.on = true
   progress('mutate')
-  Object.assign(save, { blood: save.blood - MUTATE.cost, bought: save.bought + 1 })
+  spend(MUTATE.cost)
   store()
 }
 

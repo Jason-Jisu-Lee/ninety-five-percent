@@ -20,7 +20,7 @@ import { input } from './input'
 import { depart, layers, story, title, top, ui } from './menus'
 import { evos, fate, genes, herald, mourn, omen } from './notices'
 import { render } from './render'
-import { advance, asleep, born, bound, reveal } from './opening'
+import { advance, alone, asleep, born, bound, reveal } from './opening'
 import { onward, restart, run } from './run'
 import { settle } from '../place/place'
 import { G } from './state'
@@ -76,7 +76,7 @@ export const stage1: Scene = {
     store()
   },
   draw(g) {
-    if (!evos.shown()) render(g, run.sim, G.clock, G.fade <= 0 && !asleep(), top() ? null : G.hot, G.me && !top(), !save.caught.fruitfly && !bound(), G.weary)
+    if (!evos.shown()) render(g, run.sim, G.clock, G.fade <= 0 && !asleep(), top() ? null : G.hot, G.me && !top(), !save.caught.fruitfly && !bound(), G.weary, alone())
     if (G.fade > 0) title.draw(g, G.fade)
     else {
       if (G.bird > 0) shadow(g, G.bird)

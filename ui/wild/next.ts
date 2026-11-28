@@ -1,5 +1,5 @@
 import { sound } from '../../audio/player/sound'
-import { save } from '../../core/save/save'
+import { afford, save } from '../../core/save/save'
 import { pack } from '../../core/save/wild'
 import type { Ctx } from '../../core/screen/canvas'
 import { H, W } from '../../data/look/screen'
@@ -18,7 +18,7 @@ export const spot = () => X + +!after() * (CW + GAP)
 
 export function nextWild(buy: () => void) {
   let hot = false, open = false, left = 0, mx = -1, my = -1, box = [0, 0, 0]
-  const now = () => save.fed ? WILD[pack.got] : undefined, can = () => save.blood >= (now()?.cost ?? Infinity)
+  const now = () => save.fed ? WILD[pack.got] : undefined, can = () => afford(now()?.cost)
   const on = (x: number, y: number, wide: number) => !!now() && x >= spot() && x < spot() + wide && y >= H - tall(label(now()!)) - RISE
   const inside = (x: number, y: number) => open && x >= box[0] - REACH && x < box[0] + DW + REACH && y >= box[1] - REACH && y < box[1] + box[2] + REACH
   return {

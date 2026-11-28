@@ -5,7 +5,7 @@ import { orb } from '../parts/icons'
 import { text, width } from '../text/text'
 
 export function blood(g: Ctx, n: number, exact = false, bonus = 0, left = 0, lit = false) {
-  const shown = exact ? num(n) : String(Math.floor(n)), x = 24 + width(shown), tall = Math.ceil(9 * left)
+  const shown = exact ? num(n) : String(Math.round(n)), x = 24 + width(shown), tall = Math.ceil(9 * left)
   orb(g, 16, 15, '', UI.panel)
   text(g, shown, 24, 19, lit ? UI.gold : UI.text, undefined, UI.panel)
   if (left <= 0 || !bonus) return x

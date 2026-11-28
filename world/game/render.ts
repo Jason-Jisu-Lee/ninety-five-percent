@@ -18,16 +18,17 @@ import type { hunt } from '../hunt/hunt'
 import { glints } from '../place/glints'
 import { place } from '../place/place'
 
-export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live: boolean, hot: Prey | null, me: boolean, teach = false, weary = -1) {
+export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live: boolean, hot: Prey | null, me: boolean, teach = false, weary = -1, alone = false) {
   const { fly, prey, fx, held } = sim, ready = own('lunge') && !held && !sim.rest && !sim.used && sim.fit(), jig = sim.miss < LUNGE.shake ? Math.round(Math.sin(sim.miss / LUNGE.shake * Math.PI * 6) * 2) : 0, chew = held ? 1 + +(sim.bite > FIGHT.bite * .55) : 0
   const [spr, sh] = wear(save.color)(fly.heading, fly.frame, chew, fly.lean), half = spr.width >> 1
   const x = Math.round(fly.x) + (sim.hurt > 0 ? sim.hurt * 40 & 1 || -1 : 0), y = Math.round(fly.y - fly.h * .7)
   g.drawImage(place().art, 0, 0)
   glints(g, clock)
   fx.litter(g)
-  for (const p of prey.list) drawPrey(g, p, clock, true)
+  const seen = alone ? [] : prey.list
+  for (const p of seen) drawPrey(g, p, clock, true)
   g.drawImage(sh, Math.round(fly.x + fly.h * .45) - half, Math.round(fly.y) - half)
-  for (const p of prey.list) drawPrey(g, p, clock)
+  for (const p of seen) drawPrey(g, p, clock)
   g.drawImage(spr, x - half, y - half)
   if (held) {
     drawPrey(g, held, clock)

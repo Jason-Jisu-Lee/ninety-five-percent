@@ -6,13 +6,13 @@ import { SHOP } from '../../data/shop/shop'
 import { card } from '../parts/card'
 import type { Details } from '../parts/details'
 import { MANUAL } from '../shop/about'
-import { ROWS } from '../shop/stats'
+import { ROWS, shown } from '../shop/stats'
 
 const ITEMS = SHOP.flatMap(c => c.items)
 const say = (name: string) => ITEMS.find(i => i.name === name)!.text.replace(MANUAL, '').split('. ').filter(s => !/^\d+ levels?$/.test(s)).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('. ')
 const me = (): Details => ({
   name: 'Dragonfly', col: COLORS[save.color][0], about: 'Agile predatory insect',
-  rows: ROWS.map(([n, s, , now, hint]) => [n, now(STAT[s], STAT.speed), hint]),
+  rows: ROWS.map(([n, s, , , hint], i) => [n, shown(i, STAT[s], STAT.speed), hint]),
   skills: OPEN.Instinct.filter(n => level(n)).map(n => [n, say(n)]),
 })
 
