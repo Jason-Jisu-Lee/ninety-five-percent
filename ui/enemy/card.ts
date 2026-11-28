@@ -12,7 +12,8 @@ export function foe(kind: Kind, hp = PREY[kind].hp): Details {
   return {
     name: k.name, col: tone(kind), about: k.text, skills: traits(k),
     rows: [
-      ['Damage', k.power ? num(k.power / k.strike) + '/s' : '0', 'Damage per second while held'],
+      ['Damage', num(k.power), 'Damage per attack'],
+      ['Attack speed', num(k.power ? 1 / k.strike : 0) + '/s', 'Attacks per second while held'],
       ['Health', hp < k.hp ? `${Math.ceil(hp)} / ${whole(k.hp)}` : String(whole(k.hp)), 'Hit points'],
       ['Speed', num(k.speed / CM) + ' cm/s', 'Flying speed'],
       ['Lifeblood', String(whole(k.blood)), 'Lifeblood paid for a kill'],
