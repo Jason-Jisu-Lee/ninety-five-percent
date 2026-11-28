@@ -18,7 +18,7 @@ export function hunt() {
     const [hx, hy] = s.ahead(DF.headAt), p = s.mark
     if (!p || p.free > 0 || Math.hypot(p.x - hx, p.y - hy) >= FLY.catch * own('reach')) return
     const fast = fly.top() / CM >= FIGHT.dive, behind = s.behind(p)
-    s.rear = behind && own('ambush') ? 0 : 9
+    ;[s.rear, s.spot] = [behind && own('ambush') ? 0 : 9, [p.x, p.y - p.h * .7, p.ang]]
     ;[s.held, s.bite, s.hold, s.strike, s.extra, s.plus] = [p, +!s.primed * FIGHT.bite / own('bite'), 0, PREY[p.kind].strike * between(FIGHT.jitter), +fast * own('dive') + +behind * own('ambush') + +s.primed * LUNGE.bonus, +behind * own('prowl') + +s.primed * own('lash')]
     fly.speed = Math.min(fly.speed, FIGHT.slide, s.primed ? fly.top() * LUNGE.skid : Infinity)
     ;[s.jolt, s.lunged, s.used, s.primed, s.boost, s.hand] = [s.primed, s.primed, false, false, 0, false]

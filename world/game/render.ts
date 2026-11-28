@@ -31,6 +31,7 @@ export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live
   for (const p of seen) drawPrey(g, p, clock, true)
   g.drawImage(sh, Math.round(fly.x + fly.h * .45) - half, Math.round(fly.y) - half)
   for (const p of seen) drawPrey(g, p, clock)
+  if (live && sim.rear < AMBUSH.flash) rear(g, Math.round(sim.spot[0]), Math.round(sim.spot[1]), sim.spot[2], UI.text)
   g.drawImage(spr, x - half, y - half)
   if (held) {
     drawPrey(g, held, clock)
@@ -38,8 +39,7 @@ export function render(g: Ctx, sim: ReturnType<typeof hunt>, clock: number, live
   }
   if (live) for (const p of hot === sim.mark ? [hot] : [sim.mark, hot]) if (p) marks(g, Math.round(p.x) + (p === sim.mark ? jig : 0), Math.round(p.y - p.h * .7), p === sim.mark && (ready || sim.primed) ? squeeze(span(p), sim.primed ? sim.tight : sim.span()) : span(p), UI.foe)
   const m = sim.mark
-  if (live && own('ambush') && m && !held && sim.span() <= AMBUSH.near && sim.behind(m)) rear(g, Math.round(m.x), Math.round(m.y - m.h * .7), m.ang, UI.foe)
-  if (live && held && sim.rear < AMBUSH.flash) rear(g, Math.round(held.x), Math.round(held.y - held.h * .7), held.ang, UI.text)
+  if (live && own('ambush') && m && !held && m.free <= 0 && sim.span() <= AMBUSH.near && sim.behind(m)) rear(g, Math.round(m.x), Math.round(m.y - m.h * .7), m.ang, UI.foe)
   if (live && me) marks(g, x, y, 13, UI.accent)
   if (live && drill && own('lunge') && sim.mark && !held && !sim.rest && !sim.used && !sim.primed && sim.span() <= LUNGE.far) key(g, x - 5, y - 42, 'S', !!ready)
   if (live && teach) hint(g, sim, hot, clock)

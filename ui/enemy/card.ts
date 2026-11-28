@@ -14,9 +14,9 @@ export function foe(kind: Kind, hp = PREY[kind].hp): Details {
     rows: [
       ['Damage', num(k.power), 'Damage per attack'],
       ['Attack speed', num(k.power ? 1 / k.strike : 0) + '/s', 'Attacks per second while held'],
-      ['Health', hp < k.hp ? `${Math.ceil(hp)} / ${whole(k.hp)}` : String(whole(k.hp)), 'Hit points'],
+      ['Health', hp < k.hp ? `${Math.ceil(hp)} / ${Math.round(k.hp)}` : String(Math.round(k.hp)), 'Hit points'],
       ['Speed', whole(k.speed / CM) + ' cm/s', 'Flying speed'],
-      ['Lifeblood', String(whole(k.blood)), 'Lifeblood paid for a kill'],
+      ['Lifeblood', String(Math.round(k.blood)), 'Lifeblood paid for a kill'],
     ],
   }
 }
